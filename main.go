@@ -12,7 +12,7 @@ func init(){
 		os.Exit(2)
 	}
 	utils.Get_core()
-	
+	utils.Load_config("config.json")
 	database.Get_database()
 }
 func main() {
