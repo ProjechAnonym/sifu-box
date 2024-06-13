@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"sifu-box/Utils"
-	"sifu-box/Database"
+	database "sifu-box/Database"
+	utils "sifu-box/Utils"
 )
 func init(){
 	if err := utils.Set_value(utils.Get_Dir(),"project-dir"); err != nil {
@@ -12,6 +12,7 @@ func init(){
 		os.Exit(2)
 	}
 	utils.Get_core()
+	
 	database.Get_database()
 }
 func main() {

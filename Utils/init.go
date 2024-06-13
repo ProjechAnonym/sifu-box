@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+
 	"github.com/huandu/go-clone"
 )
 var global_vars = make(map[string]interface{})
@@ -33,7 +34,7 @@ func Set_value(value any,keys ...string) error{
 
 func Get_Dir() string {
 	// base_dir := filepath.Dir(os.Args[0])
-	base_dir := "/root/sifu-box"
+	base_dir := "E:/Myproject/sifu-box"
 	return base_dir
 }
 
