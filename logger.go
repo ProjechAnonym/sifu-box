@@ -21,10 +21,10 @@ func get_encoder() zapcore.Encoder {
 func get_writer(level string) zapcore.WriteSyncer{
 	project_dir,_ := Get_value("project-dir")
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   fmt.Sprintf("%s/log/gin-%s.log",project_dir,level),
+		Filename:   fmt.Sprintf("%s/log/sifu-box-%s.log",project_dir.(string),level),
 		MaxSize:    10,
 		MaxBackups: 5,
-		MaxAge:     30,
+		MaxAge:     15,
 		Compress:   false,
 	}
 	return zapcore.AddSync(lumberJackLogger)

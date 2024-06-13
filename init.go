@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"os"
-	"path/filepath"
 
 	"github.com/huandu/go-clone"
 )
@@ -35,7 +33,8 @@ func Set_value(value any,keys ...string) error{
 }
 
 func Get_Dir() string {
-	base_dir := filepath.Dir(os.Args[0])
+	// base_dir := filepath.Dir(os.Args[0])
+	base_dir := "/root/sifu-box"
 	return base_dir
 }
 

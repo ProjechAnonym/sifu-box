@@ -5,7 +5,6 @@ import (
 	"os"
 )
 func init(){
-	os.Setenv("GOTMPDIR", "/root/sifu-box")
 	if err := Set_value(Get_Dir(),"project-dir"); err != nil {
 		fmt.Fprintln(os.Stderr,"Critical error occurred, can not set the project dir, exiting.")
 		os.Exit(2)
