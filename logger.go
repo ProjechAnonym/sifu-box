@@ -19,7 +19,7 @@ func get_encoder() zapcore.Encoder {
 }
 
 func get_writer(level string) zapcore.WriteSyncer{
-	project_dir,_ := Get_value("project_dir")
+	project_dir,_ := Get_value("project-dir")
 	lumberJackLogger := &lumberjack.Logger{
 		Filename:   fmt.Sprintf("%s/log/gin-%s.log",project_dir,level),
 		MaxSize:    10,
@@ -41,13 +41,9 @@ func Get_core(){
 	my_logger := zap.New(core)
 	zap.ReplaceGlobals(my_logger)
 }
-func Logger_caller(msg string,err error,skip ...int){
+func Logger_caller(msg string,err error,skip int){
 	if err != nil{
-		index := 1
-		if len(skip) != 0{
-			index = skip[0]
-		}
-		_,file,line,_ := runtime.Caller(index)
+		_,file,line,_ := runtime.Caller(skip)
 		zap.L().Error(msg,zap.String("caller",fmt.Sprintf("%s:%d",file,line)),zap.Error(err))
 	}else{
 		zap.L().Info(msg)

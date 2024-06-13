@@ -33,9 +33,7 @@ func Set_value(value any,keys ...string) error{
 	}
 	return nil
 }
-func Test(){
-	fmt.Println(global_vars)
-}
+
 func Get_Dir() string {
 	base_dir := filepath.Dir(os.Args[0])
 	return base_dir
