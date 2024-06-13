@@ -1,0 +1,2 @@
+cors: { origins: ["*"] }
+key: sifu

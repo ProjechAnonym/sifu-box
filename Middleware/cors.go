@@ -1,4 +1,4 @@
-package middlware
+package middleware
 
 import (
 	utils "sifu-box/Utils"
@@ -8,7 +8,7 @@ import (
 )
 
 func Cors() cors.Config {
-	origins, _ := utils.Get_value("config", "cors", "origins")
+	origins, _ := utils.Get_value("Server", "cors", "origins")
 	var allow_origins = make([]string, len(origins.([]interface{})))
 	for i, origin := range origins.([]interface{}) {
 		allow_origins[i] = origin.(string)
