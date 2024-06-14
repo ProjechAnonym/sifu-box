@@ -22,9 +22,9 @@ func get_writer(level string) zapcore.WriteSyncer{
 	project_dir,_ := Get_value("project-dir")
 	lumberJackLogger := &lumberjack.Logger{
 		Filename:   fmt.Sprintf("%s/log/sifu-box-%s.log",project_dir.(string),level),
-		MaxSize:    10,
-		MaxBackups: 5,
-		MaxAge:     15,
+		MaxSize:    1,
+		MaxBackups: 1,
+		MaxAge:     1,
 		Compress:   false,
 	}
 	return zapcore.AddSync(lumberJackLogger)
