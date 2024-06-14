@@ -4,12 +4,8 @@ import (
 	"fmt"
 	"os"
 	database "sifu-box/Database"
-	middleware "sifu-box/Middleware"
-	router "sifu-box/Router"
+	singbox "sifu-box/Singbox"
 	utils "sifu-box/Utils"
-
-	"github.com/gin-contrib/cors"
-	"github.com/gin-gonic/gin"
 )
 func init(){
 	if err := utils.Set_value(utils.Get_Dir(),"project-dir"); err != nil {
@@ -21,10 +17,11 @@ func init(){
 	database.Get_database()
 }
 func main() {
-	gin.SetMode(gin.ReleaseMode)
-	server := gin.Default()
-	server.Use(middleware.Logger(),middleware.Recovery(true),cors.New(middleware.Cors()))
-	api_group := server.Group("/api")
-	router.Setting_server(api_group)
-	server.Run()
+	singbox.Config_workflow("Gateway")
+	// gin.SetMode(gin.ReleaseMode)
+	// server := gin.Default()
+	// server.Use(middleware.Logger(),middleware.Recovery(true),cors.New(middleware.Cors()))
+	// api_group := server.Group("/api")
+	// router.Setting_server(api_group)
+	// server.Run()
 }

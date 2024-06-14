@@ -2,3 +2,5 @@ log
 sifu-box
 sifu-box.exe
 sifu-box.db
+static
+config/Proxy.config.yaml
