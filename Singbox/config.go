@@ -70,6 +70,7 @@ func format_url() ([]config_link,error) {
             parsed_url.RawQuery = params.Encode()
             links[i].url = parsed_url.String()
         }
+		// links[i].url = link.(map[string]interface{})["url"].(string)
     }
     // 返回处理后的URL列表和nil错误
     return links,nil
