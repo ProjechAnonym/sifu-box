@@ -1,6 +1,7 @@
 package singbox
 
 import (
+	"net/url"
 	utils "sifu-box/Utils"
 )
 
@@ -63,7 +64,7 @@ func get_ruleset(template string) ([]map[string]interface{}, error) {
 // 返回值:
 // - 一个包含多个规则的map切片,每个规则是一个包含"rule_set"和"outbound"键值对的map
 // - 错误对象,如果在获取规则过程中发生错误
-func get_rules(template string) ([]map[string]interface{}, error) {
+func get_rules(template string,link string,proxy bool) ([]map[string]interface{}, error) {
     // 从模板中获取默认路由规则
     base_rules, err := utils.Get_value(template, "route", "rules", "default")
     if err != nil {
@@ -72,6 +73,20 @@ func get_rules(template string) ([]map[string]interface{}, error) {
         return nil, err
     }
 
+    // 解析链接以获取域名
+    domain,err := url.Parse(link)
+    if err != nil {
+        // 日志记录域名解析失败
+        utils.Logger_caller("Extract the domain failed!", err,1)
+        return nil, err
+    }
+    host := domain.Host
+
+    // 如果使用代理，添加针对当前域名的代理规则。
+    if proxy{
+        base_rules = append(base_rules.([]interface{}),map[string]interface{}{"domain_keyword":[]string{host},"outbound":"select"})
+    }
+    
     // 从配置中获取自定义路由规则
     custom_rules, err := utils.Get_value("Proxy", "rule_set")
     if err != nil {
@@ -123,7 +138,7 @@ func get_rules(template string) ([]map[string]interface{}, error) {
 // 返回值:
 // - 一个map[string]interface{}类型的路由配置,包含规则集和规则
 // - 错误信息,如果在处理过程中出现错误
-func Merge_route(template string) (map[string]interface{}, error) {
+func Merge_route(template string,url string,proxy bool) (map[string]interface{}, error) {
     // 从模板中提取规则集信息
     rulesets, err := get_ruleset(template)
     if err != nil {
@@ -131,7 +146,7 @@ func Merge_route(template string) (map[string]interface{}, error) {
     }
 
     // 从模板中提取路由规则信息
-    rules, err := get_rules(template)
+    rules, err := get_rules(template,url,proxy)
     if err != nil {
         return nil, err
     }

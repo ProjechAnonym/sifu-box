@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/huandu/go-clone"
 	"github.com/spf13/viper"
@@ -49,7 +50,7 @@ func Load_config(file string) error {
 		os.Exit(2)
 	}
 	// 读取配置文件,读取错误则panic退出该进程
-	viper.SetConfigFile(fmt.Sprintf("%s/config/%s.config.yaml", project_dir, file))
+	viper.SetConfigFile(filepath.Join(project_dir.(string),"config",file + ".config.yaml"))
 	err = viper.ReadInConfig()
 	if err != nil {
 		Logger_caller(fmt.Sprintf("Read %s failed!", file), err,1)
@@ -68,7 +69,7 @@ func Load_template(file string) error {
 		os.Exit(2)
 	}
 	// 读取配置文件,读取错误则panic退出该进程
-	viper.SetConfigFile(fmt.Sprintf("%s/config/%s.template.yaml", project_dir, file))
+	viper.SetConfigFile(filepath.Join(project_dir.(string),"template",file + ".template.yaml"))
 	err = viper.ReadInConfig()
 	if err != nil {
 		Logger_caller(fmt.Sprintf("Read %s failed!", file), err,1)
