@@ -100,7 +100,7 @@ outbounds:
     {
       type: selector,
       tag: select,
-      outbounds: [auto],
+      outbounds: [],
       default: auto,
       interrupt_exist_connections: false,
     }
@@ -117,9 +117,21 @@ outbounds:
 
   custom_outbound:
     [
-      { type: dns, tag: dns-out },
-      { type: direct, tag: direct },
-      { type: block, tag: block },
+      [
+        { type: dns, tag: dns-out },
+        { type: direct, tag: direct },
+        { type: block, tag: block },
+      ],
+      [
+        {
+          type: shadowsocks,
+          tag: "自建香港",
+          server: "sifu.top",
+          server_port: 0,
+          method: "cipher",
+          password: "wsr19990902",
+        },
+      ],
     ]
 
 route:

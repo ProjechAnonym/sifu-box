@@ -17,7 +17,7 @@ func init(){
 	database.Get_database()
 }
 func main() {
-	singbox.Config_workflow("Gateway")
+	singbox.Config_workflow("Gateway",false)
 	// gin.SetMode(gin.ReleaseMode)
 	// server := gin.Default()
 	// server.Use(middleware.Logger(),middleware.Recovery(true),cors.New(middleware.Cors()))
