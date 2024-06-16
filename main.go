@@ -17,11 +17,23 @@ func init(){
 	database.Get_database()
 }
 func main() {
-	singbox.Config_workflow("Gateway",false)
-	// gin.SetMode(gin.ReleaseMode)
-	// server := gin.Default()
-	// server.Use(middleware.Logger(),middleware.Recovery(true),cors.New(middleware.Cors()))
-	// api_group := server.Group("/api")
-	// router.Setting_server(api_group)
-	// server.Run()
+	// -1为全部更新
+	mode,err := utils.Get_value("Server","server-mode")
+	if err != nil {
+		fmt.Fprintln(os.Stderr,"Critical error occurred, can not get the running mode, exiting.")
+		os.Exit(2)
+	}
+	if mode.(bool){
+		fmt.Println(mode)
+		// gin.SetMode(gin.ReleaseMode)
+		// server := gin.Default()
+		// server.Use(middleware.Logger(),middleware.Recovery(true),cors.New(middleware.Cors()))
+		// api_group := server.Group("/api")
+		// router.Setting_server(api_group)
+		// server.Run()
+	}else{
+		singbox.Config_workflow(-1)
+	}
+	
+
 }

@@ -34,7 +34,21 @@ func Set_value(value any,keys ...string) error{
 	}
 	return nil
 }
-
+func Del_key(keys ...string) error{
+	temp_var := global_vars
+	for i,key := range keys {
+		if i == len(keys) - 1 {
+			delete(temp_var,key)
+			break
+		}
+		if sub_map,ok := temp_var[key].(map[string]interface{}); ok{
+			temp_var = sub_map
+		}else{
+			return fmt.Errorf("the key %s for level %d does not exist",key,i + 1)
+		}	
+	}
+	return nil
+}
 func Get_Dir() string {
 	// base_dir := filepath.Dir(os.Args[0])
 	base_dir := "E:/Myproject/sifu-box"

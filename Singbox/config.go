@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"io/fs"
 	"net/url"
+	"os"
 	"path/filepath"
 	utils "sifu-box/Utils"
+	"strings"
 	"sync"
 
 	"github.com/bitly/go-simplejson"
@@ -86,29 +88,27 @@ func format_url() ([]config_link,error) {
 // config_merge 根据模板和是否合并所有配置的标志,来合并配置
 // template: 配置模板的字符串表示
 // all: 是否合并所有配置的布尔值
-// 返回错误信息,如果合并过程中发生错误
-func config_merge(template string,all bool) error{
+func config_merge(template string,index int) {
     // 从模板中提取日志、DNS、入站和实验性配置
-    // 获取固定信息
     log,err := utils.Get_value(template,"log")
     if err != nil{
         utils.Logger_caller("Get log failed!",err,1)
-        return err
+        return 
     }
     dns,err := utils.Get_value(template,"dns")
     if err != nil{
         utils.Logger_caller("Get dns failed!",err,1)
-        return err
+        return 
     }
     inbounds,err := utils.Get_value(template,"inbounds")
     if err != nil{
         utils.Logger_caller("Get inbounds failed!",err,1)
-        return err
+        return
     }
     experimental,err := utils.Get_value(template,"experimental")
     if err != nil{
         utils.Logger_caller("Get experimental failed!",err,1)
-        return err
+        return 
     }
     // 创建一个新的JSON对象,用于存储合并后的配置
     config := simplejson.New()
@@ -121,12 +121,12 @@ func config_merge(template string,all bool) error{
     error_channel := make(chan error,len(links))
     var jobs sync.WaitGroup
     if err != nil{
-        return err
+        return 
     }
     // 并发处理每个URL链接的配置合并
     for i,link := range links{
         // 如果不合并所有配置,只处理最后一个URL
-        if !all && i != len(links)-1{
+        if i != index && index != -1 {
             continue
         }
         jobs.Add(1)
@@ -137,14 +137,14 @@ func config_merge(template string,all bool) error{
             project_dir,err := utils.Get_value("project-dir")
             if err != nil{
                 utils.Logger_caller("Get project dir failed!",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url config failed",index)
+                error_channel <- fmt.Errorf("generate the %dth url of %s config failed",index,template)
                 return
             }
             // 合并路由配置
             route,err := Merge_route(template,link.url,link.proxy)
             if err != nil{
                 utils.Logger_caller("Get route failed!",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url failed,config:%s",index,link.label)
+                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.label)
                 return
             }
             full_config.(*simplejson.Json).Set("route", route)
@@ -152,7 +152,7 @@ func config_merge(template string,all bool) error{
             proies,err := Merge_outbounds(link.url,template)
             if err != nil{
                 utils.Logger_caller("Get outbounds failed!",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url failed,config:%s",index,link.label)
+                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.label)
                 return
             }
             full_config.(*simplejson.Json).Set("outbound", proies)
@@ -162,15 +162,16 @@ func config_merge(template string,all bool) error{
             label,err := encryption_md5(link.label)
             if err != nil{
                 utils.Logger_caller("Encryption md5 failed!",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url failed,config:%s",index,link.label)
+                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.label)
                 return
             }
             // 将配置写入文件
             if err = utils.File_write(config_bytes,filepath.Join(project_dir.(string),"static",template,fmt.Sprintf("%s.json",label)),[]fs.FileMode{0666,0777});err != nil{
                 utils.Logger_caller("Write config file failed!",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url failed,config:%s",index,link.label)
+                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.label)
                 return
             }
+            utils.Logger_caller(fmt.Sprintf("Generate the %s config of %s success!",link.label,template),nil,1)
         }(link,template,config,i)
     }
     // 等待所有并发任务完成
@@ -178,19 +179,50 @@ func config_merge(template string,all bool) error{
     close(error_channel)
     // 处理并输出任何配置合并过程中发生的错误
     for err := range error_channel{
-        fmt.Println(err)
+        utils.Logger_caller("generate error",err,1)
     }
-    return nil
+    
 }
-func Config_workflow(template string,all bool) error {
-	if err := utils.Load_template(template); err != nil {
-		utils.Logger_caller("load the template failed",err,1)
-		return fmt.Errorf("load the %s template failed",template)
+func Config_workflow(index int) error {
+    project_dir,err := utils.Get_value("project-dir")
+    if err != nil{
+        utils.Logger_caller("get project dir failed",err,1)
+        return err
+    }
+
+	// 打开目录
+	template_dir, err := os.Open(filepath.Join(project_dir.(string),"template"))
+	if err != nil {
+		utils.Logger_caller("failed to open template directory", err,1)
 	}
-	if err := utils.Load_config("Proxy"); err != nil {
+	defer template_dir.Close()
+
+	// 读取目录条目
+	entries, err := template_dir.ReadDir(-1) // -1 表示读取所有条目
+	if err != nil {
+		utils.Logger_caller("failed to read template directory", err,1)
+	}
+    if err := utils.Load_config("Proxy"); err != nil {
 		utils.Logger_caller("load the Proxy config failed",err,1)
 		return fmt.Errorf("load the Proxy config failed")
 	}
-	config_merge(template,all)
+    var workflow sync.WaitGroup
+	// 打印所有条目的名称
+	for _, entry := range entries {
+        template := strings.Split(entry.Name(), ".")[0]
+        if err := utils.Load_template(template); err != nil {
+            utils.Logger_caller("load the template failed",err,1)
+            return fmt.Errorf("load the %s template failed",template)
+        }
+        workflow.Add(1)
+        go func ()  {
+            defer func ()  {
+                workflow.Done()
+                utils.Del_key(template)
+            }()
+            config_merge(template,index)
+        }()
+	}
+	workflow.Wait()
 	return nil
 }
