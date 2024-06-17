@@ -152,12 +152,12 @@ func Format_url(link string, template string) (map[string]interface{}, error) {
 			utils.Logger_caller("Get vmess Template failed!", err, 1)
 			return nil, err
 		}
-		proxy_vmess.(map[string]interface{})["tag"] = msg.Get("ps")
-		proxy_vmess.(map[string]interface{})["server"] = msg.Get("add")
+		proxy_vmess.(map[string]interface{})["tag"] = msg.Get("ps").MustString()
+		proxy_vmess.(map[string]interface{})["server"] = msg.Get("add").MustString()
 		proxy_vmess.(map[string]interface{})["server_port"] = msg.Get("port").MustInt()
-		proxy_vmess.(map[string]interface{})["uuid"] = msg.Get("id")
-		proxy_vmess.(map[string]interface{})["transport"].(map[string]interface{})["type"] = msg.Get("net")
-		proxy_vmess.(map[string]interface{})["transport"].(map[string]interface{})["path"] = msg.Get("path")
+		proxy_vmess.(map[string]interface{})["uuid"] = msg.Get("id").MustString()
+		proxy_vmess.(map[string]interface{})["transport"].(map[string]interface{})["type"] = msg.Get("net").MustString()
+		proxy_vmess.(map[string]interface{})["transport"].(map[string]interface{})["path"] = msg.Get("path").MustString()
 		proxy_vmess.(map[string]interface{})["transport"].(map[string]interface{})["headers"] = map[string]string{"host": msg.Get("host").MustString()}
 		return proxy_vmess.(map[string]interface{}), nil
 	case "trojan":

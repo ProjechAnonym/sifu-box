@@ -32,7 +32,7 @@ func main() {
 		// router.Setting_server(api_group)
 		// server.Run()
 	}else{
-		singbox.Config_workflow(-1)
+		singbox.Config_workflow([]int{0,3})
 	}
 	
 

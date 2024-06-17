@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	utils "sifu-box/Utils"
+	"sort"
 	"strings"
 	"sync"
 
@@ -32,11 +33,11 @@ type config_link struct {
 	proxy bool
 	label string
 }
-func format_url() ([]config_link,error) {
+func format_url(index []int) ([]config_link,error) {
 
     // 从配置文件中获取URL列表
     urls,err := utils.Get_value("Proxy","url")
-    if err != nil {
+    if err != nil || len(urls.([]interface{})) == 0{
         // 记录获取URL列表时的错误
         utils.Logger_caller("Get urls failed!",err,1)
         return nil,err
@@ -49,16 +50,35 @@ func format_url() ([]config_link,error) {
         return nil,err
     }
     // 初始化一个用于存储处理后URL的切片
-    links := make([]config_link,len(urls.([]interface{})))
+    // 确认要获取的URL数量
+    var links_length int
+    sort.Ints(index)
+    // 如果index长度为0则解析所有url
+    if len(index) == 0{
+        links_length = len(urls.([]interface{}))
+        for i := range urls.([]interface{}){
+            index = append(index, i)
+        }
+    // 长度合理则确定url切片长度
+    }else if len(index) <= len(urls.([]interface{})) && index[len(index)-1] < len(urls.([]interface{})){
+        links_length = len(index)
+    }else{
+        // 长度超过则报错
+        utils.Logger_caller("joking?",fmt.Errorf("parsing more than the urls in the config"),1)
+        return nil,err
+    }
+    links := make([]config_link,links_length)
+    
     // 初始化一个标志,用于指示是否找到了带有"flag=clash"的URL
     clash_tag := false
     // 遍历URL列表,处理每个URL
-    for i, link := range urls.([]interface{}) {
+    for i, value := range index {
+
 		// 从URL映射中提取并设置代理标志和标签
-		links[i].proxy = link.(map[string]interface{})["proxy"].(bool)
-		links[i].label = link.(map[string]interface{})["label"].(string)
+		links[i].proxy = urls.([]interface{})[value].(map[string]interface{})["proxy"].(bool)
+		links[i].label = urls.([]interface{})[value].(map[string]interface{})["label"].(string)
         // 解析URL字符串
-        parsed_url,err := url.Parse(link.(map[string]interface{})["url"].(string))
+        parsed_url,err := url.Parse(urls.([]interface{})[value].(map[string]interface{})["url"].(string))
         if err != nil {
             // 记录URL解析失败的错误
             utils.Logger_caller("Parse url failed!",err,1)
@@ -88,7 +108,7 @@ func format_url() ([]config_link,error) {
 // config_merge 根据模板和是否合并所有配置的标志,来合并配置
 // template: 配置模板的字符串表示
 // all: 是否合并所有配置的布尔值
-func config_merge(template string,index int) {
+func config_merge(template string,index []int) {
     // 从模板中提取日志、DNS、入站和实验性配置
     log,err := utils.Get_value(template,"log")
     if err != nil{
@@ -117,18 +137,19 @@ func config_merge(template string,index int) {
     config.Set("inbounds", inbounds)
     config.Set("experimental", experimental)
     // 格式化URL,并为每个URL配置创建一个错误通道
-    links,err := format_url()
-    error_channel := make(chan error,len(links))
-    var jobs sync.WaitGroup
+    links,err := format_url(index)
     if err != nil{
         return 
     }
+    error_channel := make(chan error,len(links))
+    var jobs sync.WaitGroup
+    
     // 并发处理每个URL链接的配置合并
     for i,link := range links{
         // 如果不合并所有配置,只处理最后一个URL
-        if i != index && index != -1 {
-            continue
-        }
+        // if i != index && index != -1 {
+        //     continue
+        // }
         jobs.Add(1)
         go func(link config_link,template string,config *simplejson.Json,index int) {
             defer jobs.Done()
@@ -183,7 +204,7 @@ func config_merge(template string,index int) {
     }
     
 }
-func Config_workflow(index int) error {
+func Config_workflow(index []int) error {
     project_dir,err := utils.Get_value("project-dir")
     if err != nil{
         utils.Logger_caller("get project dir failed",err,1)

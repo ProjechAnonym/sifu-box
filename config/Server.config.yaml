@@ -1,3 +1,3 @@
 cors: { origins: ["*"] }
 key: sifu
-server-mode: true
+server-mode: false

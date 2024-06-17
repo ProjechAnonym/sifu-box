@@ -176,7 +176,7 @@ func outbound_auto(tags []string,template string) (map[string]interface{},error)
 func Merge_outbounds(url string,template string) ([]map[string]interface{},error){
     // 从URL获取代理配置,并处理可能的错误。
 	proxies,err := fetch_proxies(url,template)
-	if err != nil{
+	if err != nil || len(proxies) == 0 {
 		utils.Logger_caller("fetch proies failed!",err,1)
 		return nil,err
 	}
