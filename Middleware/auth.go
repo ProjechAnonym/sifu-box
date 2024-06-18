@@ -15,13 +15,14 @@ func Token_auth() gin.HandlerFunc{
 			ctx.Abort()
 			return
 		}
-		key,err := utils.Get_value("Server","key")
+		server_config,err := utils.Get_value("Server")
+		key := server_config.(utils.Server_config).Key
 		if err != nil{
 			utils.Logger_caller("Get key failed!",err,1)
 			ctx.Abort()
 			return 
 		}
-		if key.(string) == header {
+		if key == header {
 			ctx.Set("token",header)
 			return 
 		}

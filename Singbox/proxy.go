@@ -223,15 +223,17 @@ func Merge_outbounds(url string,template string) ([]map[string]interface{},error
     proxies = append(proxies, select_outbound)
 
     // 根据规则集生成并添加相应的选择器出站规则。
-    rulesets,err := utils.Get_value("Proxy","rule_set")
+
+    proxy_config,err := utils.Get_value("Proxy")
+    rulesets := proxy_config.(utils.Box_config).Rule_set
 	if err != nil{
 		utils.Logger_caller("Get ruleset msg failed!",err,1)
 		return proxies,err
 	}
 
-	for _,rule := range(rulesets.([]interface{})){
+	for _,rule := range(rulesets){
 		// 如果china标签为否,说明是连国外的网站,为其生成selector类型出站
-		if !rule.(map[string]interface{})["value"].(map[string]interface{})["china"].(bool){
+		if !rule.Value.China{
 			// 生成selector类型出站
 			ruleset_select_outbound,err := outbound_select(tags,template)
 			if err != nil{
@@ -239,7 +241,7 @@ func Merge_outbounds(url string,template string) ([]map[string]interface{},error
 				return proxies,err
 			}
 			// 生成selector类型出站成功则添加进出站列表
-			ruleset_select_outbound["tag"] = rule.(map[string]interface{})["label"].(string)+"-select"
+			ruleset_select_outbound["tag"] = rule.Label + "-select"
 			proxies = append(proxies, ruleset_select_outbound)
 		}
 	}

@@ -4,3 +4,4 @@ sifu-box.exe
 sifu-box.db
 static
 config/Proxy.config.yaml
+config/Proxy.config.dev.yaml

@@ -28,22 +28,17 @@ func encryption_md5(str string) (string,error) {
 // format_url 根据配置文件中的Proxy部分获取URL列表,并确保每个URL都包含"flag=clash"参数
 // 如果URL已经包含此参数,则不做更改；否则,添加该参数
 // 返回处理后的URL列表以及可能出现的错误
-type config_link struct {
-	url string
-	proxy bool
-	label string
-}
-func format_url(index []int) ([]config_link,error) {
+func format_url(index []int) ([]utils.Box_url,error) {
 
     // 从配置文件中获取URL列表
-    urls,err := utils.Get_value("Proxy","url")
-    if err != nil || len(urls.([]interface{})) == 0{
+    proxy_config,err := utils.Get_value("Proxy")
+    if err != nil || len(proxy_config.(utils.Box_config).Url) == 0{
         // 记录获取URL列表时的错误
         utils.Logger_caller("Get urls failed!",err,1)
         return nil,err
     }
     // 检查URL列表是否为空
-    if len(urls.([]interface{})) == 0 {
+    if len(proxy_config.(utils.Box_config).Url) == 0 {
         // 如果URL列表为空,创建并返回一个新的空列表和一个错误
         err = errors.New("get url list failed")
         utils.Logger_caller("Get urls failed!",err,1)
@@ -55,19 +50,19 @@ func format_url(index []int) ([]config_link,error) {
     sort.Ints(index)
     // 如果index长度为0则解析所有url
     if len(index) == 0{
-        links_length = len(urls.([]interface{}))
-        for i := range urls.([]interface{}){
+        links_length = len(proxy_config.(utils.Box_config).Url)
+        for i := range proxy_config.(utils.Box_config).Url{
             index = append(index, i)
         }
     // 长度合理则确定url切片长度
-    }else if len(index) <= len(urls.([]interface{})) && index[len(index)-1] < len(urls.([]interface{})){
+    }else if len(index) <= len(proxy_config.(utils.Box_config).Url) && index[len(index)-1] < len(proxy_config.(utils.Box_config).Url){
         links_length = len(index)
     }else{
         // 长度超过则报错
-        utils.Logger_caller("joking?",fmt.Errorf("parsing more than the urls in the config"),1)
+        utils.Logger_caller("error",fmt.Errorf("parsing more urls in the config"),1)
         return nil,err
     }
-    links := make([]config_link,links_length)
+    links := make([]utils.Box_url,links_length)
     
     // 初始化一个标志,用于指示是否找到了带有"flag=clash"的URL
     clash_tag := false
@@ -75,10 +70,10 @@ func format_url(index []int) ([]config_link,error) {
     for i, value := range index {
 
 		// 从URL映射中提取并设置代理标志和标签
-		links[i].proxy = urls.([]interface{})[value].(map[string]interface{})["proxy"].(bool)
-		links[i].label = urls.([]interface{})[value].(map[string]interface{})["label"].(string)
+		links[i].Proxy = proxy_config.(utils.Box_config).Url[value].Proxy
+		links[i].Label = proxy_config.(utils.Box_config).Url[value].Label
         // 解析URL字符串
-        parsed_url,err := url.Parse(urls.([]interface{})[value].(map[string]interface{})["url"].(string))
+        parsed_url,err := url.Parse(proxy_config.(utils.Box_config).Url[value].Url)
         if err != nil {
             // 记录URL解析失败的错误
             utils.Logger_caller("Parse url failed!",err,1)
@@ -90,7 +85,7 @@ func format_url(index []int) ([]config_link,error) {
         for key, values := range params {
             if key == "flag" && values[0] == "clash"{
                 // 如果已存在"flag=clash",将该URL添加到结果列表中,并设置标志
-                links[i].url = parsed_url.String()
+                links[i].Url = parsed_url.String()
                 clash_tag = true
                 break
             }
@@ -99,7 +94,7 @@ func format_url(index []int) ([]config_link,error) {
         if !clash_tag{
             params.Add("flag","clash")
             parsed_url.RawQuery = params.Encode()
-            links[i].url = parsed_url.String()
+            links[i].Url = parsed_url.String()
         }
     }
     // 返回处理后的URL列表和nil错误
@@ -146,12 +141,8 @@ func config_merge(template string,index []int) {
     
     // 并发处理每个URL链接的配置合并
     for i,link := range links{
-        // 如果不合并所有配置,只处理最后一个URL
-        // if i != index && index != -1 {
-        //     continue
-        // }
         jobs.Add(1)
-        go func(link config_link,template string,config *simplejson.Json,index int) {
+        go func(link utils.Box_url,template string,config *simplejson.Json,index int) {
             defer jobs.Done()
             // 克隆配置对象,以确保每个URL配置的独立性
             full_config := clone.Clone(config)
@@ -162,37 +153,37 @@ func config_merge(template string,index []int) {
                 return
             }
             // 合并路由配置
-            route,err := Merge_route(template,link.url,link.proxy)
+            route,err := Merge_route(template,link.Url,link.Proxy)
             if err != nil{
                 utils.Logger_caller("Get route failed!",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.label)
+                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
                 return
             }
             full_config.(*simplejson.Json).Set("route", route)
             // 合并出站配置
-            proies,err := Merge_outbounds(link.url,template)
+            proies,err := Merge_outbounds(link.Url,template)
             if err != nil{
                 utils.Logger_caller("Get outbounds failed!",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.label)
+                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
                 return
             }
             full_config.(*simplejson.Json).Set("outbound", proies)
             // 对合并后的配置进行编码
             config_bytes,_ := full_config.(*simplejson.Json).EncodePretty()
             // 对标签进行MD5加密
-            label,err := encryption_md5(link.label)
+            label,err := encryption_md5(link.Label)
             if err != nil{
                 utils.Logger_caller("Encryption md5 failed!",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.label)
+                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
                 return
             }
             // 将配置写入文件
             if err = utils.File_write(config_bytes,filepath.Join(project_dir.(string),"static",template,fmt.Sprintf("%s.json",label)),[]fs.FileMode{0666,0777});err != nil{
                 utils.Logger_caller("Write config file failed!",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.label)
+                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
                 return
             }
-            utils.Logger_caller(fmt.Sprintf("Generate the %s config of %s success!",link.label,template),nil,1)
+            utils.Logger_caller(fmt.Sprintf("Generate the %s config of %s success!",link.Label,template),nil,1)
         }(link,template,config,i)
     }
     // 等待所有并发任务完成
@@ -245,5 +236,6 @@ func Config_workflow(index []int) error {
         }()
 	}
 	workflow.Wait()
+    utils.Del_key("Proxy")
 	return nil
 }

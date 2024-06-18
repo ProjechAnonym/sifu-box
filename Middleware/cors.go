@@ -8,11 +8,13 @@ import (
 )
 
 func Cors() cors.Config {
-	origins, _ := utils.Get_value("Server", "cors", "origins")
-	var allow_origins = make([]string, len(origins.([]interface{})))
-	for i, origin := range origins.([]interface{}) {
-		allow_origins[i] = origin.(string)
+	server_config, err := utils.Get_value("Server")
+	if err != nil{
+		utils.Logger_caller("get server config failed",err,1)
 	}
+	origins := server_config.(utils.Server_config).Cors.Origins
+	var allow_origins = make([]string, len(origins))
+	copy(allow_origins, origins)
 	cores_config := cors.Config{
 		AllowOrigins:     allow_origins,
 		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET"},

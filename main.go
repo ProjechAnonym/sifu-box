@@ -4,8 +4,13 @@ import (
 	"fmt"
 	"os"
 	database "sifu-box/Database"
+	middleware "sifu-box/Middleware"
+	router "sifu-box/Router"
 	singbox "sifu-box/Singbox"
 	utils "sifu-box/Utils"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 func init(){
 	if err := utils.Set_value(utils.Get_Dir(),"project-dir"); err != nil {
@@ -18,21 +23,21 @@ func init(){
 }
 func main() {
 	// -1为全部更新
-	mode,err := utils.Get_value("Server","server-mode")
+	server_config,err := utils.Get_value("Server")
 	if err != nil {
 		fmt.Fprintln(os.Stderr,"Critical error occurred, can not get the running mode, exiting.")
 		os.Exit(2)
 	}
-	if mode.(bool){
-		fmt.Println(mode)
-		// gin.SetMode(gin.ReleaseMode)
-		// server := gin.Default()
-		// server.Use(middleware.Logger(),middleware.Recovery(true),cors.New(middleware.Cors()))
-		// api_group := server.Group("/api")
-		// router.Setting_server(api_group)
-		// server.Run()
+	if server_config.(utils.Server_config).Server_mode{
+		gin.SetMode(gin.ReleaseMode)
+		server := gin.Default()
+		server.Use(middleware.Logger(),middleware.Recovery(true),cors.New(middleware.Cors()))
+		api_group := server.Group("/api")
+		router.Setting_server(api_group)
+		router.Setting_box(api_group)
+		server.Run(":8080")
 	}else{
-		singbox.Config_workflow([]int{0,3})
+		singbox.Config_workflow([]int{1,0})
 	}
 	
 

@@ -19,7 +19,8 @@ func get_ruleset(template string) ([]map[string]interface{}, error) {
     }
 
     // 从配置中获取自定义规则集
-    custom_rulesets, err := utils.Get_value("Proxy", "rule_set")
+    proxy_config, err := utils.Get_value("Proxy")
+    custom_rulesets := proxy_config.(utils.Box_config).Rule_set
     if err != nil {
         // 如果获取自定义规则集失败,记录错误并返回
         utils.Logger_caller("Get custom_rule_set failed!", err,1)
@@ -27,22 +28,22 @@ func get_ruleset(template string) ([]map[string]interface{}, error) {
     }
 
     // 初始化规则集切片,大小为默认规则集和自定义规则集长度之和
-    rulesets := make([]map[string]interface{}, len(default_rulesets.([]interface{}))+len(custom_rulesets.([]interface{})))
+    rulesets := make([]map[string]interface{}, len(default_rulesets.([]interface{}))+len(custom_rulesets))
 
     // 遍历自定义规则集,根据类型创建新的规则集映射表,并追加到默认规则集中
-    for _, rule := range custom_rulesets.([]interface{}) {
+    for _, rule := range custom_rulesets {
         // 提取自定义规则的标签和路径信息
-        tag := rule.(map[string]interface{})["label"].(string)
-        path := rule.(map[string]interface{})["value"].(map[string]interface{})["path"].(string)
-		format := rule.(map[string]interface{})["value"].(map[string]interface{})["format"].(string)
+        tag := rule.Label
+        path := rule.Value.Path
+		format := rule.Value.Format
         // 根据类型创建规则集映射表
         ruleset := make(map[string]interface{})
-        switch rule.(map[string]interface{})["value"].(map[string]interface{})["type"] {
+        switch rule.Value.Type{
         case "local":
             ruleset = map[string]interface{}{"tag": tag,"type": "local", "format": format, "path": path}
         case "remote":
-			detour := rule.(map[string]interface{})["value"].(map[string]interface{})["download_detour"].(string)
-			interval := rule.(map[string]interface{})["value"].(map[string]interface{})["update_interval"].(string)
+			detour := rule.Value.Download_detour
+			interval := rule.Value.Update_interval
             ruleset = map[string]interface{}{"tag": tag, "type": "remote",  "format": format, "url": path, "download_detour": detour, "update_interval": interval}
         }
 
@@ -88,7 +89,8 @@ func get_rules(template string,link string,proxy bool) ([]map[string]interface{}
     }
     
     // 从配置中获取自定义路由规则
-    custom_rules, err := utils.Get_value("Proxy", "rule_set")
+    proxy_config, err := utils.Get_value("Proxy")
+    custom_rules := proxy_config.(utils.Box_config).Rule_set
     if err != nil {
         // 如果获取自定义规则失败,记录错误并返回
         utils.Logger_caller("Get custom rules failed!", err,1)
@@ -105,13 +107,13 @@ func get_rules(template string,link string,proxy bool) ([]map[string]interface{}
     }
 
     // 根据默认规则、自定义规则和分流规则的总数初始化规则切片
-    rules := make([]map[string]interface{}, len(base_rules.([]interface{}))+len(custom_rules.([]interface{}))+len(shunt_rules.([]interface{})))
+    rules := make([]map[string]interface{}, len(base_rules.([]interface{}))+len(custom_rules)+len(shunt_rules.([]interface{})))
 
     // 遍历自定义规则,根据规则的"china"值决定是直接路由还是选择路由
     // 此处逻辑于上面相同
-    for _, rule := range custom_rules.([]interface{}) {
-        tag := rule.(map[string]interface{})["label"].(string)
-        switch rule.(map[string]interface{})["value"].(map[string]interface{})["china"] {
+    for _, rule := range custom_rules {
+        tag := rule.Label
+        switch rule.Value.China {
         case true:
             // 如果"china"为true,添加直接路由规则
             base_rules = append(base_rules.([]interface{}), map[string]interface{}{"rule_set": tag, "outbound": "direct"})

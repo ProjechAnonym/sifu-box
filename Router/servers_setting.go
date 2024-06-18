@@ -16,7 +16,7 @@ import (
 //   group *gin.RouterGroup: 路由组，用于定义一组具有相同前缀的路由。
 func add_server(group *gin.RouterGroup) {
     // 创建一个子路由组,专门处理添加服务器的POST请求。
-    add_router := group.Group("add")
+    add_router := group.Group("/add")
     
     // 定义路由：接收POST请求，路径为/add/server
     add_router.POST("/server",func(ctx *gin.Context) {
@@ -56,7 +56,7 @@ func add_server(group *gin.RouterGroup) {
 //   group *gin.RouterGroup - gin路由器组，用于定义路由
 func remove_server(group *gin.RouterGroup) {
     // 创建一个子路由组,专门处理移除操作。
-    remove_router := group.Group("remove")
+    remove_router := group.Group("/remove")
     
     // 定义删除服务器的路由路径
     remove_router.DELETE("/server", func(ctx *gin.Context) {
@@ -85,7 +85,7 @@ func remove_server(group *gin.RouterGroup) {
 //   group *gin.RouterGroup - 父路由组，用于创建子路由组并继承其配置
 func Setting_server(group *gin.RouterGroup){
     // 创建一个名为"setting"的子路由组，用于处理所有与设置相关的请求
-    setting_router := group.Group("setting")
+    setting_router := group.Group("/setting")
     
     // 在"setting"子路由组上应用Token认证中间件，确保所有请求都需要通过认证
     setting_router.Use(middleware.Token_auth())

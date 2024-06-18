@@ -8,6 +8,36 @@ import (
 	"github.com/huandu/go-clone"
 	"github.com/spf13/viper"
 )
+type Box_url struct {
+	Url   string `yaml:"url"`
+	Proxy bool `yaml:"proxy"`
+	Label string `yaml:"label"`
+}
+type Ruleset_value struct {
+	Path   string `yaml:"path"`
+	Format string `yaml:"format"`
+	Type string `yaml:"type"`
+	China bool `yaml:"china"`
+	Update_interval string `yaml:"update_interval"`
+	Download_detour string `yaml:"download_detour"`
+}
+type Box_ruleset struct {
+	Label string `yaml:"label"`
+	Value Ruleset_value `yaml:"value"`
+}
+
+type Box_config struct {
+	Url     []Box_url     `yaml:"url"`
+	Rule_set []Box_ruleset `yaml:"rule_set"`
+}
+type Cors struct {
+	Origins []string `yaml:"origins"`
+}
+type Server_config struct {
+	Cors Cors `yaml:"cors"`
+	Key string `yaml:"key"`
+	Server_mode bool `yaml:"server_mode"`
+}
 var global_vars = make(map[string]interface{})
 
 func Get_value(keys ...string) (any, error) {
@@ -71,7 +101,24 @@ func Load_config(file string) error {
 		fmt.Fprintf(os.Stderr, "Critical! Load the %s config has failed,exiting.",file)
 		os.Exit(2)
 	}
-	Set_value(viper.AllSettings(),file)
+	switch file {
+	case "Proxy":
+		var box_config Box_config
+		if err := viper.Unmarshal(&box_config); err != nil {
+			Logger_caller("Load proxy yaml failed",err,1)
+			return err
+		}
+		Set_value(box_config,file)
+		return nil
+	case "Server":
+		var server_config Server_config
+		if err := viper.Unmarshal(&server_config); err != nil {
+			Logger_caller("Load proxy yaml failed",err,1)
+			return err
+		}
+		Set_value(server_config,file)
+		return nil
+	}
 	return nil
 }
 func Load_template(file string) error {
