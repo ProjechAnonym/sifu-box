@@ -4,14 +4,17 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/huandu/go-clone"
 	"github.com/spf13/viper"
 )
 
 var global_vars = make(map[string]interface{})
-
+var mu sync.RWMutex
 func Get_value(keys ...string) (any, error) {
+	mu.RLock()
+	defer mu.RUnlock()
 	result := clone.Clone(global_vars)
 	for i, key := range keys {
 		if result = result.(map[string]interface{})[key]; result == nil{
@@ -21,6 +24,8 @@ func Get_value(keys ...string) (any, error) {
 	return result, nil
 }
 func Set_value(value any,keys ...string) error{
+	mu.Lock()
+	defer mu.Unlock()
 	temp_var := global_vars
 	for i,key := range keys {
 		if i == len(keys) - 1 {
@@ -36,6 +41,8 @@ func Set_value(value any,keys ...string) error{
 	return nil
 }
 func Del_key(keys ...string) error{
+	mu.Lock()
+	defer mu.Unlock()
 	temp_var := global_vars
 	for i,key := range keys {
 		if i == len(keys) - 1 {
