@@ -31,14 +31,13 @@ func Add_items(box_config utils.Box_config) error {
 
     // 从配置中获取代理设置
     proxy_config, err := utils.Get_value("Proxy")
-    proxyConfig := proxy_config.(utils.Box_config)
 	// 初始化变量
 	// index 用于存储新url的索引,为空则更新所有url的链接
 	var index []int
 	// urls 用于存储原url并添加新url
-    urls := proxyConfig.Url
+    urls := proxy_config.(utils.Box_config).Url
 	// rulesets 用于存储原规则集并添加新规则集
-    rulesets := proxyConfig.Rule_set
+    rulesets := proxy_config.(utils.Box_config).Rule_set
 	
     if err != nil {
         // 记录获取代理配置失败的日志并返回错误
