@@ -19,7 +19,15 @@ func init(){
 	}
 	utils.Get_core()
 	utils.Load_config("Server")
-	database.Get_database()
+	server_config,err := utils.Get_value("Server")
+	if err != nil {
+		utils.Logger_caller("get server config failed!",err,1)
+		os.Exit(2)
+	}
+	if server_config.(utils.Server_config).Server_mode{
+		database.Get_database()
+	}
+	
 }
 func main() {
 	server_config,err := utils.Get_value("Server")
@@ -38,6 +46,4 @@ func main() {
 	}else{
 		singbox.Config_workflow([]int{})
 	}
-	
-
 }

@@ -115,13 +115,14 @@ outbounds:
       interrupt_exist_connections: false,
     }
 
-  custom_outbound:
-    [
+  custom_outbound: [
+      # 默认的出站,不配置上不了网的很基本的东西
       [
         { type: dns, tag: dns-out },
         { type: direct, tag: direct },
         { type: block, tag: block },
       ],
+      # 自定义节点的列表
       [
         {
           type: shadowsocks,
@@ -155,12 +156,15 @@ route:
       },
     ]
   rules:
+    # 默认的出站规则,就是一些很基本不调就上不了网的
     default:
       [
         { protocol: dns, outbound: dns-out },
         { ip_is_private: true, outbound: direct },
         { protocol: [quic], outbound: block },
       ]
+
+    # 分流规则,这个配置会比较灵活,在Proxy配置中的规则集会在分流规则的第一条开始添加
     shunt:
       [
         {
@@ -180,6 +184,7 @@ route:
           outbound: direct,
         },
       ]
+  # 默认出站节点不能改,很多配置下载需要代理,我设置的都是select
   final: select
   auto_detect_interface: true
 experimental:
