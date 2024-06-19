@@ -104,15 +104,16 @@ func Format_yaml(proxy_map map[string]interface{},template string) (proxy map[st
 // 返回值:
 //   - 一个map[string]interface{},包含解析后的配置信息
 //   - 一个error,如果解析过程中出现错误,则返回错误信息
-func Format_url(link string, template string) (map[string]interface{}, error) {
-    // 使用defer和recover处理函数内部可能出现的panic,确保函数能够安全返回
+func Format_url(link string, template string) (proxy map[string]interface{},err error) {
+	// 使用defer和recover处理函数内部可能出现的panic,确保函数能够安全返回
 	defer func() {
 		if r := recover(); r != nil {
-			err := fmt.Errorf("recovered from panic: %v", r)
+			err = fmt.Errorf("recovered from panic: %v", r)
 			utils.Logger_caller("Panic occurred in FormatUrl", err, 1)
+			proxy = nil
+			return
 		}
 	}()
-
 	// 解析链接的协议类型
 	protocol_type := strings.Split(link, "://")[0]
 	switch protocol_type {
@@ -139,16 +140,16 @@ func Format_url(link string, template string) (map[string]interface{}, error) {
 			utils.Logger_caller("Get ss Template failed!", err, 1)
 			return nil, err
 		}
-		proxy_ss.(map[string]interface{})["tag"] = tag
-		proxy_ss.(map[string]interface{})["server"] = matches[2]
-		proxy_ss.(map[string]interface{})["server_port"], err = strconv.Atoi(matches[3])
+		proxy = proxy_ss.(map[string]interface{})
+		proxy["tag"] = tag
+		proxy["server"] = matches[2]
+		proxy["server_port"], err = strconv.Atoi(matches[3])
 		if err != nil {
 			utils.Logger_caller("num string transfer failed!", err, 1)
 			return nil, err
 		}
-		proxy_ss.(map[string]interface{})["method"] = strings.Split(string(msg_bytes), ":")[0]
-		proxy_ss.(map[string]interface{})["password"] = strings.Split(string(msg_bytes), ":")[1]
-		return proxy_ss.(map[string]interface{}), nil
+		proxy["method"] = strings.Split(string(msg_bytes), ":")[0]
+		proxy["password"] = strings.Split(string(msg_bytes), ":")[1]
 	case "vmess":
 		// 解析vmess链接格式,并根据解析结果生成相应的配置信息
 		msg_bytes, err := base64.StdEncoding.DecodeString(strings.Split(link, "://")[1])
@@ -162,18 +163,26 @@ func Format_url(link string, template string) (map[string]interface{}, error) {
 			return nil, err
 		}
 		proxy_vmess, err := utils.Get_value(template, "outbounds", "vmess")
+		proxy = proxy_vmess.(map[string]interface{})
 		if err != nil {
 			utils.Logger_caller("Get vmess Template failed!", err, 1)
 			return nil, err
 		}
-		proxy_vmess.(map[string]interface{})["tag"] = msg.Get("ps").MustString()
-		proxy_vmess.(map[string]interface{})["server"] = msg.Get("add").MustString()
-		proxy_vmess.(map[string]interface{})["server_port"] = msg.Get("port").MustInt()
-		proxy_vmess.(map[string]interface{})["uuid"] = msg.Get("id").MustString()
-		proxy_vmess.(map[string]interface{})["transport"].(map[string]interface{})["type"] = msg.Get("net").MustString()
-		proxy_vmess.(map[string]interface{})["transport"].(map[string]interface{})["path"] = msg.Get("path").MustString()
-		proxy_vmess.(map[string]interface{})["transport"].(map[string]interface{})["headers"] = map[string]string{"host": msg.Get("host").MustString()}
-		return proxy_vmess.(map[string]interface{}), nil
+		proxy["tag"] = msg.Get("ps").MustString()
+		proxy["server"] = msg.Get("add").MustString()
+		proxy["server_port"] = msg.Get("port").MustInt()
+		proxy["uuid"] = msg.Get("id").MustString()
+		transport := make(map[string]interface{})
+		switch msg.Get("net").MustString() {
+		case "grpc":
+			transport["type"] = msg.Get("net").MustString()
+			transport["grpc-opts"] = msg.Get("path").MustString()
+		case "ws":
+			transport["type"] = msg.Get("net").MustString()
+			transport["path"] = msg.Get("path").MustString()
+			transport["headers"] = map[string]string{"host": msg.Get("host").MustString()}
+		}
+		proxy["transport"] = transport
 	case "trojan":
 		// 解析trojan链接格式,并根据解析结果生成相应的配置信息
 		re := regexp.MustCompile(`^(.*?)://([^@]+)@([^:]+):(\d+)\?(.*?)#(.*)$`)
@@ -188,9 +197,10 @@ func Format_url(link string, template string) (map[string]interface{}, error) {
 			utils.Logger_caller("Get trojan Template failed!", err, 1)
 			return nil, err
 		}
-		proxy_trojan.(map[string]interface{})["tag"] = tag
-		proxy_trojan.(map[string]interface{})["server"] = matches[3]
-		proxy_trojan.(map[string]interface{})["server_port"], err = strconv.Atoi(matches[4])
+		proxy = proxy_trojan.(map[string]interface{})
+		proxy["tag"] = tag
+		proxy["server"] = matches[3]
+		proxy["server_port"], err = strconv.Atoi(matches[4])
 		if err != nil {
 			utils.Logger_caller("num string transfer failed!", err, 1)
 			return nil, err
@@ -201,11 +211,13 @@ func Format_url(link string, template string) (map[string]interface{}, error) {
 			return nil, err
 		}
 		sniValue := values.Get("sni")
-		proxy_trojan.(map[string]interface{})["tls"].(map[string]interface{})["server_name"] = sniValue
-		proxy_trojan.(map[string]interface{})["password"] = matches[2]
-		return proxy_trojan.(map[string]interface{}), nil
+		proxy["tls"].(map[string]interface{})["server_name"] = sniValue
+		proxy["password"] = matches[2]
+	default:
+		// 如果协议类型不在支持的范围内,则返回错误
+		return nil, fmt.Errorf("protocol %s is not in the template", protocol_type)
 	}
-
-	// 如果协议类型不在支持的范围内,则返回错误
-	return nil, fmt.Errorf("protocol %s is not in the template", protocol_type)
+	return proxy, err
+	
+	
 }
