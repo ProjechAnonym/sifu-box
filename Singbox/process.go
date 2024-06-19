@@ -130,6 +130,7 @@ func Format_url(link string, template string) (proxy map[string]interface{},err 
 			utils.Logger_caller("url tag unescape failed", err, 1)
 			return nil, err
 		}
+		// 这个等号是base64的占位符
 		msg_bytes, err := base64.StdEncoding.DecodeString(matches[1] + "=")
 		if err != nil {
 			utils.Logger_caller("url password and cipher unescape failed", err, 1)
