@@ -36,7 +36,7 @@ func main() {
 		router.Setting_box(api_group)
 		server.Run(":8080")
 	}else{
-		singbox.Config_workflow([]int{1,0})
+		singbox.Config_workflow([]int{})
 	}
 	
 

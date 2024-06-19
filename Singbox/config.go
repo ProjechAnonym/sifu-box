@@ -103,7 +103,7 @@ func format_url(index []int) ([]utils.Box_url,error) {
 // config_merge 根据模板和是否合并所有配置的标志,来合并配置
 // template: 配置模板的字符串表示
 // all: 是否合并所有配置的布尔值
-func config_merge(template string,index []int) {
+func config_merge(template string,mode bool,index []int) {
     // 从模板中提取日志、DNS、入站和实验性配置
     log,err := utils.Get_value(template,"log")
     if err != nil{
@@ -137,12 +137,13 @@ func config_merge(template string,index []int) {
         return 
     }
     error_channel := make(chan error,len(links))
+    // 创建进程组,避免程序过早退出
     var jobs sync.WaitGroup
     
     // 并发处理每个URL链接的配置合并
     for i,link := range links{
         jobs.Add(1)
-        go func(link utils.Box_url,template string,config *simplejson.Json,index int) {
+        go func(link utils.Box_url,template string,config *simplejson.Json,index int,mode bool) {
             defer jobs.Done()
             // 克隆配置对象,以确保每个URL配置的独立性
             full_config := clone.Clone(config)
@@ -170,12 +171,18 @@ func config_merge(template string,index []int) {
             full_config.(*simplejson.Json).Set("outbound", proies)
             // 对合并后的配置进行编码
             config_bytes,_ := full_config.(*simplejson.Json).EncodePretty()
-            // 对标签进行MD5加密
-            label,err := encryption_md5(link.Label)
-            if err != nil{
-                utils.Logger_caller("Encryption md5 failed!",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
-                return
+            // 获取配置文件名
+            var label string
+            if mode{
+                // 对标签进行MD5加密
+                label,err = encryption_md5(link.Label)
+                if err != nil{
+                    utils.Logger_caller("Encryption md5 failed!",err,1)
+                    error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
+                    return
+                }
+            }else{
+                label = link.Label
             }
             // 将配置写入文件
             if err = utils.File_write(config_bytes,filepath.Join(project_dir.(string),"static",template,fmt.Sprintf("%s.json",label)),[]fs.FileMode{0666,0777});err != nil{
@@ -184,7 +191,7 @@ func config_merge(template string,index []int) {
                 return
             }
             utils.Logger_caller(fmt.Sprintf("Generate the %s config of %s success!",link.Label,template),nil,1)
-        }(link,template,config,i)
+        }(link,template,config,i,mode)
     }
     // 等待所有并发任务完成
     jobs.Wait()
@@ -218,7 +225,17 @@ func Config_workflow(index []int) error {
 		utils.Logger_caller("load the Proxy config failed",err,1)
 		return fmt.Errorf("load the Proxy config failed")
 	}
+    // 创建进程组,避免程序过早退出
     var workflow sync.WaitGroup
+    // 获取服务器配置
+    server_config,err := utils.Get_value("Server")
+    if err != nil{
+        // 记录并返回可能出现的错误
+        utils.Logger_caller("get server config failed",err,1)
+        return fmt.Errorf("get server config failed")
+    }
+    // 获取运行模式
+    server_mode := server_config.(utils.Server_config).Server_mode
 	// 打印所有条目的名称
 	for _, entry := range entries {
         template := strings.Split(entry.Name(), ".")[0]
@@ -232,7 +249,7 @@ func Config_workflow(index []int) error {
                 workflow.Done()
                 utils.Del_key(template)
             }()
-            config_merge(template,index)
+            config_merge(template,server_mode,index)
         }()
 	}
 	workflow.Wait()
