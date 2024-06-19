@@ -72,8 +72,14 @@ func format_url(index []int) ([]utils.Box_url,error) {
 		// 从URL映射中提取并设置代理标志和标签
 		links[i].Proxy = proxy_config.(utils.Box_config).Url[value].Proxy
 		links[i].Label = proxy_config.(utils.Box_config).Url[value].Label
+        links[i].Remote = proxy_config.(utils.Box_config).Url[value].Remote
+        // 如果是本地文件不需要改变路径,直接赋值后跳过
+        if !proxy_config.(utils.Box_config).Url[value].Remote{
+            links[i].Path = proxy_config.(utils.Box_config).Url[value].Path
+            continue
+        }
         // 解析URL字符串
-        parsed_url,err := url.Parse(proxy_config.(utils.Box_config).Url[value].Url)
+        parsed_url,err := url.Parse(proxy_config.(utils.Box_config).Url[value].Path)
         if err != nil {
             // 记录URL解析失败的错误
             utils.Logger_caller("Parse url failed!",err,1)
@@ -85,7 +91,7 @@ func format_url(index []int) ([]utils.Box_url,error) {
         for key, values := range params {
             if key == "flag" && values[0] == "clash"{
                 // 如果已存在"flag=clash",将该URL添加到结果列表中,并设置标志
-                links[i].Url = parsed_url.String()
+                links[i].Path = parsed_url.String()
                 clash_tag = true
                 break
             }
@@ -94,7 +100,7 @@ func format_url(index []int) ([]utils.Box_url,error) {
         if !clash_tag{
             params.Add("flag","clash")
             parsed_url.RawQuery = params.Encode()
-            links[i].Url = parsed_url.String()
+            links[i].Path = parsed_url.String()
         }
     }
     // 返回处理后的URL列表和nil错误
@@ -154,7 +160,7 @@ func config_merge(template string,mode bool,index []int) {
                 return
             }
             // 合并路由配置
-            route,err := Merge_route(template,link.Url,link.Proxy)
+            route,err := Merge_route(template,link.Path,link.Proxy)
             if err != nil{
                 utils.Logger_caller("Get route failed!",err,1)
                 error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
@@ -162,7 +168,7 @@ func config_merge(template string,mode bool,index []int) {
             }
             full_config.(*simplejson.Json).Set("route", route)
             // 合并出站配置
-            proies,err := Merge_outbounds(link.Url,template)
+            proies,err := Merge_outbounds(link.Path,template,link.Remote)
             if err != nil{
                 utils.Logger_caller("Get outbounds failed!",err,1)
                 error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
@@ -185,7 +191,7 @@ func config_merge(template string,mode bool,index []int) {
                 label = link.Label
             }
             // 将配置写入文件
-            if err = utils.File_write(config_bytes,filepath.Join(project_dir.(string),"static",template,fmt.Sprintf("%s.json",label)),[]fs.FileMode{0666,0777});err != nil{
+            if err = utils.File_write(config_bytes,filepath.Join(project_dir.(string),"static",template,fmt.Sprintf("%s.json",label)),[]fs.FileMode{0644,0644});err != nil{
                 utils.Logger_caller("Write config file failed!",err,1)
                 error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
                 return

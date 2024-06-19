@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"os"
 	utils "sifu-box/Utils"
 	"strings"
 
@@ -173,14 +174,37 @@ func outbound_auto(tags []string,template string) (map[string]interface{},error)
 // url: 用于获取代理配置的URL。
 // template: 包含出站规则模板的字符串。
 // 返回值: 一个包含合并后出站规则的切片,以及可能的错误。
-func Merge_outbounds(url string,template string) ([]map[string]interface{},error){
-    // 从URL获取代理配置,并处理可能的错误。
-	proxies,err := fetch_proxies(url,template)
-	if err != nil || len(proxies) == 0 {
-		utils.Logger_caller("fetch proies failed!",err,1)
-		return nil,err
-	}
-
+func Merge_outbounds(path string,template string,remote bool) ([]map[string]interface{},error){
+    // 初始化变量
+    var proxies []map[string]interface{}
+    var err error
+    // 如果是远程文件则获取远程文件
+    if remote{
+        // 从URL获取代理配置,并处理可能的错误。
+        proxies,err = fetch_proxies(path,template)
+        if err != nil || len(proxies) == 0 {
+            utils.Logger_caller("fetch proies failed!",err,1)
+            return nil,err
+        }
+    }else{
+        // 本地文件则获取本地文件
+        content ,err := os.ReadFile(path)
+        if err != nil {
+            utils.Logger_caller("load yaml failed!",err,1)
+            return nil,err
+        }
+        var config_yaml map[string]interface{}
+        if err := yaml.Unmarshal(content,&config_yaml); err != nil{
+            utils.Logger_caller("parse yaml failed!",err,1)
+            return nil,err
+        }
+        proxies,err = handle_yaml(config_yaml,path,template)
+        if err != nil || len(proxies) == 0 {
+            utils.Logger_caller("parse proies failed!",err,1)
+            return nil,err
+        }
+    }
+    
     // 从模板中提取自定义和默认出站规则。
     template_outbounds,err := utils.Get_value(template,"outbounds","custom_outbound")
     custom_outbounds := make([]map[string]interface{},len(template_outbounds.([]interface{})[1].([]interface{})))

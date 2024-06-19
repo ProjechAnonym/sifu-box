@@ -18,7 +18,16 @@ import (
 // 返回值:
 // - 格式化后的代理配置映射
 // - 如果格式化失败,返回错误信息
-func Format_yaml(proxy_map map[string]interface{},template string) (map[string]interface{}, error) {
+func Format_yaml(proxy_map map[string]interface{},template string) (proxy map[string]interface{},err error) {
+	// 使用defer和recover处理函数内部可能出现的panic,确保函数能够安全返回
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("recovered from panic: %v", r)
+			utils.Logger_caller("Panic occurred in FormatUrl", err, 1)
+			proxy = nil
+			return
+		}
+	}()
 	// 从proxy_map中提取协议类型和标签信息
 	// 获取协议类型
 	protocol_type := proxy_map["type"]
@@ -34,17 +43,24 @@ func Format_yaml(proxy_map map[string]interface{},template string) (map[string]i
 			utils.Logger_caller("Get vmess Template failed!", err,1)
 			return nil, err
 		}
+		proxy = proxy_vmess.(map[string]interface{})
 		// 根据proxy_map中的信息填充vmess配置
-		proxy_vmess.(map[string]interface{})["tag"] = tag
-		proxy_vmess.(map[string]interface{})["server"] = proxy_map["server"]
-		proxy_vmess.(map[string]interface{})["server_port"] = int(proxy_map["port"].(int))
-		proxy_vmess.(map[string]interface{})["uuid"] = proxy_map["uuid"]
-		proxy_vmess.(map[string]interface{})["transport"].(map[string]interface{})["type"] = proxy_map["network"]
-		proxy_vmess.(map[string]interface{})["transport"].(map[string]interface{})["path"] = proxy_map["ws-path"]
-		proxy_vmess.(map[string]interface{})["transport"].(map[string]interface{})["headers"] = map[string]string{"host":proxy_map["ws-headers"].(map[string]interface{})["Host"].(string)}
-		// 返回填充后的vmess配置
-		return proxy_vmess.(map[string]interface{}), nil
-
+		proxy["tag"] = tag
+		proxy["server"] = proxy_map["server"]
+		proxy["server_port"] = int(proxy_map["port"].(int))
+		proxy["uuid"] = proxy_map["uuid"]
+		proxy["transport"].(map[string]interface{})["type"] = proxy_map["network"]
+		transport := make(map[string]interface{})
+		switch proxy_map["network"].(string) {
+			case "grpc":
+				transport["type"] = proxy_map["network"]
+				transport["grpc-opts"] = map[string]string{"grpc-service-name":proxy_map["grpc-opts"].(map[string]interface{})["grpc-service-name"].(string)}
+			case "ws":
+				transport["type"] = proxy_map["network"]
+				transport["path"] = proxy_map["ws-path"]
+				transport["headers"] = map[string]string{"host":proxy_map["ws-headers"].(map[string]interface{})["Host"].(string)}
+		}
+		proxy["transport"] = transport
 	case "ss":
 		// 处理ss协议类型的代理配置
 		proxy_ss, err := utils.Get_value(template, "outbounds", "ss")
@@ -53,15 +69,13 @@ func Format_yaml(proxy_map map[string]interface{},template string) (map[string]i
 			utils.Logger_caller("Get ss Template failed!", err,1)
 			return nil, err
 		}
+		proxy = proxy_ss.(map[string]interface{})
 		// 根据proxy_map中的信息填充ss配置
-		proxy_ss.(map[string]interface{})["tag"] = tag
-		proxy_ss.(map[string]interface{})["server"] = proxy_map["server"]
-		proxy_ss.(map[string]interface{})["server_port"] = int(proxy_map["port"].(int))
-		proxy_ss.(map[string]interface{})["method"] = proxy_map["cipher"]
-		proxy_ss.(map[string]interface{})["password"] = proxy_map["password"]
-		// 返回填充后的ss配置
-		return proxy_ss.(map[string]interface{}), nil
-
+		proxy["tag"] = tag
+		proxy["server"] = proxy_map["server"]
+		proxy["server_port"] = int(proxy_map["port"].(int))
+		proxy["method"] = proxy_map["cipher"]
+		proxy["password"] = proxy_map["password"]
 	case "trojan":
 		// 处理trojan协议类型的代理配置
 		proxy_trojan, err := utils.Get_value(template, "outbounds", "trojan")
@@ -70,18 +84,18 @@ func Format_yaml(proxy_map map[string]interface{},template string) (map[string]i
 			utils.Logger_caller("Get trojan Template failed!", err,1)
 			return nil, err
 		}
+		proxy = proxy_trojan.(map[string]interface{})
 		// 根据proxy_map中的信息填充trojan配置
-		proxy_trojan.(map[string]interface{})["tag"] = tag
-		proxy_trojan.(map[string]interface{})["server"] = proxy_map["server"]
-		proxy_trojan.(map[string]interface{})["server_port"] = int(proxy_map["port"].(int))
-		proxy_trojan.(map[string]interface{})["tls"].(map[string]interface{})["server_name"] = proxy_map["sni"]
-		proxy_trojan.(map[string]interface{})["password"] = proxy_map["password"]
-		// 返回填充后的trojan配置
-		return proxy_trojan.(map[string]interface{}), nil
+		proxy["tag"] = tag
+		proxy["server"] = proxy_map["server"]
+		proxy["server_port"] = int(proxy_map["port"].(int))
+		proxy["tls"].(map[string]interface{})["server_name"] = proxy_map["sni"]
+		proxy["password"] = proxy_map["password"]
+	default:
+		// 如果协议类型不在支持的范围内,返回错误
+		return nil, fmt.Errorf("protocol %s is not in the template", protocol_type)
 	}
-
-	// 如果协议类型不在支持的范围内,返回错误
-	return nil, fmt.Errorf("protocol %s is not in the template", protocol_type)
+	return proxy, err
 }
 
 // Format_url 根据给定的链接和模板,解析链接并返回符合模板格式的配置信息

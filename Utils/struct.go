@@ -1,9 +1,10 @@
 package utils
 
 type Box_url struct {
-	Url   string `yaml:"url"`
-	Proxy bool   `yaml:"proxy"`
-	Label string `yaml:"label"`
+	Path   string `yaml:"path"`
+	Proxy  bool   `yaml:"proxy"`
+	Label  string `yaml:"label"`
+	Remote bool   `yaml:"remote"`
 }
 type Ruleset_value struct {
 	Path            string `yaml:"path"`

@@ -27,7 +27,6 @@ func init(){
 	if server_config.(utils.Server_config).Server_mode{
 		database.Get_database()
 	}
-	
 }
 func main() {
 	server_config,err := utils.Get_value("Server")
