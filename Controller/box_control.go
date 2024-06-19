@@ -36,10 +36,10 @@ func Add_items(box_config utils.Box_config) error {
 	// index 用于存储新url的索引,为空则更新所有url的链接
 	var index []int
 	// urls 用于存储原url并添加新url
-    var urls []utils.Box_url
+    urls := proxyConfig.Url
 	// rulesets 用于存储原规则集并添加新规则集
-    var rulesets []utils.Box_ruleset
-
+    rulesets := proxyConfig.Rule_set
+	
     if err != nil {
         // 记录获取代理配置失败的日志并返回错误
         utils.Logger_caller("Get proxy config failed", err, 1)
@@ -49,8 +49,6 @@ func Add_items(box_config utils.Box_config) error {
     // 根据新添加的规则集和URL更新配置
 	// 规则集为空则只更新新的url配置
     if len(box_config.Rule_set) == 0 {
-        // 获取原先url
-        urls = proxyConfig.Url
 		// 确定原先url长度,方便接下来进行指定url的更新
         urls_length := len(urls)
 		// url为空说明没有添加,返回错误
@@ -65,11 +63,9 @@ func Add_items(box_config utils.Box_config) error {
         }
     } else {
         // 如果指定了规则集,将其与代理配置中的规则集合并
-        rulesets = proxyConfig.Rule_set
         rulesets = append(rulesets, box_config.Rule_set...)
         if len(box_config.Url) != 0 {
             // 如果指定了URL,将其与代理配置中的URL合并
-            urls = proxyConfig.Url
             urls = append(urls, box_config.Url...)
         }
     }
