@@ -22,7 +22,6 @@ func init(){
 	database.Get_database()
 }
 func main() {
-	// -1为全部更新
 	server_config,err := utils.Get_value("Server")
 	if err != nil {
 		fmt.Fprintln(os.Stderr,"Critical error occurred, can not get the running mode, exiting.")

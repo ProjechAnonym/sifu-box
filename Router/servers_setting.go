@@ -67,7 +67,7 @@ func remove_server(group *gin.RouterGroup) {
         // 如果删除操作失败,记录错误并返回内部服务器错误响应
         if err := database.Db.Where("url = ?", url).Delete(&database.Server{}).Error; err != nil {
             utils.Logger_caller("Delete from the database failed!", err, 1)
-            ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "delete data from database failed!"})
             return
         }
         

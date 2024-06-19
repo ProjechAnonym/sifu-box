@@ -14,11 +14,15 @@ func add_items(group *gin.RouterGroup){
 		var config utils.Box_config
 		if err := ctx.BindJSON(&config); err != nil {
 			utils.Logger_caller("Marshal json failed!",err,1)
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Add items failed."})
 			return
 		}
-		controller.Add_items(config)
-		
+		if err := controller.Add_items(config);err != nil {
+			utils.Logger_caller("Add items failed!",err,1)
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Add items failed."})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"result": "success"})
 	})
 
 }
