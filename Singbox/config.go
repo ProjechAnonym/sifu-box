@@ -1,8 +1,6 @@
 package singbox
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -17,14 +15,7 @@ import (
 	"github.com/bitly/go-simplejson"
 	"github.com/huandu/go-clone"
 )
-func encryption_md5(str string) (string,error) {
-	h := md5.New()
-	_,err := h.Write([]byte(str))
-	if err != nil {
-		return "",err
-	}
-	return hex.EncodeToString(h.Sum(nil)),nil
-}
+
 // format_url 根据配置文件中的Proxy部分获取URL列表,并确保每个URL都包含"flag=clash"参数
 // 如果URL已经包含此参数,则不做更改；否则,添加该参数
 // 返回处理后的URL列表以及可能出现的错误
@@ -181,7 +172,7 @@ func config_merge(template string,mode bool,index []int) {
             var label string
             if mode{
                 // 对标签进行MD5加密
-                label,err = encryption_md5(link.Label)
+                label,err = utils.Encryption_md5(link.Label)
                 if err != nil{
                     utils.Logger_caller("Encryption md5 failed!",err,1)
                     error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)

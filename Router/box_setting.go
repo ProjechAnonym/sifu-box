@@ -93,8 +93,51 @@ func add_items(group *gin.RouterGroup) {
         ctx.JSON(http.StatusOK, gin.H{"result": "success"})
     })
 }
+// fetch_items 设置与获取物品相关的路由
+// 使用 gin.RouterGroup 作为参数,允许在已有的路由组中嵌套创建新的路由组,专门处理 /fetch 路径下的请求
+func fetch_items(group *gin.RouterGroup) {
+    // 在 /fetch 路径下创建一个新的路由组
+    fetch_router := group.Group("/fetch")
+    
+    // 定义 GET 请求的路由,用于获取物品信息
+    fetch_router.GET("/items", func(ctx *gin.Context) {
+        // 调用 controller 中的 Fetch_items 函数尝试获取物品信息
+        config, err := controller.Fetch_items()
+        // 如果获取失败,记录错误日志并返回内部服务器错误的响应
+        if err != nil {
+            utils.Logger_caller("fetch items failed!", err, 1)
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "fetch items failed."})
+            return
+        }
+        // 如果获取成功,返回物品信息
+        ctx.JSON(http.StatusOK, config)
+    })
+}
+func delete_items(group *gin.RouterGroup) {
+    delete_router := group.Group("/delete")
+    delete_router.DELETE("/items", func(ctx *gin.Context) {
+        type delete_config struct {
+            Urls []int `json:"urls"`
+            Rulesets []int `json:"rulesets"`
+        }
+        var items delete_config
+        if err := ctx.BindJSON(&items);err!=nil{
+            utils.Logger_caller("marshal json failed!", err, 1)
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "marshal json failed."})
+            return
+        }
+        if err := controller.Delete_items(map[string][]int{"urls":items.Urls,"rulesets":items.Rulesets}); err != nil{
+            utils.Logger_caller("delete items failed!", err, 1)
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "delete items failed."})
+            return
+        }
+        ctx.JSON(http.StatusOK, gin.H{"result": "success"})
+    })
+}
 func Setting_box(group *gin.RouterGroup) {
 	setting_router := group.Group("/config")
 	setting_router.Use(middleware.Token_auth())
 	add_items(setting_router)
+	fetch_items(setting_router)
+    delete_items(setting_router)
 }
