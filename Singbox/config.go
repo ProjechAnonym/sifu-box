@@ -92,9 +92,6 @@ func format_url(index []int) ([]utils.Box_url,error) {
             parsed_url.RawQuery = params.Encode()
             links[i].Path = parsed_url.String()
         }
-        params.Del("flag")
-        parsed_url.RawQuery = params.Encode()
-        links[i].Path = parsed_url.String()
     }
     // 返回处理后的URL列表和nil错误
     return links,nil

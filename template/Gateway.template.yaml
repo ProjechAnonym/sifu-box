@@ -61,41 +61,6 @@ inbounds:
   ]
 
 outbounds:
-  ss:
-    {
-      type: shadowsocks,
-      tag: "",
-      server: "",
-      server_port: 0,
-      method: "",
-      password: "",
-    }
-  vmess:
-    {
-      type: vmess,
-      tag: "",
-      server: "",
-      server_port: 0,
-      uuid: "",
-      security: auto,
-      transport:
-        {
-          type: ws,
-          path: /,
-          headers: {},
-          early_data_header_name: Sec-WebSocket-Protocol,
-        },
-    }
-  trojan:
-    {
-      type: trojan,
-      tag: "",
-      server: "",
-      server_port: 0,
-      password: "",
-      tls:
-        { enabled: true, disable_sni: false, server_name: "", insecure: true },
-    }
   select:
     {
       type: selector,
