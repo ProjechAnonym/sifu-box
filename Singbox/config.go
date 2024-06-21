@@ -20,7 +20,6 @@ import (
 // 如果URL已经包含此参数,则不做更改；否则,添加该参数
 // 返回处理后的URL列表以及可能出现的错误
 func format_url(index []int) ([]utils.Box_url,error) {
-
     // 从配置文件中获取URL列表
     proxy_config,err := utils.Get_value("Proxy")
     if err != nil || len(proxy_config.(utils.Box_config).Url) == 0{
@@ -93,6 +92,9 @@ func format_url(index []int) ([]utils.Box_url,error) {
             parsed_url.RawQuery = params.Encode()
             links[i].Path = parsed_url.String()
         }
+        params.Del("flag")
+        parsed_url.RawQuery = params.Encode()
+        links[i].Path = parsed_url.String()
     }
     // 返回处理后的URL列表和nil错误
     return links,nil

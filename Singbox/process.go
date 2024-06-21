@@ -1,16 +1,11 @@
 package singbox
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"net/url"
-	"regexp"
 	utils "sifu-box/Utils"
-	"strconv"
 	"strings"
 
-	"github.com/bitly/go-simplejson"
 	"github.com/huandu/go-clone"
 )
 func Get_map_value(proxy_map map[string]interface{},keys ...string)(interface{},error){
@@ -109,102 +104,55 @@ func Format_url(link string, template string) (proxy map[string]interface{},err 
 	protocol_type := strings.Split(link, "://")[0]
 	switch protocol_type {
 	case "ss":
-		// 解析ss链接格式,并根据解析结果生成相应的配置信息
-		re := regexp.MustCompile(`ss:\/\/([^@]+)@([^:]+):(\d+)(#.*)?`)
-		matches := re.FindStringSubmatch(link)
-		if matches == nil {
-			utils.Logger_caller("split ss url failed", nil, 1)
-			return nil, fmt.Errorf("link %s is not in the format of ss://", link)
+		ss,err := Base64_marshal_ss(link)
+		if err != nil{
+			utils.Logger_caller("marshal base64 ss failed",err,1)
+			return nil,err
 		}
-		tag, err := url.QueryUnescape(matches[4])
-		if err != nil {
-			utils.Logger_caller("url tag unescape failed", err, 1)
-			return nil, err
-		}
-		// 这个等号是base64的占位符
-		msg_bytes, err := base64.StdEncoding.DecodeString(matches[1] + "=")
-		if err != nil {
-			utils.Logger_caller("url password and cipher unescape failed", err, 1)
-			return nil, err
-		}
-		proxy_ss, err := utils.Get_value(template, "outbounds", "ss")
-		if err != nil {
-			utils.Logger_caller("Get ss Template failed!", err, 1)
-			return nil, err
-		}
-		proxy = proxy_ss.(map[string]interface{})
-		proxy["tag"] = tag
-		proxy["server"] = matches[2]
-		proxy["server_port"], err = strconv.Atoi(matches[3])
-		if err != nil {
-			utils.Logger_caller("num string transfer failed!", err, 1)
-			return nil, err
-		}
-		proxy["method"] = strings.Split(string(msg_bytes), ":")[0]
-		proxy["password"] = strings.Split(string(msg_bytes), ":")[1]
+		proxy = ss
 	case "vmess":
-		// 解析vmess链接格式,并根据解析结果生成相应的配置信息
-		msg_bytes, err := base64.StdEncoding.DecodeString(strings.Split(link, "://")[1])
-		if err != nil {
-			utils.Logger_caller("url password and cipher unescape failed", err, 1)
-			return nil, err
+		vmess,err := Base64_marshal_vmess(link)
+		if err != nil{
+			utils.Logger_caller("marshal base64 vmess failed",err,1)
+			return nil,err
 		}
-		msg, err := simplejson.NewJson(msg_bytes)
-		if err != nil {
-			utils.Logger_caller("vmess msg unescape failed", err, 1)
-			return nil, err
-		}
-		proxy_vmess, err := utils.Get_value(template, "outbounds", "vmess")
-		proxy = proxy_vmess.(map[string]interface{})
-		if err != nil {
-			utils.Logger_caller("Get vmess Template failed!", err, 1)
-			return nil, err
-		}
-		proxy["tag"] = msg.Get("ps").MustString()
-		proxy["server"] = msg.Get("add").MustString()
-		proxy["server_port"] = msg.Get("port").MustInt()
-		proxy["uuid"] = msg.Get("id").MustString()
-		transport := make(map[string]interface{})
-		switch msg.Get("net").MustString() {
-		case "grpc":
-			transport["type"] = msg.Get("net").MustString()
-			transport["grpc-opts"] = msg.Get("path").MustString()
-		case "ws":
-			transport["type"] = msg.Get("net").MustString()
-			transport["path"] = msg.Get("path").MustString()
-			transport["headers"] = map[string]string{"host": msg.Get("host").MustString()}
-		}
-		proxy["transport"] = transport
+		proxy = vmess
 	case "trojan":
-		// 解析trojan链接格式,并根据解析结果生成相应的配置信息
-		re := regexp.MustCompile(`^(.*?)://([^@]+)@([^:]+):(\d+)\?(.*?)#(.*)$`)
-		matches := re.FindStringSubmatch(link)
-		tag, err := url.QueryUnescape(matches[6])
+		trojan,err := Base64_marshal_trojan(link)
 		if err != nil {
-			utils.Logger_caller("url tag unescape failed", err, 1)
-			return nil, err
+			utils.Logger_caller("marshal base64 trojan failed",err,1)
+			return nil,err
 		}
-		proxy_trojan, err := utils.Get_value(template, "outbounds", "trojan")
-		if err != nil {
-			utils.Logger_caller("Get trojan Template failed!", err, 1)
-			return nil, err
-		}
-		proxy = proxy_trojan.(map[string]interface{})
-		proxy["tag"] = tag
-		proxy["server"] = matches[3]
-		proxy["server_port"], err = strconv.Atoi(matches[4])
-		if err != nil {
-			utils.Logger_caller("num string transfer failed!", err, 1)
-			return nil, err
-		}
-		values, err := url.ParseQuery(matches[5])
-		if err != nil {
-			utils.Logger_caller("sni string parse failed!", err, 1)
-			return nil, err
-		}
-		sniValue := values.Get("sni")
-		proxy["tls"].(map[string]interface{})["server_name"] = sniValue
-		proxy["password"] = matches[2]
+		proxy = trojan
+		// // 解析trojan链接格式,并根据解析结果生成相应的配置信息
+		// re := regexp.MustCompile(`^(.*?)://([^@]+)@([^:]+):(\d+)\?(.*?)#(.*)$`)
+		// matches := re.FindStringSubmatch(link)
+		// tag, err := url.QueryUnescape(matches[6])
+		// if err != nil {
+		// 	utils.Logger_caller("url tag unescape failed", err, 1)
+		// 	return nil, err
+		// }
+		// proxy_trojan, err := utils.Get_value(template, "outbounds", "trojan")
+		// if err != nil {
+		// 	utils.Logger_caller("Get trojan Template failed!", err, 1)
+		// 	return nil, err
+		// }
+		// proxy = proxy_trojan.(map[string]interface{})
+		// proxy["tag"] = tag
+		// proxy["server"] = matches[3]
+		// proxy["server_port"], err = strconv.Atoi(matches[4])
+		// if err != nil {
+		// 	utils.Logger_caller("num string transfer failed!", err, 1)
+		// 	return nil, err
+		// }
+		// values, err := url.ParseQuery(matches[5])
+		// if err != nil {
+		// 	utils.Logger_caller("sni string parse failed!", err, 1)
+		// 	return nil, err
+		// }
+		// sniValue := values.Get("sni")
+		// proxy["tls"].(map[string]interface{})["server_name"] = sniValue
+		// proxy["password"] = matches[2]
 	default:
 		// 如果协议类型不在支持的范围内,则返回错误
 		return nil, fmt.Errorf("protocol %s is not in the template", protocol_type)

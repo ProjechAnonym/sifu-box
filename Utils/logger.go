@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"os"
 	"runtime"
 
 	"github.com/natefinch/lumberjack"
@@ -36,8 +35,8 @@ func Get_core(){
 	error_writer := get_writer("error")
 	info_core := zapcore.NewCore(encoder,info_writer,zapcore.InfoLevel)
 	error_core := zapcore.NewCore(encoder,error_writer,zapcore.ErrorLevel)
-	consolo_core := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout),zapcore.DebugLevel)
-	core := zapcore.NewTee(info_core,error_core,consolo_core)
+	// consolo_core := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout),zapcore.DebugLevel)
+	core := zapcore.NewTee(info_core,error_core)
 	my_logger := zap.New(core)
 	zap.ReplaceGlobals(my_logger)
 }
