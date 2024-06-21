@@ -2,6 +2,7 @@ package singbox
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"regexp"
@@ -10,8 +11,34 @@ import (
 	"strings"
 
 	"github.com/bitly/go-simplejson"
+	"github.com/huandu/go-clone"
 )
-
+func Get_map_value(proxy_map map[string]interface{},keys ...string)(interface{},error){
+	result := clone.Clone(proxy_map)
+	for i, key := range keys {
+		if result = result.(map[string]interface{})[key]; result == nil{
+			return nil,fmt.Errorf("the key %s for level %d does not exist",key,i + 1)
+		}
+	}
+	return result, nil
+}
+func Struct2map[T trojan|vmess|shadowsocks](s T,class string) (map[string]interface{},error){
+	// 将s配置结构体序列化为JSON格式
+	s_bytes, err := json.Marshal(s)
+	if err != nil{
+		utils.Logger_caller(fmt.Sprintf("marshal %s struct failed",class),err,1)
+		return nil,err
+	}
+	// 反序列化JSON数据回map[string]interface{}格式,以便于后续处理
+	var s_map map[string]interface{}
+	
+	err = json.Unmarshal(s_bytes, &s_map)
+	if err != nil {
+		utils.Logger_caller(fmt.Sprintf("marshal %s struct to map failed",class),err,1)
+		return nil,err
+	}
+	return s_map,nil
+}
 // Format_yaml 根据给定的代理配置映射和模板字符串,格式化并返回相应的代理配置
 // proxy_map: 包含代理配置信息的映射,如协议类型、服务器地址等
 // template: 包含代理配置模板的字符串
@@ -31,66 +58,30 @@ func Format_yaml(proxy_map map[string]interface{},template string) (proxy map[st
 	// 从proxy_map中提取协议类型和标签信息
 	// 获取协议类型
 	protocol_type := proxy_map["type"]
-	tag := proxy_map["name"]
 
 	// 根据协议类型切换不同的处理逻辑
 	switch protocol_type {
 	case "vmess":
-		// 处理vmess协议类型的代理配置
-		proxy_vmess, err := utils.Get_value(template, "outbounds", "vmess")
-		if err != nil {
-			// 如果获取vmess模板失败,记录日志并返回错误
-			utils.Logger_caller("Get vmess Template failed!", err,1)
-			return nil, err
+		vmess,err := Map_marshal_vmess(proxy_map)
+		if err != nil{
+			utils.Logger_caller("marshal vmess failed",err,1)
+			return nil,err
 		}
-		proxy = proxy_vmess.(map[string]interface{})
-		// 根据proxy_map中的信息填充vmess配置
-		proxy["tag"] = tag
-		proxy["server"] = proxy_map["server"]
-		proxy["server_port"] = int(proxy_map["port"].(int))
-		proxy["uuid"] = proxy_map["uuid"]
-		proxy["transport"].(map[string]interface{})["type"] = proxy_map["network"]
-		transport := make(map[string]interface{})
-		switch proxy_map["network"].(string) {
-			case "grpc":
-				transport["type"] = proxy_map["network"]
-				transport["grpc-opts"] = map[string]string{"grpc-service-name":proxy_map["grpc-opts"].(map[string]interface{})["grpc-service-name"].(string)}
-			case "ws":
-				transport["type"] = proxy_map["network"]
-				transport["path"] = proxy_map["ws-path"]
-				transport["headers"] = map[string]string{"host":proxy_map["ws-headers"].(map[string]interface{})["Host"].(string)}
-		}
-		proxy["transport"] = transport
+		proxy = vmess
 	case "ss":
-		// 处理ss协议类型的代理配置
-		proxy_ss, err := utils.Get_value(template, "outbounds", "ss")
-		if err != nil {
-			// 如果获取ss模板失败,记录日志并返回错误
-			utils.Logger_caller("Get ss Template failed!", err,1)
-			return nil, err
+		ss,err := Map_marshal_ss(proxy_map)
+		if err != nil{
+			utils.Logger_caller("marshal ss failed",err,1)
+			return nil,err
 		}
-		proxy = proxy_ss.(map[string]interface{})
-		// 根据proxy_map中的信息填充ss配置
-		proxy["tag"] = tag
-		proxy["server"] = proxy_map["server"]
-		proxy["server_port"] = int(proxy_map["port"].(int))
-		proxy["method"] = proxy_map["cipher"]
-		proxy["password"] = proxy_map["password"]
+		proxy = ss
 	case "trojan":
-		// 处理trojan协议类型的代理配置
-		proxy_trojan, err := utils.Get_value(template, "outbounds", "trojan")
-		if err != nil {
-			// 如果获取trojan模板失败,记录日志并返回错误
-			utils.Logger_caller("Get trojan Template failed!", err,1)
-			return nil, err
+		trojan,err := Map_marshal_trojan(proxy_map)
+		if err != nil{
+			utils.Logger_caller("marshal ss failed",err,1)
+			return nil,err
 		}
-		proxy = proxy_trojan.(map[string]interface{})
-		// 根据proxy_map中的信息填充trojan配置
-		proxy["tag"] = tag
-		proxy["server"] = proxy_map["server"]
-		proxy["server_port"] = int(proxy_map["port"].(int))
-		proxy["tls"].(map[string]interface{})["server_name"] = proxy_map["sni"]
-		proxy["password"] = proxy_map["password"]
+		proxy = trojan
 	default:
 		// 如果协议类型不在支持的范围内,返回错误
 		return nil, fmt.Errorf("protocol %s is not in the template", protocol_type)
