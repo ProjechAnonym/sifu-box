@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -85,5 +86,24 @@ func File_write(content []byte, dst string,perm []fs.FileMode) error {
     }
 
     // 操作成功，返回nil
+    return nil
+}
+func File_copy(src, dst string) error{
+    src_file, err := os.Open(src)
+    if err != nil {
+        Logger_caller("Open file failed!", err,1)
+        return err
+    }
+    defer src_file.Close()
+    target_file, err := os.OpenFile(dst, os.O_CREATE|os.O_RDWR, 0755)
+    if err != nil {
+        Logger_caller("Create file failed!", err,1)
+        return err
+    }
+    defer target_file.Close()
+    if _,err = io.Copy(target_file,src_file);err != nil{
+        Logger_caller("Copy file failed!", err,1)
+        return err
+    }
     return nil
 }
