@@ -61,6 +61,11 @@ func add_items(group *gin.RouterGroup) {
         // 初始化配置结构体和URL列表
         config := utils.Box_config{}
         urls := make([]utils.Box_url, len(files))
+        // 检查temp目录是否存在,不存在则创建
+        if err := utils.Dir_Create(filepath.Join(project_dir.(string),"temp"),0755); err != nil{
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "creat temp dir failed."})
+            return
+        }
         // 遍历上传的文件,处理并保存每个文件
         for i, file := range files {
             // 解析文件名,用于生成标签

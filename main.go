@@ -41,6 +41,7 @@ func main() {
 		api_group := server.Group("/api")
 		router.Setting_server(api_group)
 		router.Setting_box(api_group)
+		router.Setting_exec(api_group)
 		server.Run(":8080")
 	}else{
 		singbox.Config_workflow([]int{})

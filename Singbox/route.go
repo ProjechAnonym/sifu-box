@@ -65,7 +65,7 @@ func get_ruleset(template string) ([]map[string]interface{}, error) {
 // 返回值:
 // - 一个包含多个规则的map切片,每个规则是一个包含"rule_set"和"outbound"键值对的map
 // - 错误对象,如果在获取规则过程中发生错误
-func get_rules(template string,link string,proxy bool) ([]map[string]interface{}, error) {
+func get_rules(template,link string,proxy bool) ([]map[string]interface{}, error) {
     // 从模板中获取默认路由规则
     base_rules, err := utils.Get_value(template, "route", "rules", "default")
     if err != nil {
@@ -140,7 +140,7 @@ func get_rules(template string,link string,proxy bool) ([]map[string]interface{}
 // 返回值:
 // - 一个map[string]interface{}类型的路由配置,包含规则集和规则
 // - 错误信息,如果在处理过程中出现错误
-func Merge_route(template string,url string,proxy bool) (map[string]interface{}, error) {
+func Merge_route(template,url string,proxy bool) (map[string]interface{}, error) {
     // 从模板中提取规则集信息
     rulesets, err := get_ruleset(template)
     if err != nil {

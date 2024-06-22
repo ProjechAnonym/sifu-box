@@ -221,6 +221,8 @@ func Config_workflow(index []int) error {
 		utils.Logger_caller("load the Proxy config failed",err,1)
 		return fmt.Errorf("load the Proxy config failed")
 	}
+    // 结束后删除代理信息配置
+    defer utils.Del_key("Proxy")
     // 创建进程组,避免程序过早退出
     var workflow sync.WaitGroup
     // 获取服务器配置
@@ -249,6 +251,5 @@ func Config_workflow(index []int) error {
         }()
 	}
 	workflow.Wait()
-    utils.Del_key("Proxy")
 	return nil
 }

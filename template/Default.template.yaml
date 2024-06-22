@@ -145,7 +145,7 @@ route:
   final: select
   auto_detect_interface: true
 experimental:
-  clash_api: { external_controller: 0.0.0.0:9090, secret: "123456" }
+  clash_api: { external_controller: 0.0.0.0:9090, secret: "123456",external_ui_download_url: "https://github.com/MetaCubeX/Yacd-meta/archive/gh-pages.zip",external_ui_download_detour: "select",external_ui": ""}
   cache_file:
     enabled: true
     path: /opt/singbox/cache.db

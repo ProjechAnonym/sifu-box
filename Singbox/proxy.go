@@ -20,7 +20,7 @@ import (
 // 返回值:
 // []map[string]interface{}: 格式化后的代理信息列表,每个代理是一个映射
 // error: 如果处理过程中出现错误,则返回错误信息
-func handle_yaml(config map[string]interface{}, host string, template string) ([]map[string]interface{}, error) {
+func handle_yaml(config map[string]interface{}, host, template string) ([]map[string]interface{}, error) {
     // 检查配置中的代理列表是否为空,如果为空,则记录错误日志并返回错误
     if len(config["proxies"].([]interface{})) == 0 {
         utils.Logger_caller("no proxies", fmt.Errorf("%s config without proxies", host), 1)
@@ -44,7 +44,7 @@ func handle_yaml(config map[string]interface{}, host string, template string) ([
 // host: 主机名,用于错误日志中标识配置来源
 // template: URL模板,用于格式化获取的代理配置URL
 // 返回值: 一个包含多个代理配置的map切片,以及可能出现的错误
-func handle_url(urls []string, host string, template string) ([]map[string]interface{}, error) {
+func handle_url(urls []string, host, template string) ([]map[string]interface{}, error) {
     // 检查URL列表是否为空,如果为空,则记录错误日志并返回错误
     if len(urls) == 0 {
         utils.Logger_caller("no proxies", fmt.Errorf("%s config without proxies", host), 1)
@@ -70,7 +70,7 @@ func handle_url(urls []string, host string, template string) ([]map[string]inter
 // url: 获取代理配置的URL
 // template: 代理配置的模板字符串,用于解析返回的内容
 // 返回值: 一个包含多个代理配置的map切片,以及可能的错误
-func fetch_proxies(url string,template string) ([]map[string]interface{},error){
+func fetch_proxies(url,template string) ([]map[string]interface{},error){
     // 初始化代理切片和错误变量
     var proxies []map[string]interface{}
     var err error
@@ -174,7 +174,7 @@ func outbound_auto(tags []string,template string) (map[string]interface{},error)
 // url: 用于获取代理配置的URL
 // template: 包含出站规则模板的字符串
 // 返回值: 一个包含合并后出站规则的切片,以及可能的错误
-func Merge_outbounds(path string,template string,remote bool) ([]map[string]interface{},error){
+func Merge_outbounds(path,template string,remote bool) ([]map[string]interface{},error){
     // 初始化变量
     var proxies []map[string]interface{}
     var err error

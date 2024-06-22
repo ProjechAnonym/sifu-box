@@ -31,6 +31,8 @@ func Add_items(box_config utils.Box_config) error {
 
     // 从配置中获取代理设置
     proxy_config, err := utils.Get_value("Proxy")
+    // 结束后删除代理信息配置
+    defer utils.Del_key("Proxy")
 	// 初始化变量
 	// index 用于存储新url的索引,为空则更新所有url的链接
 	var index []int
@@ -111,7 +113,8 @@ func Fetch_items() (utils.Box_config, error) {
         utils.Logger_caller("Load proxy config failed", err, 1)
         return utils.Box_config{}, fmt.Errorf("load proxy failed")
     }
-
+    // 结束后删除代理信息配置
+    defer utils.Del_key("Proxy")
     // 获取名为"Proxy"的配置项的值如果获取失败,记录错误日志并返回错误
     proxy_config, err := utils.Get_value("Proxy")
     if err != nil {
@@ -138,7 +141,8 @@ func Delete_items(items map[string][]int) error{
         utils.Logger_caller("Load proxy config failed", err, 1)
         return fmt.Errorf("load proxy failed")
     }
-
+    // 结束后删除代理信息配置
+    defer utils.Del_key("Proxy")
     // 从配置中获取代理设置
     proxy_config, err := utils.Get_value("Proxy")
     if err != nil {
