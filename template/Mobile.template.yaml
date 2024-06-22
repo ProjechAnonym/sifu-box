@@ -115,21 +115,23 @@ outbounds:
       interrupt_exist_connections: false,
     }
 
-  custom_outbound: [
+  custom_outbound:
+    [
       [
         { type: dns, tag: dns-out },
         { type: direct, tag: direct },
         { type: block, tag: block },
       ],
-      [],
-      # {
-      #   type: shadowsocks,
-      #   tag: "自建香港",
-      #   server: "sifu.top",
-      #   server_port: 0,
-      #   method: "cipher",
-      #   password: "wsr19990902",
-      # },
+      [
+        {
+          type: shadowsocks,
+          tag: "自建香港",
+          server: "sifu.top",
+          server_port: 0,
+          method: "cipher",
+          password: "wsr19990902",
+        },
+      ],
     ]
 
 route:

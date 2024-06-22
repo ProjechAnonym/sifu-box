@@ -6,3 +6,4 @@ static
 config/Proxy.config.yaml
 config/Proxy.config.dev.yaml
 temp/*.yaml
+test

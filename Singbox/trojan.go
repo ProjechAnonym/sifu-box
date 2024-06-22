@@ -63,54 +63,76 @@ func Map_marshal_trojan(proxy_map map[string]interface{}) (map[string]interface{
     return trojan_map, nil
 }
 
-func Base64_marshal_trojan(link string) (map[string]interface{}, error){
-	info := strings.TrimPrefix(link,"trojan://")
-	parts := strings.Split(info, "@")
-	password := parts[0]
-	url_parts := strings.Split(parts[1], "#")
-	server_url,err := url.Parse("trojan://" + url_parts[0])
-	if err != nil {
-		utils.Logger_caller("trojan url parsed failed!",err,1)
-		return nil,err
-	}
-	tag,err := url.QueryUnescape(url_parts[1])
-	if err != nil {
-		utils.Logger_caller("url decode failed!",err,1)
-		return nil,err
-	}
-	port,err := strconv.Atoi(server_url.Port())
-	if err != nil {
-		utils.Logger_caller("get trojan port failed!",err,1)
-		return nil,err
-	}
-	
-	params := server_url.Query()
-	var skip_cert bool
-	if skip_cert_verify := params.Get("allowInsecure");skip_cert_verify != ""{
-		if skip_cert_verify == "1"{
-			skip_cert = true
-		}else{
-			skip_cert = false
-		}
-	}else{
-		skip_cert = true
-	}
-	trojan := trojan{
-		Type: "trojan",
-		Tag: tag,
-		Password: password,
-		Server: server_url.Hostname(),
-		Server_port: port,
-		Tls: Tls_config{
-			Enabled: true,
-			Insecure: skip_cert,
-			Server_name: params.Get("sni"),
-		},
-	}
-	trojan_map,err := Struct2map(trojan,"trojan")
-	if err != nil{
-		utils.Logger_caller("marshal trojan to map failed",err,1)
-		return nil,err
-	}
-	return trojan_map,nil
+// Base64_marshal_trojan 解析trojan链接并将其转换为map格式,用于后续处理
+// link: trojan协议的链接字符串,例如"trojan://password@server#tag?allowInsecure=1&sni=example.com:8080"
+// 返回值:
+//   - 一个包含解析后信息的map[string]interface{},其中信息已编码为Base64
+//   - 如果解析过程中出现错误,则返回错误信息
+func Base64_marshal_trojan(link string) (map[string]interface{}, error) {
+    // 移除链接前缀"trojan://",以便后续处理
+    info := strings.TrimPrefix(link, "trojan://")
+    // 使用"@"分割链接字符串,获取密码和服务器信息
+    parts := strings.Split(info, "@")
+    // 从分割后的第一部分获取密码
+    password := parts[0]
+    // 使用"#"分割服务器信息,获取服务器URL和标签
+    url_parts := strings.Split(parts[1], "#")
+    // 解析服务器URL,为后续获取端口和参数做准备
+    server_url, err := url.Parse("trojan://" + url_parts[0])
+    if err != nil {
+        // 日志记录URL解析失败
+        utils.Logger_caller("trojan url parsed failed!", err, 1)
+        return nil, err
+    }
+    // 解码标签信息,以便正确使用
+    tag, err := url.QueryUnescape(url_parts[1])
+    if err != nil {
+        // 日志记录标签解码失败
+        utils.Logger_caller("url decode failed!", err, 1)
+        return nil, err
+    }
+    // 获取服务器端口
+    port, err := strconv.Atoi(server_url.Port())
+    if err != nil {
+        // 日志记录端口获取失败
+        utils.Logger_caller("get trojan port failed!", err, 1)
+        return nil, err
+    }
+    
+    // 从服务器URL中获取参数
+    params := server_url.Query()
+    // 初始化是否跳过证书验证的变量
+    var skip_cert bool
+    // 根据参数"allowInsecure"的值,确定是否跳过证书验证
+    if skip_cert_verify := params.Get("allowInsecure"); skip_cert_verify != "" {
+        if skip_cert_verify == "1" {
+            skip_cert = true
+        } else {
+            skip_cert = false
+        }
+    } else {
+        skip_cert = true
+    }
+    // 构建trojan配置结构体
+    trojan := trojan{
+        Type: "trojan",
+        Tag: tag,
+        Password: password,
+        Server: server_url.Hostname(),
+        Server_port: port,
+        Tls: Tls_config{
+            Enabled: true,
+            Insecure: skip_cert,
+            Server_name: params.Get("sni"),
+        },
+    }
+    // 将trojan配置结构体转换为map格式
+    trojan_map, err := Struct2map(trojan, "trojan")
+    if err != nil {
+        // 日志记录结构体转换失败
+        utils.Logger_caller("marshal trojan to map failed", err, 1)
+        return nil, err
+    }
+    // 返回转换后的map和nil错误
+    return trojan_map, nil
 }

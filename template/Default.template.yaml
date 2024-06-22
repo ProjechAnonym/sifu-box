@@ -57,6 +57,7 @@ inbounds:
       stack: mixed,
       sniff: true,
       sniff_override_destination: false,
+      route_exclude_address: ["192.168.0.0/16", "fc00::/7"],
     },
   ]
 
@@ -88,16 +89,7 @@ outbounds:
         { type: block, tag: block },
       ],
       # 自定义节点的列表
-      [
-        {
-          type: shadowsocks,
-          tag: "自建香港",
-          server: "sifu.top",
-          server_port: 0,
-          method: "cipher",
-          password: "wsr19990902",
-        },
-      ],
+      [],
     ]
 
 route:

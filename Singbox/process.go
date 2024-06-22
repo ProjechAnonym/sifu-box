@@ -8,13 +8,28 @@ import (
 
 	"github.com/huandu/go-clone"
 )
+
+// Get_map_value 根据提供的键序列从嵌套映射中检索值
+// 它接受一个映射和一个或多个键,然后尝试按照键的顺序深入映射获取最终值
+// 如果某个键不存在,函数将返回一个错误
+// 参数:
+//   proxy_map: 嵌套映射的初始副本
+//   keys: 用于深入映射的键序列
+// 返回值:
+//   interface{}: 成功获取到的最终值,如果未成功,则为nil
+//   error: 如果在查找过程中遇到任何键不存在的情况,则返回错误信息
 func Get_map_value(proxy_map map[string]interface{},keys ...string)(interface{},error){
+	// 使用clone库克隆初始映射,以避免对原始映射的意外修改
 	result := clone.Clone(proxy_map)
+	// 遍历提供的键序列
 	for i, key := range keys {
+		// 尝试获取当前键对应的值,并更新result变量
+		// 如果值不存在,result将为nil,此时返回错误
 		if result = result.(map[string]interface{})[key]; result == nil{
 			return nil,fmt.Errorf("the key %s for level %d does not exist",key,i + 1)
 		}
 	}
+	// 如果所有键都成功找到,返回最终值
 	return result, nil
 }
 func Struct2map[T trojan|vmess|shadowsocks](s T,class string) (map[string]interface{},error){
@@ -124,35 +139,6 @@ func Format_url(link string, template string) (proxy map[string]interface{},err 
 			return nil,err
 		}
 		proxy = trojan
-		// // 解析trojan链接格式,并根据解析结果生成相应的配置信息
-		// re := regexp.MustCompile(`^(.*?)://([^@]+)@([^:]+):(\d+)\?(.*?)#(.*)$`)
-		// matches := re.FindStringSubmatch(link)
-		// tag, err := url.QueryUnescape(matches[6])
-		// if err != nil {
-		// 	utils.Logger_caller("url tag unescape failed", err, 1)
-		// 	return nil, err
-		// }
-		// proxy_trojan, err := utils.Get_value(template, "outbounds", "trojan")
-		// if err != nil {
-		// 	utils.Logger_caller("Get trojan Template failed!", err, 1)
-		// 	return nil, err
-		// }
-		// proxy = proxy_trojan.(map[string]interface{})
-		// proxy["tag"] = tag
-		// proxy["server"] = matches[3]
-		// proxy["server_port"], err = strconv.Atoi(matches[4])
-		// if err != nil {
-		// 	utils.Logger_caller("num string transfer failed!", err, 1)
-		// 	return nil, err
-		// }
-		// values, err := url.ParseQuery(matches[5])
-		// if err != nil {
-		// 	utils.Logger_caller("sni string parse failed!", err, 1)
-		// 	return nil, err
-		// }
-		// sniValue := values.Get("sni")
-		// proxy["tls"].(map[string]interface{})["server_name"] = sniValue
-		// proxy["password"] = matches[2]
 	default:
 		// 如果协议类型不在支持的范围内,则返回错误
 		return nil, fmt.Errorf("protocol %s is not in the template", protocol_type)

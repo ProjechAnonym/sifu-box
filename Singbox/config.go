@@ -164,7 +164,7 @@ func config_merge(template string,mode bool,index []int) {
                 error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
                 return
             }
-            full_config.(*simplejson.Json).Set("outbound", proies)
+            full_config.(*simplejson.Json).Set("outbounds", proies)
             // 对合并后的配置进行编码
             config_bytes,_ := full_config.(*simplejson.Json).EncodePretty()
             // 获取配置文件名

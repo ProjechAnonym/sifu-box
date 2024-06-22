@@ -27,7 +27,7 @@ type shadowsocks struct {
 func Map_marshal_ss(proxy_map map[string]interface{}) (map[string]interface{}, error) {
     // 创建一个shadowsocks配置结构体实例,初始化其字段值从proxy_map中获取
     ss := shadowsocks{
-        Type:        "ss",
+        Type:        "shadowsocks",
         Tag:         proxy_map["name"].(string),
         Server:      proxy_map["server"].(string),
         Server_port: proxy_map["port"].(int),
