@@ -1,6 +1,7 @@
 # sifu-box
 singbox转换程序
 ## 必备文件
+```
 .
 |-- config
 |   |-- Proxy.config.yaml
@@ -9,3 +10,4 @@ singbox转换程序
 |   `-- Default
 `-- template
     `-- Default.template.yaml
+```
