@@ -105,7 +105,7 @@ func File_copy(src, dst string,perm fs.FileMode) error{
     defer src_file.Close()
     
     // 创建或打开目标文件,以读写模式,并设置指定的权限
-    target_file, err := os.OpenFile(dst, os.O_CREATE|os.O_RDWR, perm)
+    target_file, err := os.OpenFile(dst, os.O_CREATE|os.O_RDWR|os.O_TRUNC, perm)
     if err != nil {
         // 记录创建目标文件失败的日志并返回错误
         Logger_caller("Create file failed!", err,1)

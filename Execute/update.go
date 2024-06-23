@@ -1,4 +1,4 @@
-package commands
+package execute
 
 import (
 	"io/fs"
@@ -62,5 +62,15 @@ func Update_file(origin_file, new_file, backupfile string, perm fs.FileMode, ser
         }
     }
     // 操作成功
+    return nil
+}
+func Recover_file(origin_file,backup_file string,perm fs.FileMode, server database.Server) error{
+    if server.Localhost{
+        // 复制新文件到原始文件位置,设置新文件的权限模式
+        if err := utils.File_copy(backup_file,origin_file,perm); err != nil {
+            utils.Logger_caller("copy new config file failed!",err,1)
+            return err
+        }
+    }
     return nil
 }

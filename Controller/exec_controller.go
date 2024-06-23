@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"path/filepath"
 	database "sifu-box/Database"
-	commands "sifu-box/Execute"
+	execute "sifu-box/Execute"
 	utils "sifu-box/Utils"
 )
 
@@ -85,11 +85,37 @@ func Update_config(addr, config string) error {
         new_config := filepath.Join(project_dir.(string),"static","Default",fmt.Sprintf("%s.json",label))
 
         // 更新配置文件
-        if err := commands.Update_file(origin_config, new_config, backup_config, 0644, server); err != nil {
+        if err := execute.Update_file(origin_config, new_config, backup_config, 0644, server); err != nil {
             // 日志记录更新配置文件失败
             utils.Logger_caller("update config failed!", err, 1)
             return err
         }   
+    }
+    // 查看更新配置后是否运行成功
+    result,err := execute.Reload_config(server)
+    if err != nil {
+        // 日志记录重启配置文件失败
+        utils.Logger_caller("reload config failed!", err, 1)
+        // 恢复备份的配置文件
+        if rec_err := execute.Recover_file(filepath.Join("/","opt","singbox","config.json"), filepath.Join(project_dir.(string),"temp","configbackup",fmt.Sprintf("%s.json",backupfile)), 0644, server);rec_err != nil{
+            return rec_err
+        }
+        // 出现错误,尝试重启服务
+        if start_err := execute.Boot_service("sing-box",server);start_err != nil{
+            return start_err
+        }
+        return err
+    }
+    // 如果没有错误但是服务没有重载,尝试重启服务
+    if !result {
+        // 恢复备份的配置文件
+        if rec_err := execute.Recover_file(filepath.Join("/","opt","singbox","config.json"), filepath.Join(project_dir.(string),"temp","configbackup",fmt.Sprintf("%s.json",backupfile)), 0644, server);rec_err != nil{
+            return rec_err
+        }
+        if start_err := execute.Boot_service("sing-box",server);start_err != nil{
+            return start_err
+        }
+        return fmt.Errorf("reload config failed")
     }
 
     // 更新数据库中服务器的配置信息
