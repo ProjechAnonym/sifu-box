@@ -119,7 +119,7 @@ func fetch_items(group *gin.RouterGroup) {
         ctx.JSON(http.StatusOK, config)
     })
 }
-func delete_items(group *gin.RouterGroup) {
+func delete_items(group *gin.RouterGroup,lock *sync.Mutex) {
     delete_router := group.Group("/delete")
     delete_router.DELETE("/items", func(ctx *gin.Context) {
         type delete_config struct {
@@ -132,7 +132,7 @@ func delete_items(group *gin.RouterGroup) {
             ctx.JSON(http.StatusInternalServerError, gin.H{"error": "marshal json failed."})
             return
         }
-        if err := controller.Delete_items(map[string][]int{"urls":items.Urls,"rulesets":items.Rulesets}); err != nil{
+        if err := controller.Delete_items(map[string][]int{"urls":items.Urls,"rulesets":items.Rulesets},lock); err != nil{
             utils.Logger_caller("delete items failed!", err, 1)
             ctx.JSON(http.StatusInternalServerError, gin.H{"error": "delete items failed."})
             return
@@ -140,10 +140,13 @@ func delete_items(group *gin.RouterGroup) {
         ctx.JSON(http.StatusOK, gin.H{"result": "success"})
     })
 }
+
+
 func Setting_box(group *gin.RouterGroup,lock *sync.Mutex) {
 	setting_router := group.Group("/config")
 	setting_router.Use(middleware.Token_auth())
 	add_items(setting_router,lock)
 	fetch_items(setting_router)
-    delete_items(setting_router)
+    delete_items(setting_router,lock)
+   
 }

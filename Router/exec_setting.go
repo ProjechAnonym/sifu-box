@@ -43,6 +43,47 @@ func update_config(group *gin.RouterGroup,lock *sync.Mutex) {
         ctx.JSON(http.StatusOK, gin.H{"result": "success"})
     })
 }
+
+func refresh_items(group *gin.RouterGroup,lock *sync.Mutex) {
+    refresh_router := group.Group("/refresh")
+    refresh_router.GET("/items", func(ctx *gin.Context) {
+        if err := controller.Refresh_items(lock); err != nil {
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "refresh items failed."})
+            return
+        }
+        ctx.JSON(http.StatusOK, gin.H{"result": "success"})
+    })
+}
+
+func check_service(group *gin.RouterGroup){
+    check_router := group.Group("/check")
+    check_router.POST("/service", func(ctx *gin.Context) {
+        url := ctx.PostForm("url")
+        service := ctx.PostForm("service")
+        status,err := controller.Check_status(url,service)
+        if err != nil {
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+            return
+        }
+        if status{
+            ctx.JSON(http.StatusOK, gin.H{"message": true})
+        }else{
+            ctx.JSON(http.StatusOK, gin.H{"message": false})
+        }
+    })
+}
+func boot_service(group *gin.RouterGroup,lock *sync.Mutex){
+    boot_router := group.Group("/boot")
+    boot_router.POST("/service", func(ctx *gin.Context) {
+        url := ctx.PostForm("url")
+        service := ctx.PostForm("service")
+        if err := controller.Boot_service(url,service,lock); err!=nil{
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+            return
+        }
+        ctx.JSON(http.StatusOK, gin.H{"message": true})
+    })
+}
 func Setting_exec(group *gin.RouterGroup,lock *sync.Mutex){
     // 创建一个名为"setting"的子路由组,用于处理所有与设置相关的请求
     setting_router := group.Group("/execute")
@@ -50,5 +91,7 @@ func Setting_exec(group *gin.RouterGroup,lock *sync.Mutex){
     // 在"setting"子路由组上应用Token认证中间件,确保所有请求都需要通过认证
     setting_router.Use(middleware.Token_auth())
 	update_config(setting_router,lock)
-    
+    refresh_items(setting_router,lock)
+    check_service(setting_router)
+    boot_service(setting_router,lock)
 }
