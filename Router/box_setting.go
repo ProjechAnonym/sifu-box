@@ -7,13 +7,14 @@ import (
 	middleware "sifu-box/Middleware"
 	utils "sifu-box/Utils"
 	"strings"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 )
 
 // add_items 在给定的路由组中添加处理新增项和文件上传的路由
 // group: 一个gin.RouterGroup实例,用于组织和注册路由
-func add_items(group *gin.RouterGroup) {
+func add_items(group *gin.RouterGroup,lock *sync.Mutex) {
     // 创建一个子路由组,专门处理与"添加"相关的路由
     add_router := group.Group("/add")
 
@@ -28,7 +29,7 @@ func add_items(group *gin.RouterGroup) {
             return
         }
         // 调用控制器方法添加项,处理业务逻辑
-        if err := controller.Add_items(config); err != nil {
+        if err := controller.Add_items(config,lock); err != nil {
             // 日志记录添加项失败,并返回错误响应
             utils.Logger_caller("Add items failed!", err, 1)
             ctx.JSON(http.StatusBadRequest, gin.H{"error": "Add items failed."})
@@ -88,7 +89,7 @@ func add_items(group *gin.RouterGroup) {
         // 将处理后的URL列表赋值给配置结构体
         config.Url = urls
         // 调用控制器方法添加配置,处理业务逻辑
-        if err := controller.Add_items(config); err != nil {
+        if err := controller.Add_items(config,lock); err != nil {
             // 日志记录添加失败,并返回错误响应
             utils.Logger_caller("Add items failed!", err, 1)
             ctx.JSON(http.StatusBadRequest, gin.H{"error": "Add items failed."})
@@ -139,10 +140,10 @@ func delete_items(group *gin.RouterGroup) {
         ctx.JSON(http.StatusOK, gin.H{"result": "success"})
     })
 }
-func Setting_box(group *gin.RouterGroup) {
+func Setting_box(group *gin.RouterGroup,lock *sync.Mutex) {
 	setting_router := group.Group("/config")
 	setting_router.Use(middleware.Token_auth())
-	add_items(setting_router)
+	add_items(setting_router,lock)
 	fetch_items(setting_router)
     delete_items(setting_router)
 }

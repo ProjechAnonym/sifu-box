@@ -11,11 +11,11 @@ import (
 // 如果加载失败或日志中包含错误信息,则记录错误并返回错误
 // 返回值:
 //   error: 如果重新加载配置失败或存在错误日志,则返回相应的错误;否则返回nil
-func Reload_config(server database.Server) (bool,error){
+func Reload_config(service string,server database.Server) (bool,error){
 	status := true
 	if server.Localhost{
 		// 使用systemctl命令重新加载sing-box服务
-		_,_,err := utils.Command_exec("systemctl", "reload", "sing-box")
+		_,_,err := utils.Command_exec("systemctl", "reload", service)
 		if err != nil {
 			// 如果命令执行失败,则记录错误并返回
 			utils.Logger_caller("reload config failed!",err,1)
@@ -23,10 +23,10 @@ func Reload_config(server database.Server) (bool,error){
 		}
 
 		// 使用journalctl命令获取sing-box服务最近10条日志
-		results,errors,err := utils.Command_exec("journalctl", "-u", "sing-box","-n","1")
+		results,errors,err := utils.Command_exec("journalctl", "-u", service,"-n","1")
 		if err != nil {
 			// 如果命令执行失败,则记录错误并返回
-			utils.Logger_caller("get journal failed!",err,1)
+			utils.Logger_caller("get journal log failed!",err,1)
 			return false,err
 		}
 		 

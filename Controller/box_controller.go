@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
+	database "sifu-box/Database"
+	execute "sifu-box/Execute"
 	singbox "sifu-box/Singbox"
 	utils "sifu-box/Utils"
+	"sync"
 
 	"gopkg.in/yaml.v3"
 )
@@ -13,7 +16,7 @@ import (
 // Add_items 向配置文件中添加新项目或更新现有项目配置
 // box_config: 包含待添加或更新的项目配置的数据结构
 // 返回值: 如果操作成功,则返回nil；否则返回错误信息
-func Add_items(box_config utils.Box_config) error {
+func Add_items(box_config utils.Box_config,lock *sync.Mutex) error {
     // 获取项目目录路径,用于确定生成文件的路径
     project_dir, err := utils.Get_value("project-dir")
     if err != nil {
@@ -97,6 +100,17 @@ func Add_items(box_config utils.Box_config) error {
         utils.Logger_caller("Config workflow failed", err, 1)
         return fmt.Errorf("config workflow failed")
     }
+
+    if len(box_config.Rule_set) != 0 {
+        var servers []database.Server
+        if database.Db.Find(&servers).Error != nil {
+            utils.Logger_caller("Get servers failed", err, 1)
+            return fmt.Errorf("get servers failed")
+        }
+        execute.Group_update(servers, new_proxy_config,lock)
+    }
+
+    
     // 操作成功,返回nil
     return nil
 }

@@ -8,6 +8,7 @@ import (
 	router "sifu-box/Router"
 	singbox "sifu-box/Singbox"
 	utils "sifu-box/Utils"
+	"sync"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,7 @@ func init(){
 	}
 }
 func main() {
+	var lock sync.Mutex
 	server_config,err := utils.Get_value("Server")
 	if err != nil {
 		fmt.Fprintln(os.Stderr,"Critical error occurred, can not get the running mode, exiting.")
@@ -40,8 +42,8 @@ func main() {
 		server.Use(middleware.Logger(),middleware.Recovery(true),cors.New(middleware.Cors()))
 		api_group := server.Group("/api")
 		router.Setting_server(api_group)
-		router.Setting_box(api_group)
-		router.Setting_exec(api_group)
+		router.Setting_box(api_group,&lock)
+		router.Setting_exec(api_group,&lock)
 		server.Run(":8080")
 	}else{
 		singbox.Config_workflow([]int{})
