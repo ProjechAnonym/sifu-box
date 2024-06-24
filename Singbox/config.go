@@ -153,7 +153,7 @@ func config_merge(template string,mode bool,index []int) {
             route,err := Merge_route(template,link.Path,link.Proxy)
             if err != nil{
                 utils.Logger_caller("get route failed",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
+                error_channel <- fmt.Errorf("generate the %dth url of %s failed, config: %s",index,template,link.Label)
                 return
             }
             full_config.(*simplejson.Json).Set("route", route)
@@ -161,7 +161,7 @@ func config_merge(template string,mode bool,index []int) {
             proies,err := Merge_outbounds(link.Path,template,link.Remote)
             if err != nil{
                 utils.Logger_caller("get outbounds failed",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
+                error_channel <- fmt.Errorf("generate the %dth url of %s failed, config: %s",index,template,link.Label)
                 return
             }
             full_config.(*simplejson.Json).Set("outbounds", proies)
@@ -183,10 +183,10 @@ func config_merge(template string,mode bool,index []int) {
             // 将配置写入文件
             if err = utils.File_write(config_bytes,filepath.Join(project_dir.(string),"static",template,fmt.Sprintf("%s.json",label)),[]fs.FileMode{0644,0644});err != nil{
                 utils.Logger_caller("write config file failed",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
+                error_channel <- fmt.Errorf("generate the %dth url of %s failed, config: %s",index,template,link.Label)
                 return
             }
-            utils.Logger_caller(fmt.Sprintf("generate the %s config of %s success!",link.Label,template),nil,1)
+            utils.Logger_caller(fmt.Sprintf("generate the %s config of %s success",link.Label,template),nil,1)
         }(link,template,config,i,mode)
     }
     // 等待所有并发任务完成
