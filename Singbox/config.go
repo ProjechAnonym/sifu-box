@@ -24,14 +24,14 @@ func format_url(index []int) ([]utils.Box_url,error) {
     proxy_config,err := utils.Get_value("Proxy")
     if err != nil || len(proxy_config.(utils.Box_config).Url) == 0{
         // 记录获取URL列表时的错误
-        utils.Logger_caller("Get urls failed!",err,1)
+        utils.Logger_caller("get urls failed",err,1)
         return nil,err
     }
     // 检查URL列表是否为空
     if len(proxy_config.(utils.Box_config).Url) == 0 {
         // 如果URL列表为空,创建并返回一个新的空列表和一个错误
         err = errors.New("get url list failed")
-        utils.Logger_caller("Get urls failed!",err,1)
+        utils.Logger_caller("get urls failed",err,1)
         return nil,err
     }
     // 初始化一个用于存储处理后URL的切片
@@ -72,7 +72,7 @@ func format_url(index []int) ([]utils.Box_url,error) {
         parsed_url,err := url.Parse(proxy_config.(utils.Box_config).Url[value].Path)
         if err != nil {
             // 记录URL解析失败的错误
-            utils.Logger_caller("Parse url failed!",err,1)
+            utils.Logger_caller("parse url failed",err,1)
             return nil,err
         }
         // 获取URL的查询参数
@@ -104,7 +104,7 @@ func config_merge(template string,mode bool,index []int) {
     log,err := utils.Get_value(template,"log")
     if err != nil{
         utils.Logger_caller("Get log failed!",err,1)
-        return 
+        return
     }
     dns,err := utils.Get_value(template,"dns")
     if err != nil{
@@ -145,14 +145,14 @@ func config_merge(template string,mode bool,index []int) {
             full_config := clone.Clone(config)
             project_dir,err := utils.Get_value("project-dir")
             if err != nil{
-                utils.Logger_caller("Get project dir failed!",err,1)
+                utils.Logger_caller("get project dir failed",err,1)
                 error_channel <- fmt.Errorf("generate the %dth url of %s config failed",index,template)
                 return
             }
             // 合并路由配置
             route,err := Merge_route(template,link.Path,link.Proxy)
             if err != nil{
-                utils.Logger_caller("Get route failed!",err,1)
+                utils.Logger_caller("get route failed",err,1)
                 error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
                 return
             }
@@ -160,7 +160,7 @@ func config_merge(template string,mode bool,index []int) {
             // 合并出站配置
             proies,err := Merge_outbounds(link.Path,template,link.Remote)
             if err != nil{
-                utils.Logger_caller("Get outbounds failed!",err,1)
+                utils.Logger_caller("get outbounds failed",err,1)
                 error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
                 return
             }
@@ -173,8 +173,8 @@ func config_merge(template string,mode bool,index []int) {
                 // 对标签进行MD5加密
                 label,err = utils.Encryption_md5(link.Label)
                 if err != nil{
-                    utils.Logger_caller("Encryption md5 failed!",err,1)
-                    error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
+                    utils.Logger_caller("encryption md5 failed",err,1)
+                    error_channel <- fmt.Errorf("generate the %dth url of %s failed, config: %s",index,template,link.Label)
                     return
                 }
             }else{
@@ -182,11 +182,11 @@ func config_merge(template string,mode bool,index []int) {
             }
             // 将配置写入文件
             if err = utils.File_write(config_bytes,filepath.Join(project_dir.(string),"static",template,fmt.Sprintf("%s.json",label)),[]fs.FileMode{0644,0644});err != nil{
-                utils.Logger_caller("Write config file failed!",err,1)
+                utils.Logger_caller("write config file failed",err,1)
                 error_channel <- fmt.Errorf("generate the %dth url of %s failed,config:%s",index,template,link.Label)
                 return
             }
-            utils.Logger_caller(fmt.Sprintf("Generate the %s config of %s success!",link.Label,template),nil,1)
+            utils.Logger_caller(fmt.Sprintf("generate the %s config of %s success!",link.Label,template),nil,1)
         }(link,template,config,i,mode)
     }
     // 等待所有并发任务完成

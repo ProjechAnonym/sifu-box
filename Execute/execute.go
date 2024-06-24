@@ -69,13 +69,11 @@ func Exec_update(label string, proxy_config utils.Box_config, server database.Se
 
 	// 更新配置文件并创建备份
 	if err := Update_file(original_path, new_path, backup_path, 0644, server); err != nil {
-		utils.Logger_caller("update config file failed", err, 1)
 		return err
 	}
 
 	// 尝试重载配置并验证
 	if result, err := Reload_config("sing-box", server); err != nil || !result {
-		utils.Logger_caller("reload config failed,recovering backup", err, 1)
 
 		// 配置重载失败时恢复备份配置
 		if recoverErr := Recover_file(original_path, backup_path, 0644, server); recoverErr != nil {

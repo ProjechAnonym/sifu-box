@@ -45,7 +45,7 @@ func add_items(group *gin.RouterGroup,lock *sync.Mutex) {
         form, err := ctx.MultipartForm()
         if err != nil {
             // 日志记录获取多部分表单失败,并返回错误响应
-            utils.Logger_caller("get json files failed!", err, 1)
+            utils.Logger_caller("get json files failed", err, 1)
             ctx.JSON(http.StatusBadRequest, gin.H{"error": "Add files failed."})
             return
         }

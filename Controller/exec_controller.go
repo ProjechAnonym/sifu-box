@@ -10,6 +10,7 @@ import (
 // Update_config 根据给定的地址和配置更新服务器配置
 // addr: 服务器地址,用于查找数据库中的服务器信息
 // config: 配置字符串,用于更新服务器的配置
+// lock: 互斥锁,用于保护应用程序启停
 // 返回值: 错误信息,如果操作成功则为nil
 func Update_config(addr, config string,lock *sync.Mutex) error {
     // 从数据库中查询服务器信息

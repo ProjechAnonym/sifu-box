@@ -74,21 +74,18 @@ func Format_yaml(proxy_map map[string]interface{},template string) (proxy map[st
 	case "vmess":
 		vmess,err := Map_marshal_vmess(proxy_map)
 		if err != nil{
-			utils.Logger_caller("marshal vmess failed",err,1)
 			return nil,err
 		}
 		proxy = vmess
 	case "ss":
 		ss,err := Map_marshal_ss(proxy_map)
 		if err != nil{
-			utils.Logger_caller("marshal ss failed",err,1)
 			return nil,err
 		}
 		proxy = ss
 	case "trojan":
 		trojan,err := Map_marshal_trojan(proxy_map)
 		if err != nil{
-			utils.Logger_caller("marshal ss failed",err,1)
 			return nil,err
 		}
 		proxy = trojan
@@ -121,21 +118,18 @@ func Format_url(link string, template string) (proxy map[string]interface{},err 
 	case "ss":
 		ss,err := Base64_marshal_ss(link)
 		if err != nil{
-			utils.Logger_caller("marshal base64 ss failed",err,1)
 			return nil,err
 		}
 		proxy = ss
 	case "vmess":
 		vmess,err := Base64_marshal_vmess(link)
 		if err != nil{
-			utils.Logger_caller("marshal base64 vmess failed",err,1)
 			return nil,err
 		}
 		proxy = vmess
 	case "trojan":
 		trojan,err := Base64_marshal_trojan(link)
 		if err != nil {
-			utils.Logger_caller("marshal base64 trojan failed",err,1)
 			return nil,err
 		}
 		proxy = trojan
@@ -144,6 +138,4 @@ func Format_url(link string, template string) (proxy map[string]interface{},err 
 		return nil, fmt.Errorf("protocol %s is not in the template", protocol_type)
 	}
 	return proxy, err
-	
-	
 }

@@ -3,7 +3,6 @@ package singbox
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	utils "sifu-box/Utils"
 	"strconv"
 	"strings"
@@ -31,13 +30,11 @@ func Map_marshal_vmess(proxy_map map[string]interface{}) (map[string]interface{}
     // 尝试获取是否启用TLS的配置,如果不存在则默认为false
 	tls_enable,err := Get_map_value(proxy_map,"tls")
 	if err != nil{
-		utils.Logger_caller(fmt.Sprintf("%s has no tls key",proxy_map["name"]),err,1)
 		tls_enable = false
 	}
 	// 获取skip-cert-verify配置
 	skip_cert_verify,err := Get_map_value(proxy_map,"skip-cert-verify")
 	if err != nil{
-		utils.Logger_caller(fmt.Sprintf("%s has no skip_cert_verify key",proxy_map["name"]),err,1)
 		skip_cert_verify = true
 	}
 	// 初始化vmess配置结构体
@@ -83,7 +80,6 @@ func Map_marshal_vmess(proxy_map map[string]interface{}) (map[string]interface{}
 	// 转换为map字典
 	vmess_map,err := Struct2map(vmess,"vmess")
 	if err != nil {
-		utils.Logger_caller("marshal vmess to map failed",err,1)
 		return nil,err
 	}
 	return vmess_map,nil
@@ -129,8 +125,6 @@ func Base64_marshal_vmess(link string) (map[string]interface{},error){
     // 判断tls是否启用,以及是否需要跳过证书验证
 	var tls_enable bool
 	if _,err := Get_map_value(proxy_map,"tls"); err != nil {
-        // 记录未找到tls键的日志,设置tls为禁用,并返回错误
-		utils.Logger_caller(fmt.Sprintf("%s has no tls key",proxy_map["ps"].(string)),err,1)
 		tls_enable = false
 	}else{
 		tls_enable = true
@@ -139,13 +133,11 @@ func Base64_marshal_vmess(link string) (map[string]interface{},error){
 	skip_cert,err := Get_map_value(proxy_map,"skip-cert-verify")
 	if err != nil {
         // 记录未找到skip_cert_verify键的日志,设置为跳过证书验证,并返回错误
-		utils.Logger_caller(fmt.Sprintf("%s has no skip_cert_verify key",proxy_map["ps"].(string)),err,1)
 		skip_cert = true
 	}
 	sni,err := Get_map_value(proxy_map,"sni")
 	if err != nil{
         // 记录未找到sni键的日志,设置sni为空字符串,并返回错误
-		utils.Logger_caller(fmt.Sprintf("%s has no sni key",proxy_map["ps"].(string)),err,1)
 		sni = ""
 	}
     // 根据提取的信息,构建tls配置
@@ -180,8 +172,6 @@ func Base64_marshal_vmess(link string) (map[string]interface{},error){
     // 将vmess配置转换为map格式,并返回
 	vmess_map,err := Struct2map(vmess,"vmess")
 	if err != nil {
-        // 记录转换失败的日志,并返回错误
-		utils.Logger_caller("marshal vmess to map failed",err,1)
 		return nil,err
 	}
 	return vmess_map,nil

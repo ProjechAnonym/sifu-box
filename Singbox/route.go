@@ -1,6 +1,7 @@
 package singbox
 
 import (
+	"fmt"
 	"net/url"
 	utils "sifu-box/Utils"
 )
@@ -14,7 +15,7 @@ func get_ruleset(template string) ([]map[string]interface{}, error) {
     default_rulesets, err := utils.Get_value(template, "route", "rule_set")
     if err != nil {
         // 如果获取默认规则集失败,记录错误并返回
-        utils.Logger_caller("Get default rulesets failed!", err,1)
+        utils.Logger_caller("Get default rulesets failed", err,1)
         return nil, err
     }
 
@@ -23,7 +24,7 @@ func get_ruleset(template string) ([]map[string]interface{}, error) {
     custom_rulesets := proxy_config.(utils.Box_config).Rule_set
     if err != nil {
         // 如果获取自定义规则集失败,记录错误并返回
-        utils.Logger_caller("Get custom_rule_set failed!", err,1)
+        utils.Logger_caller("Get custom rule set failed", err,1)
         return nil, err
     }
 
@@ -70,7 +71,7 @@ func get_rules(template,link string,proxy bool) ([]map[string]interface{}, error
     base_rules, err := utils.Get_value(template, "route", "rules", "default")
     if err != nil {
         // 如果获取默认规则失败,记录错误并返回
-        utils.Logger_caller("Get origin rules failed!", err,1)
+        utils.Logger_caller("Get origin rules failed", err,1)
         return nil, err
     }
 
@@ -78,7 +79,7 @@ func get_rules(template,link string,proxy bool) ([]map[string]interface{}, error
     domain,err := url.Parse(link)
     if err != nil {
         // 日志记录域名解析失败
-        utils.Logger_caller("Extract the domain failed!", err,1)
+        utils.Logger_caller(fmt.Sprintf("parse %s domain failed",link), err,1)
         return nil, err
     }
     host := domain.Host
@@ -93,7 +94,7 @@ func get_rules(template,link string,proxy bool) ([]map[string]interface{}, error
     custom_rules := proxy_config.(utils.Box_config).Rule_set
     if err != nil {
         // 如果获取自定义规则失败,记录错误并返回
-        utils.Logger_caller("Get custom rules failed!", err,1)
+        utils.Logger_caller("Get custom rules failed", err,1)
         return nil, err
     }
 
@@ -102,7 +103,7 @@ func get_rules(template,link string,proxy bool) ([]map[string]interface{}, error
     shunt_rules, err := utils.Get_value(template, "route", "rules", "shunt")
     if err != nil {
         // 如果获取分流规则失败,记录错误并返回
-        utils.Logger_caller("Get shunt rules failed!", err,1)
+        utils.Logger_caller("Get shunt rules failed", err,1)
         return nil, err
     }
 
@@ -157,7 +158,7 @@ func Merge_route(template,url string,proxy bool) (map[string]interface{}, error)
     route, err := utils.Get_value(template, "route")
     if err != nil {
         // 记录路由解析失败的日志
-        utils.Logger_caller("Marshal route failed!", err,1)
+        utils.Logger_caller(fmt.Sprintf("get route part from template %s failed",template), err,1)
         return nil, err
     }
 

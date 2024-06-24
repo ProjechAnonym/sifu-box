@@ -1,7 +1,6 @@
 package singbox
 
 import (
-	"fmt"
 	"net/url"
 	utils "sifu-box/Utils"
 	"strconv"
@@ -25,7 +24,6 @@ func Map_marshal_trojan(proxy_map map[string]interface{}) (map[string]interface{
     skip_cert_verify, err := Get_map_value(proxy_map, "skip-cert-verify")
     if err != nil {
         // 如果获取失败,记录错误日志并使用默认值false
-        utils.Logger_caller(fmt.Sprintf("%s has no skip-cert-verify key", proxy_map["name"].(string)), err, 1)
         skip_cert_verify = false
     }
 
@@ -33,7 +31,6 @@ func Map_marshal_trojan(proxy_map map[string]interface{}) (map[string]interface{
     sni, err := Get_map_value(proxy_map, "sni")
     if err != nil {
         // 如果获取失败,记录错误日志并返回错误
-        utils.Logger_caller(fmt.Sprintf("%s has no sni key", proxy_map["sni"].(string)), err, 1)
         return nil, err
     }
 
@@ -55,7 +52,6 @@ func Map_marshal_trojan(proxy_map map[string]interface{}) (map[string]interface{
     trojan_map, err := Struct2map(trojan, "trojan")
     if err != nil {
         // 如果转换失败,记录错误日志并返回错误
-        utils.Logger_caller("marshal trojan to map failed", err, 1)
         return nil, err
     }
 
@@ -130,7 +126,6 @@ func Base64_marshal_trojan(link string) (map[string]interface{}, error) {
     trojan_map, err := Struct2map(trojan, "trojan")
     if err != nil {
         // 日志记录结构体转换失败
-        utils.Logger_caller("marshal trojan to map failed", err, 1)
         return nil, err
     }
     // 返回转换后的map和nil错误

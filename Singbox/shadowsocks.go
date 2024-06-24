@@ -39,7 +39,6 @@ func Map_marshal_ss(proxy_map map[string]interface{}) (map[string]interface{}, e
     // 这里使用了Struct2map函数进行转换,如果转换失败,则记录错误日志并返回错误
     ss_map, err := Struct2map(ss, "ss")
     if err != nil {
-        utils.Logger_caller("marshal vmess to map failed", err, 1)
         return nil, err
     }
 
@@ -105,7 +104,6 @@ func Base64_marshal_ss(link string) (map[string]interface{}, error) {
 	ss_map, err := Struct2map(ss, "shadowsocks")
 	if err != nil {
         // 记录日志并返回错误
-		utils.Logger_caller("marshal vmess to map failed", err, 1)
 		return nil, err
 	}
 

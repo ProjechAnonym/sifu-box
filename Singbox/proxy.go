@@ -23,7 +23,7 @@ import (
 func handle_yaml(config map[string]interface{}, host, template string) ([]map[string]interface{}, error) {
     // 检查配置中的代理列表是否为空,如果为空,则记录错误日志并返回错误
     if len(config["proxies"].([]interface{})) == 0 {
-        utils.Logger_caller("no proxies", fmt.Errorf("%s config without proxies", host), 1)
+        utils.Logger_caller("no proxies", fmt.Errorf("no proxies in %s yaml file", host), 1)
         return nil, errors.New("no proxies")
     }
     var proxies []map[string]interface{}
@@ -47,7 +47,7 @@ func handle_yaml(config map[string]interface{}, host, template string) ([]map[st
 func handle_url(urls []string, host, template string) ([]map[string]interface{}, error) {
     // 检查URL列表是否为空,如果为空,则记录错误日志并返回错误
     if len(urls) == 0 {
-        utils.Logger_caller("no proxies", fmt.Errorf("%s config without proxies", host), 1)
+        utils.Logger_caller("no proxies", fmt.Errorf("no proxies in %s base64 string", host), 1)
         return nil, errors.New("no proxies")
     }
 
@@ -87,13 +87,13 @@ func fetch_proxies(url,template string) ([]map[string]interface{},error){
         // 尝试解析响应体为yaml格式
         if err := yaml.Unmarshal(r.Body,&content); err != nil{
             // 解析失败时,记录错误日志
-            msg := fmt.Sprintf("Parse %s proxies yaml failed!",r.Request.URL.Host)
+            msg := fmt.Sprintf("parse %s msg to yaml failed",r.Request.URL.Host)
             utils.Logger_caller(msg,err,1)
             // 尝试将响应体解码为base64
             decodedBytes, err := base64.StdEncoding.DecodeString(string(r.Body))
             if err != nil{
                 // 解码失败时,记录错误日志
-                msg := fmt.Sprintf("decode base64 %s proxies failed!",r.Request.URL.Host)
+                msg := fmt.Sprintf("decode base64 %s msg failed",r.Request.URL.Host)
                 utils.Logger_caller(msg,err,1)
                 return
             }
@@ -141,7 +141,7 @@ func outbound_select(tags []string, template string) (map[string]interface{}, er
     select_map, err := utils.Get_value(template, "outbounds", "select")
     if err != nil {
         // 如果提取过程中发生错误,记录日志并返回错误
-        utils.Logger_caller("get select outbound template failed!", err, 1)
+        utils.Logger_caller(fmt.Sprintf("get select outbound template from %s failed",template), err, 1)
         return nil, err
     }
     // 将"auto"标签添加到标签切片中,确保自动选择选项可用
@@ -160,7 +160,7 @@ func outbound_auto(tags []string,template string) (map[string]interface{},error)
     auto_map,err := utils.Get_value(template,"outbounds","auto")
     if err != nil{
         // 如果提取配置失败,记录错误并返回
-        utils.Logger_caller("get auto outbound template failed!",err,1)
+        utils.Logger_caller(fmt.Sprintf("get auto outbound template from %s failed",template),err,1)
         return nil,err
     }
     
@@ -183,28 +183,36 @@ func Merge_outbounds(path,template string,remote bool) ([]map[string]interface{}
         // 从URL获取代理配置,并处理可能的错误
         proxies,err = fetch_proxies(path,template)
         if err != nil || len(proxies) == 0 {
-            utils.Logger_caller("fetch proies failed!",err,1)
+            if err != nil{
+                utils.Logger_caller("fetch proies failed",err,1)
+            }else{
+                utils.Logger_caller("fetch proies failed",fmt.Errorf("the length of proxies array is 0"),1)
+            }
         }
     }else{
         // 本地文件则获取本地文件
         content ,err := os.ReadFile(path)
         if err != nil {
-            utils.Logger_caller("load yaml failed!",err,1)
+            utils.Logger_caller("load yaml failed",err,1)
             return nil,err
         }
         var config_yaml map[string]interface{}
         if err := yaml.Unmarshal(content,&config_yaml); err != nil{
-            utils.Logger_caller("parse yaml failed!",err,1)
+            utils.Logger_caller("parse yaml failed",err,1)
             return nil,err
         }
         proxies,err = handle_yaml(config_yaml,path,template)
         if err != nil || len(proxies) == 0 {
-            utils.Logger_caller("parse proies failed!",err,1)
+            utils.Logger_caller("transform proies failed!",err,1)
         }
     }
     
     // 从模板中提取自定义和默认出站规则
     template_outbounds,err := utils.Get_value(template,"outbounds","custom_outbound")
+    if err != nil{
+        utils.Logger_caller(fmt.Sprintf("get template from %s outbounds failed",template),err,1)
+        return nil,err
+    }
     custom_outbounds := make([]map[string]interface{},len(template_outbounds.([]interface{})[1].([]interface{})))
     default_outbounds := make([]map[string]interface{},len(template_outbounds.([]interface{})[0].([]interface{})))
     // 如果没有自定义规则或代理配置,则返回错误
@@ -221,10 +229,7 @@ func Merge_outbounds(path,template string,remote bool) ([]map[string]interface{}
     for i,default_outbound := range template_outbounds.([]interface{})[0].([]interface{}){
         default_outbounds[i] = default_outbound.(map[string]interface{})
     }
-    if err != nil{
-        utils.Logger_caller("get template template outbound failed!",err,1)
-        return nil,err
-    }
+
 
     // 生成标签列表
     tags := make([]string,len(custom_outbounds) + len(proxies))
@@ -236,7 +241,6 @@ func Merge_outbounds(path,template string,remote bool) ([]map[string]interface{}
     // 生成自动选择的出站规则,并处理可能的错误
     auto,err := outbound_auto(tags,template)
     if err != nil{
-        utils.Logger_caller("get auto outbound failed!",err,1)
         return nil,err
     }
     // 添加自动出站设置
@@ -245,7 +249,6 @@ func Merge_outbounds(path,template string,remote bool) ([]map[string]interface{}
     // 添加手动选择出站
     select_outbound,err := outbound_select(tags,template)
     if err != nil{
-        utils.Logger_caller("Get select outbounds failed!",err,1)
         return proxies,err
     }
     proxies = append(proxies, select_outbound)
@@ -254,7 +257,7 @@ func Merge_outbounds(path,template string,remote bool) ([]map[string]interface{}
     proxy_config,err := utils.Get_value("Proxy")
     rulesets := proxy_config.(utils.Box_config).Rule_set
 	if err != nil{
-		utils.Logger_caller("Get ruleset msg failed!",err,1)
+		utils.Logger_caller("get ruleset msg failed",err,1)
 		return proxies,err
 	}
 
@@ -264,7 +267,6 @@ func Merge_outbounds(path,template string,remote bool) ([]map[string]interface{}
 			// 生成selector类型出站
 			ruleset_select_outbound,err := outbound_select(tags,template)
 			if err != nil{
-				utils.Logger_caller("Get select outbounds failed!",err,1)
 				return proxies,err
 			}
 			// 生成selector类型出站成功则添加进出站列表
