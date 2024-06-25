@@ -36,7 +36,7 @@ func add_items(group *gin.RouterGroup,lock *sync.Mutex) {
             return
         }
         // 如果添加成功,返回成功的响应
-        ctx.JSON(http.StatusOK, gin.H{"result": "success"})
+        ctx.JSON(http.StatusOK, gin.H{"message": true})
     })
 
     // 注册一个处理添加文件的POST请求路由
@@ -96,7 +96,7 @@ func add_items(group *gin.RouterGroup,lock *sync.Mutex) {
             return
         }
         // 如果添加成功,返回成功的响应
-        ctx.JSON(http.StatusOK, gin.H{"result": "success"})
+        ctx.JSON(http.StatusOK, gin.H{"message": true})
     })
 }
 // fetch_items 设置与获取物品相关的路由
@@ -119,28 +119,43 @@ func fetch_items(group *gin.RouterGroup) {
         ctx.JSON(http.StatusOK, config)
     })
 }
-func delete_items(group *gin.RouterGroup,lock *sync.Mutex) {
+// delete_items 在给定的路由组中定义了一个用于删除物品的路由
+// group: 路由组对象,用于定义新的路由路径
+// lock: 互斥锁对象,用于确保并发安全地删除物品
+func delete_items(group *gin.RouterGroup, lock *sync.Mutex) {
+    // 创建一个子路由组,专门处理删除操作
     delete_router := group.Group("/delete")
+    
+    // 定义一个DELETE请求的处理函数,用于删除指定的物品
     delete_router.DELETE("/items", func(ctx *gin.Context) {
+        // 定义一个结构体,用于解析请求中的JSON数据
         type delete_config struct {
             Urls []int `json:"urls"`
             Rulesets []int `json:"rulesets"`
         }
+        
+        // 解析请求中的JSON数据,填充delete_config结构体
         var items delete_config
-        if err := ctx.BindJSON(&items);err!=nil{
+        if err := ctx.BindJSON(&items); err != nil {
+            // 如果解析JSON数据失败,记录错误并返回内部服务器错误
             utils.Logger_caller("marshal json failed!", err, 1)
             ctx.JSON(http.StatusInternalServerError, gin.H{"error": "marshal json failed."})
             return
         }
-        if err := controller.Delete_items(map[string][]int{"urls":items.Urls,"rulesets":items.Rulesets},lock); err != nil{
+        
+        // 调用物品控制器的Delete_items方法,尝试删除指定的物品
+        // 使用互斥锁来保证并发安全
+        if err := controller.Delete_items(map[string][]int{"urls": items.Urls, "rulesets": items.Rulesets}, lock); err != nil {
+            // 如果删除操作失败,记录错误并返回内部服务器错误
             utils.Logger_caller("delete items failed!", err, 1)
             ctx.JSON(http.StatusInternalServerError, gin.H{"error": "delete items failed."})
             return
         }
-        ctx.JSON(http.StatusOK, gin.H{"result": "success"})
+        
+        // 如果删除成功,返回成功的响应
+        ctx.JSON(http.StatusOK, gin.H{"message": true})
     })
 }
-
 
 func Setting_box(group *gin.RouterGroup,lock *sync.Mutex) {
 	setting_router := group.Group("/config")
@@ -148,5 +163,5 @@ func Setting_box(group *gin.RouterGroup,lock *sync.Mutex) {
 	add_items(setting_router,lock)
 	fetch_items(setting_router)
     delete_items(setting_router,lock)
-   
+    
 }

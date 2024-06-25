@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/huandu/go-clone"
@@ -99,22 +100,38 @@ func Load_config(file string) error {
 	}
 	return nil
 }
-func Load_template(file string) error {
+func Load_template() error {
 	// 获取项目目录路径,获取失败直接panic退出该进程
 	project_dir, err := Get_value("project-dir")
 	if err != nil {
-		Logger_caller(fmt.Sprintf("Get %s Dir failed!", file), err,1)
-		fmt.Fprintln(os.Stderr, "Critical! Get project dictionary failed,exiting.")
-		os.Exit(2)
+		Logger_caller("get project dir failed", err,1)
+		return err
 	}
-	// 读取配置文件,读取错误则panic退出该进程
-	viper.SetConfigFile(filepath.Join(project_dir.(string),"template",file + ".template.yaml"))
-	err = viper.ReadInConfig()
+	// 打开目录
+	template_dir, err := os.Open(filepath.Join(project_dir.(string),"template"))
 	if err != nil {
-		Logger_caller(fmt.Sprintf("Read %s failed!", file), err,1)
-		fmt.Fprintf(os.Stderr, "Critical! Load the %s template has failed,exiting.",file)
-		os.Exit(2)
+		Logger_caller("failed to open template directory", err,1)
+		return err
 	}
-	Set_value(viper.AllSettings(),file)
+	defer template_dir.Close()
+
+	// 读取目录条目
+	entries, err := template_dir.ReadDir(-1) // -1 表示读取所有条目
+	if err != nil {
+		Logger_caller("failed to read template directory", err,1)
+		return err
+	}
+	for _, entry := range entries{
+		template := strings.Split(entry.Name(), ".")[0]
+		// 读取配置文件,读取错误则panic退出该进程
+		viper.SetConfigFile(filepath.Join(project_dir.(string),"template",template + ".template.yaml"))
+		err = viper.ReadInConfig()
+		if err != nil {
+			Logger_caller(fmt.Sprintf("Read %s failed!", template), err,1)
+			fmt.Fprintf(os.Stderr, "Critical! Load the %s template has failed,exiting.",template)
+			os.Exit(2)
+		}
+		Set_value(viper.AllSettings(),template)
+	}
 	return nil
 }

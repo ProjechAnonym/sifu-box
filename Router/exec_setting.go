@@ -5,9 +5,11 @@ import (
 	controller "sifu-box/Controller"
 	middleware "sifu-box/Middleware"
 	utils "sifu-box/Utils"
+	"strconv"
 	"sync"
 
 	"github.com/gin-gonic/gin"
+	"github.com/robfig/cron/v3"
 )
 
 // update_config 配置更新路由组
@@ -40,7 +42,7 @@ func update_config(group *gin.RouterGroup,lock *sync.Mutex) {
         }
         
         // 如果更新成功,则返回成功的响应
-        ctx.JSON(http.StatusOK, gin.H{"result": "success"})
+        ctx.JSON(http.StatusOK, gin.H{"message": true})
     })
 }
 
@@ -51,7 +53,7 @@ func refresh_items(group *gin.RouterGroup,lock *sync.Mutex) {
             ctx.JSON(http.StatusInternalServerError, gin.H{"error": "refresh items failed."})
             return
         }
-        ctx.JSON(http.StatusOK, gin.H{"result": "success"})
+        ctx.JSON(http.StatusOK, gin.H{"message": true})
     })
 }
 
@@ -84,7 +86,29 @@ func boot_service(group *gin.RouterGroup,lock *sync.Mutex){
         ctx.JSON(http.StatusOK, gin.H{"message": true})
     })
 }
-func Setting_exec(group *gin.RouterGroup,lock *sync.Mutex){
+func set_interval(group *gin.RouterGroup,lock *sync.Mutex,cron_task *cron.Cron,id *cron.EntryID){
+    interval_router := group.Group("/interval")
+    interval_router.POST("/setting", func(ctx *gin.Context) {
+        span := ctx.PostFormArray("span")
+        time_span := make([]int,len(span))
+        var err error
+        for i,num := range(span){
+            time_span[i],err = strconv.Atoi(num)
+            if err != nil{
+                ctx.JSON(http.StatusBadRequest,gin.H{
+                    "message": "span must be integer",
+                })
+                return
+            }
+        }
+        if err := controller.Set_interval(time_span,cron_task,id,lock); err != nil{
+            ctx.JSON(http.StatusInternalServerError, gin.H{"message": false})
+            return
+        }
+        ctx.JSON(http.StatusOK, gin.H{"message": true})
+    })
+}
+func Setting_exec(group *gin.RouterGroup,lock *sync.Mutex,cron_task *cron.Cron,id *cron.EntryID){
     // 创建一个名为"setting"的子路由组,用于处理所有与设置相关的请求
     setting_router := group.Group("/execute")
     
@@ -94,4 +118,5 @@ func Setting_exec(group *gin.RouterGroup,lock *sync.Mutex){
     refresh_items(setting_router,lock)
     check_service(setting_router)
     boot_service(setting_router,lock)
+    set_interval(setting_router,lock,cron_task,id)
 }

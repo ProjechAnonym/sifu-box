@@ -93,26 +93,42 @@ func Exec_update(label string, proxy_config utils.Box_config, server database.Se
 		utils.Logger_caller("update database data fail", err, 1)
 		return err
 	}
-
+	// 完成后日志记录信息
+	utils.Logger_caller(fmt.Sprintf("update %s success, config: %s",server.Url,server.Config), nil, 1)
 	return nil
 }
 
-func Group_update(servers []database.Server, proxy_config utils.Box_config,lock *sync.Mutex){
+// Group_update 并发更新服务器配置
+// 此函数接收一个服务器列表、一个代理配置和一个互斥锁作为参数
+// 它的目的是同时更新多台服务器的配置,使用互斥锁来保证并发更新过程中的线程安全
+// servers: 服务器列表,每个服务器包含一个配置对象
+// proxy_config: 代理配置,用于更新服务器配置
+// lock: 用于并发控制的互斥锁
+func Group_update(servers []database.Server, proxy_config utils.Box_config, lock *sync.Mutex) {
+    // 持续尝试获取锁,以确保并发安全
 	for {
-		if lock.TryLock(){
+		if lock.TryLock() {
 			break
 		}
 	}
+    // 确保在函数退出前释放锁
 	defer lock.Unlock()
+
+    // 使用 WaitGroup 来等待所有更新操作完成
 	var servers_workflow sync.WaitGroup
+    // 遍历服务器列表,对每台服务器启动一个并发更新任务
 	for _, server := range servers {
 		servers_workflow.Add(1)
-		go func(server database.Server){
+        // 使用 goroutine 并发执行更新操作
+		go func(server database.Server) {
+            // 确保在子goroutine退出前通知 WaitGroup
 			defer servers_workflow.Done()
-			if err := Exec_update(server.Config, proxy_config, server,false,lock); err != nil {
+            // 尝试执行更新操作,并处理可能的错误
+			if err := Exec_update(server.Config, proxy_config, server, false, lock); err != nil {
 				utils.Logger_caller("update servers config failed", err, 1)
 			}
 		}(server)
 	}
+    // 等待所有更新操作完成
 	servers_workflow.Wait()
 }

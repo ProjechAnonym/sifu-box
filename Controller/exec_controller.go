@@ -8,6 +8,8 @@ import (
 	utils "sifu-box/Utils"
 	"strings"
 	"sync"
+
+	"github.com/robfig/cron/v3"
 )
 
 // Update_config 根据给定的地址和配置更新服务器配置
@@ -24,18 +26,8 @@ func Update_config(addr, config string,lock *sync.Mutex) error {
         return err
     }
 
-    // 加载代理配置
-    if err := utils.Load_config("Proxy"); err != nil {
-        // 日志记录加载代理配置失败
-        utils.Logger_caller("load Proxy config failed!", err, 1)
-        return err
-    }
-
     // 获取代理配置中的代理信息
     proxy_config, err := utils.Get_value("Proxy")
-    // 释放代理配置资源
-    // 结束后删除代理信息配置
-    defer utils.Del_key("Proxy")
     if err != nil {
         // 日志记录获取代理配置失败
         utils.Logger_caller("get Proxy config failed!", err, 1)
@@ -66,13 +58,6 @@ func Refresh_items(lock *sync.Mutex) error {
         // 记录获取服务器失败的日志并返回错误信息
         utils.Logger_caller("Get servers failed", err, 1)
         return fmt.Errorf("get servers failed")
-    }
-
-    // 加载代理配置
-    if err := utils.Load_config("Proxy"); err != nil {
-        // 记录加载代理配置失败的日志并返回错误
-        utils.Logger_caller("load Proxy config failed", err, 1)
-        return err
     }
 
     // 获取代理配置中的URL信息
@@ -182,5 +167,62 @@ func Boot_service(addr, service string, lock *sync.Mutex) error {
         return err
     }
 
+    return nil
+}
+
+// Set_interval 根据给定的时间间隔更新Cron任务的执行时间
+// span: 代表时间间隔的不同维度,如分钟、小时、日期等
+// cron_task: Cron任务对象,用于添加或删除Cron任务
+// id: 当前Cron任务的ID,用于删除现有任务
+// lock: 互斥锁,用于确保并发安全
+// 返回值: 错误对象,如果操作失败则返回非nil的错误对象
+func Set_interval(span []int,cron_task *cron.Cron,id *cron.EntryID,lock *sync.Mutex) error{
+    // 根据span的长度生成不同的Cron表达式,用于控制任务执行的间隔
+    var new_time string
+    switch len(span) {
+    case 0:
+        new_time = ""
+    case 1:
+        new_time = fmt.Sprintf("*/%d * * * *",span[0])
+    case 2:
+        new_time = fmt.Sprintf("%d %d * * *",span[0],span[1])
+    case 3:
+        new_time = fmt.Sprintf("%d %d * * %d",span[0],span[1],span[2])
+    }
+
+    // 删除现有的Cron任务
+    cron_task.Remove(*id)
+
+    var err error
+    // 如果新的Cron表达式不为空,则添加新的Cron任务
+    if new_time != "" {
+        *id,err = cron_task.AddFunc(new_time, func() {
+            // 执行工作流配置的函数,此处未展示具体实现
+            singbox.Config_workflow([]int{})
+            var servers []database.Server
+            // 从数据库获取服务器列表
+            if err := database.Db.Find(&servers).Error; err != nil {
+                // 记录获取服务器列表失败的日志
+                utils.Logger_caller("get server list failed!", err, 1)
+                return
+            }
+            // 获取代理配置
+            proxy_config, err := utils.Get_value("Proxy")
+            // 如果获取配置出错,记录错误信息
+            if err != nil {
+                // 记录获取代理配置失败的日志
+                utils.Logger_caller("get proxy config failed", err, 1)
+                return
+            }
+            // 使用互斥锁更新服务器组的代理配置
+            execute.Group_update(servers, proxy_config.(utils.Box_config), lock)
+        })
+        if err != nil{
+            // 记录添加Cron任务失败的日志
+            utils.Logger_caller("set interval failed", err, 1)
+            return err
+        }
+    }
+    // 如果没有错误,则返回nil
     return nil
 }

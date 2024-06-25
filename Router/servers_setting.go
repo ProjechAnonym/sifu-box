@@ -46,7 +46,7 @@ func add_server(group *gin.RouterGroup) {
         }
         
         // 如果插入成功,返回状态码200和成功信息
-        ctx.JSON(http.StatusOK, gin.H{"result": "success"})
+        ctx.JSON(http.StatusOK, gin.H{"message": true})
     })
 }
 
@@ -72,7 +72,7 @@ func remove_server(group *gin.RouterGroup) {
         }
         
         // 如果删除成功,返回成功的响应
-        ctx.JSON(http.StatusOK, gin.H{"result": "success"})
+        ctx.JSON(http.StatusOK, gin.H{"message": true})
     })
 }
 

@@ -217,12 +217,6 @@ func Config_workflow(index []int) error {
 	if err != nil {
 		utils.Logger_caller("failed to read template directory", err,1)
 	}
-    if err := utils.Load_config("Proxy"); err != nil {
-		utils.Logger_caller("load the Proxy config failed",err,1)
-		return fmt.Errorf("load the Proxy config failed")
-	}
-    // 结束后删除代理信息配置
-    defer utils.Del_key("Proxy")
     // 创建进程组,避免程序过早退出
     var workflow sync.WaitGroup
     // 获取服务器配置
@@ -237,15 +231,15 @@ func Config_workflow(index []int) error {
 	// 打印所有条目的名称
 	for _, entry := range entries {
         template := strings.Split(entry.Name(), ".")[0]
-        if err := utils.Load_template(template); err != nil {
-            utils.Logger_caller("load the template failed",err,1)
-            return fmt.Errorf("load the %s template failed",template)
-        }
+        // if err := utils.Load_template(template); err != nil {
+        //     utils.Logger_caller("load the template failed",err,1)
+        //     return fmt.Errorf("load the %s template failed",template)
+        // }
         workflow.Add(1)
         go func ()  {
             defer func ()  {
                 workflow.Done()
-                utils.Del_key(template)
+                // utils.Del_key(template)
             }()
             config_merge(template,server_mode,index)
         }()

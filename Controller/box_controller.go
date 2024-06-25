@@ -25,17 +25,8 @@ func Add_items(box_config utils.Box_config,lock *sync.Mutex) error {
         return fmt.Errorf("get project dir failed")
     }
 
-    // 加载代理配置
-    if err := utils.Load_config("Proxy"); err != nil {
-        // 记录加载代理配置失败的日志并返回错误
-        utils.Logger_caller("Load proxy config failed", err, 1)
-        return fmt.Errorf("load proxy failed")
-    }
-
     // 从配置中获取代理设置
     proxy_config, err := utils.Get_value("Proxy")
-    // 结束后删除代理信息配置
-    defer utils.Del_key("Proxy")
 	// 初始化变量
 	// index 用于存储新url的索引,为空则更新所有url的链接
 	var index []int
@@ -93,7 +84,12 @@ func Add_items(box_config utils.Box_config,lock *sync.Mutex) error {
         utils.Logger_caller("Write Proxy config failed!", err, 1)
         return err
     }
-
+    // 重新设置代理配置
+    if err := utils.Set_value(new_proxy_config,"Proxy"); err != nil {
+        // 记录设置代理配置失败的日志并返回错误
+        utils.Logger_caller("Set proxy config failed", err, 1)
+        return fmt.Errorf("set proxy failed")
+    }
     // 配置工作流刷新配置文件
     if err := singbox.Config_workflow(index); err != nil {
         // 记录配置工作流失败的日志并返回错误
@@ -119,14 +115,6 @@ func Add_items(box_config utils.Box_config,lock *sync.Mutex) error {
 //   utils.Box_config: 代理配置的结构体
 //   error: 加载或获取配置时可能出现的错误
 func Fetch_items() (utils.Box_config, error) {
-    // 加载名为"Proxy"的配置项如果加载失败,记录错误日志并返回错误
-    if err := utils.Load_config("Proxy"); err != nil {
-        // 记录加载代理配置失败的日志并返回错误
-        utils.Logger_caller("Load proxy config failed", err, 1)
-        return utils.Box_config{}, fmt.Errorf("load proxy failed")
-    }
-    // 结束后删除代理信息配置
-    defer utils.Del_key("Proxy")
     // 获取名为"Proxy"的配置项的值如果获取失败,记录错误日志并返回错误
     proxy_config, err := utils.Get_value("Proxy")
     if err != nil {
@@ -147,14 +135,6 @@ func Delete_items(items map[string][]int,lock *sync.Mutex) error{
         utils.Logger_caller("Get project dir failed", err, 1)
         return fmt.Errorf("get project dir failed")
     } 
-    // 加载代理配置
-    if err := utils.Load_config("Proxy"); err != nil {
-        // 记录加载代理配置失败的日志并返回错误
-        utils.Logger_caller("Load proxy config failed", err, 1)
-        return fmt.Errorf("load proxy failed")
-    }
-    // 结束后删除代理信息配置
-    defer utils.Del_key("Proxy")
     // 从配置中获取代理设置
     proxy_config, err := utils.Get_value("Proxy")
     if err != nil {
@@ -212,6 +192,12 @@ func Delete_items(items map[string][]int,lock *sync.Mutex) error{
         // 记录写入配置文件失败的日志并返回错误
         utils.Logger_caller("Write Proxy config failed!", err, 1)
         return err
+    }
+    // 重新设置代理配置
+    if err := utils.Set_value(new_proxy_config,"Proxy"); err != nil {
+        // 记录设置代理配置失败的日志并返回错误
+        utils.Logger_caller("Set proxy config failed", err, 1)
+        return fmt.Errorf("set proxy failed")
     }
     // 如果删除了规则集,刷新工作流配置
     if len(items["rulesets"]) != 0{
