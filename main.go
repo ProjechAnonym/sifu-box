@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	
+
 	execute "sifu-box/Execute"
 	middleware "sifu-box/Middleware"
 	router "sifu-box/Router"
@@ -90,7 +90,7 @@ func main() {
         // 设置API路由
         api_group := server.Group("/api")
         router.Setting_server(api_group)
-        router.Setting_box(api_group, &lock)
+        router.Setting_box(api_group)
         router.Setting_exec(api_group, &lock,cron_task,&cron_id)
         // 启动服务器监听8080端口
         server.Run(":8080")

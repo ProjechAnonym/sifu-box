@@ -112,7 +112,7 @@ func Group_update(servers []utils.Server, proxy_config utils.Box_config, lock *s
 	}
     // 确保在函数退出前释放锁
 	defer lock.Unlock()
-
+	
     // 使用 WaitGroup 来等待所有更新操作完成
 	var servers_workflow sync.WaitGroup
     // 遍历服务器列表,对每台服务器启动一个并发更新任务

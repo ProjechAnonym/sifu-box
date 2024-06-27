@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
-	execute "sifu-box/Execute"
-	singbox "sifu-box/Singbox"
 	utils "sifu-box/Utils"
-	"sync"
 
 	"gopkg.in/yaml.v3"
 )
@@ -15,7 +12,7 @@ import (
 // Add_items 向配置文件中添加新项目或更新现有项目配置
 // box_config: 包含待添加或更新的项目配置的数据结构
 // 返回值: 如果操作成功,则返回nil；否则返回错误信息
-func Add_items(box_config utils.Box_config,lock *sync.Mutex) error {
+func Add_items(box_config utils.Box_config) error {
     // 获取项目目录路径,用于确定生成文件的路径
     project_dir, err := utils.Get_value("project-dir")
     if err != nil {
@@ -89,21 +86,6 @@ func Add_items(box_config utils.Box_config,lock *sync.Mutex) error {
         utils.Logger_caller("Set proxy config failed", err, 1)
         return fmt.Errorf("set proxy failed")
     }
-    // 配置工作流刷新配置文件
-    if err := singbox.Config_workflow(index); err != nil {
-        // 记录配置工作流失败的日志并返回错误
-        utils.Logger_caller("Config workflow failed", err, 1)
-        return fmt.Errorf("config workflow failed")
-    }
-
-    if len(box_config.Rule_set) != 0 {
-        var servers []utils.Server
-        if utils.Db.Find(&servers).Error != nil {
-            utils.Logger_caller("Get servers failed", err, 1)
-            return fmt.Errorf("get servers failed")
-        }
-        execute.Group_update(servers, new_proxy_config,lock)
-    }
     // 操作成功,返回nil
     return nil
 }
@@ -126,7 +108,7 @@ func Fetch_items() (utils.Box_config, error) {
 // Delete_items 根据提供的items删除配置文件中的特定URL和规则集。
 // items: 一个映射，包含要删除的URL和规则集的索引。
 // 返回值: 删除操作可能返回的任何错误。
-func Delete_items(items map[string][]int,lock *sync.Mutex) error{
+func Delete_items(items map[string][]int) error{
     // 获取项目目录路径,用于确定生成文件的路径
     project_dir, err := utils.Get_value("project-dir")
     if err != nil {
@@ -198,53 +180,6 @@ func Delete_items(items map[string][]int,lock *sync.Mutex) error{
         utils.Logger_caller("Set proxy config failed", err, 1)
         return fmt.Errorf("set proxy failed")
     }
-    // 如果删除了规则集,刷新工作流配置
-    if len(items["rulesets"]) != 0{
-        // 配置工作流刷新配置文件
-        if err := singbox.Config_workflow([]int{}); err != nil {
-            // 记录配置工作流失败的日志并返回错误
-            utils.Logger_caller("Config workflow failed", err, 1)
-            return fmt.Errorf("config workflow failed")
-        }
-    }
-    // 如果新链接集不为空,更新服务器配置
-    if len(new_urls) != 0{
-        var servers []utils.Server
-        if err := utils.Db.Find(&servers).Error;err != nil {
-            utils.Logger_caller("Get servers failed", err, 1)
-            return fmt.Errorf("get servers failed")
-        }
-        var update_servers []utils.Server
-        // 服务器当前配置是否存在标志,默认不存在
-        server_update := false
-        // 遍历服务器列表,查看当前配置是否被删除
-        for _,server := range(servers){
-            for _,link := range(new_urls){
-                // 如果当前服务器配置存在则更新标志
-                if server.Config == link.Label{
-                    server_update = true
-                    break
-                }
-            }
-            if len(items["rulesets"]) != 0{
-                // 删除的规则集不为空则需要更新所有服务器的配置
-                // 确定服务器的配置是否被删除,删除则使用新列表中的第1条
-                if !server_update{
-                    server.Config = new_urls[0].Label
-                }
-                // 添加进更新服务器中
-                update_servers = append(update_servers,server)
-            }else{
-                // 删除的规则集为空则需要更新配置被删除的服务器的配置
-                if !server_update{
-                    server.Config = new_urls[0].Label
-                    update_servers = append(update_servers,server)
-                }
-            }
-        }
-        execute.Group_update(update_servers, new_proxy_config,lock)
-    }
-
     // 删除操作成功，返回nil
     return nil
 }

@@ -7,4 +7,5 @@ type Server struct {
 	Password  string `json:"password" gorm:"not null;type:varchar(255)"`
 	Localhost bool   `json:"localhost" gorm:"not null;type:bool"`
 	Config 	  string `json:"config" gorm:"type:varchar(255)"`
+	Fingerprint string `json:"-" gorm:"type:varchar(255)"`
 }

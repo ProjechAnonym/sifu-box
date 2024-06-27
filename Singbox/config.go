@@ -99,27 +99,27 @@ func format_url(index []int) ([]utils.Box_url,error) {
 // config_merge 根据模板和是否合并所有配置的标志,来合并配置
 // template: 配置模板的字符串表示
 // all: 是否合并所有配置的布尔值
-func config_merge(template string,mode bool,index []int) {
+func config_merge(template string,mode bool,index []int) []error{
     // 从模板中提取日志、DNS、入站和实验性配置
     log,err := utils.Get_value(template,"log")
     if err != nil{
         utils.Logger_caller("Get log failed!",err,1)
-        return
+        return []error{err}
     }
     dns,err := utils.Get_value(template,"dns")
     if err != nil{
         utils.Logger_caller("Get dns failed!",err,1)
-        return 
+        return []error{err}
     }
     inbounds,err := utils.Get_value(template,"inbounds")
     if err != nil{
         utils.Logger_caller("Get inbounds failed!",err,1)
-        return
+        return []error{err}
     }
     experimental,err := utils.Get_value(template,"experimental")
     if err != nil{
         utils.Logger_caller("Get experimental failed!",err,1)
-        return 
+        return []error{err}
     }
     // 创建一个新的JSON对象,用于存储合并后的配置
     config := simplejson.New()
@@ -130,7 +130,7 @@ func config_merge(template string,mode bool,index []int) {
     // 格式化URL,并为每个URL配置创建一个错误通道
     links,err := format_url(index)
     if err != nil{
-        return 
+        return []error{err}
     }
     error_channel := make(chan error,len(links))
     // 创建进程组,避免程序过早退出
@@ -146,14 +146,14 @@ func config_merge(template string,mode bool,index []int) {
             project_dir,err := utils.Get_value("project-dir")
             if err != nil{
                 utils.Logger_caller("get project dir failed",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s config failed",index,template)
+                error_channel <- fmt.Errorf("generate the config '%s' from template '%s' has failed",link.Label,template)
                 return
             }
             // 合并路由配置
             route,err := Merge_route(template,link.Path,link.Proxy)
             if err != nil{
                 utils.Logger_caller("get route failed",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s failed, config: %s",index,template,link.Label)
+                error_channel <- fmt.Errorf("generate the config '%s' from template '%s' has failed",link.Label,template)
                 return
             }
             full_config.(*simplejson.Json).Set("route", route)
@@ -161,7 +161,7 @@ func config_merge(template string,mode bool,index []int) {
             proies,err := Merge_outbounds(link.Path,template,link.Remote)
             if err != nil{
                 utils.Logger_caller("get outbounds failed",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s failed, config: %s",index,template,link.Label)
+                error_channel <- fmt.Errorf("generate the config '%s' from template '%s' has failed",link.Label,template)
                 return
             }
             full_config.(*simplejson.Json).Set("outbounds", proies)
@@ -174,7 +174,8 @@ func config_merge(template string,mode bool,index []int) {
                 label,err = utils.Encryption_md5(link.Label)
                 if err != nil{
                     utils.Logger_caller("encryption md5 failed",err,1)
-                    error_channel <- fmt.Errorf("generate the %dth url of %s failed, config: %s",index,template,link.Label)
+                    
+                    error_channel <- fmt.Errorf("generate the config '%s' from template '%s' has failed",link.Label,template)
                     return
                 }
             }else{
@@ -183,26 +184,28 @@ func config_merge(template string,mode bool,index []int) {
             // 将配置写入文件
             if err = utils.File_write(config_bytes,filepath.Join(project_dir.(string),"static",template,fmt.Sprintf("%s.json",label)),[]fs.FileMode{0644,0644});err != nil{
                 utils.Logger_caller("write config file failed",err,1)
-                error_channel <- fmt.Errorf("generate the %dth url of %s failed, config: %s",index,template,link.Label)
+                error_channel <- fmt.Errorf("generate the config '%s' from template '%s' has failed",link.Label,template)
                 return
             }
-            utils.Logger_caller(fmt.Sprintf("generate the %s config of %s success",link.Label,template),nil,1)
+            utils.Logger_caller(fmt.Sprintf("generate the config '%s' from template '%s' success",link.Label,template),nil,1)
         }(link,template,config,i,mode)
     }
     // 等待所有并发任务完成
     jobs.Wait()
     close(error_channel)
     // 处理并输出任何配置合并过程中发生的错误
+    var errors []error
     for err := range error_channel{
         utils.Logger_caller("generate error",err,1)
+        errors = append(errors, err)
     }
-    
+    return errors
 }
-func Config_workflow(index []int) error {
+func Config_workflow(index []int) []error {
     project_dir,err := utils.Get_value("project-dir")
     if err != nil{
         utils.Logger_caller("get project dir failed",err,1)
-        return err
+        return []error{err}
     }
 
 	// 打开目录
@@ -224,26 +227,23 @@ func Config_workflow(index []int) error {
     if err != nil{
         // 记录并返回可能出现的错误
         utils.Logger_caller("get server config failed",err,1)
-        return fmt.Errorf("get server config failed")
+        return []error{fmt.Errorf("get server config failed")}
     }
     // 获取运行模式
     server_mode := server_config.(utils.Server_config).Server_mode
+    // 创建错误列表用于获得生成失败的链接
+    var errors []error
 	// 打印所有条目的名称
 	for _, entry := range entries {
         template := strings.Split(entry.Name(), ".")[0]
-        // if err := utils.Load_template(template); err != nil {
-        //     utils.Logger_caller("load the template failed",err,1)
-        //     return fmt.Errorf("load the %s template failed",template)
-        // }
         workflow.Add(1)
         go func ()  {
             defer func ()  {
                 workflow.Done()
-                // utils.Del_key(template)
             }()
-            config_merge(template,server_mode,index)
+            errors = append(errors, config_merge(template,server_mode,index)...)
         }()
 	}
 	workflow.Wait()
-	return nil
+	return errors
 }

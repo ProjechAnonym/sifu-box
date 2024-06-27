@@ -43,12 +43,11 @@ func Update_config(addr, config string,lock *sync.Mutex) error {
 // Refresh_items 更新服务器配置项
 // 使用锁 *sync.Mutex 来保证并发安全
 // 返回错误信息如果更新过程中出现错误
-func Refresh_items(lock *sync.Mutex) error {
+func Refresh_items(lock *sync.Mutex) []error {
     // 配置工作流
-    if err := singbox.Config_workflow([]int{}); err != nil {
+    if errs := singbox.Config_workflow([]int{}); errs != nil {
         // 记录配置工作流失败的日志并返回错误信息
-        utils.Logger_caller("Config workflow failed", err, 1)
-        return fmt.Errorf("config workflow failed")
+        return errs
     }
 
     // 从数据库中获取服务器列表
@@ -56,7 +55,7 @@ func Refresh_items(lock *sync.Mutex) error {
     if err := utils.Db.Find(&servers).Error; err != nil {
         // 记录获取服务器失败的日志并返回错误信息
         utils.Logger_caller("Get servers failed", err, 1)
-        return fmt.Errorf("get servers failed")
+        return []error{fmt.Errorf("get servers failed")}
     }
 
     // 获取代理配置中的URL信息
@@ -64,7 +63,7 @@ func Refresh_items(lock *sync.Mutex) error {
     if err != nil {
         // 记录获取代理配置失败的日志并返回错误
         utils.Logger_caller("load Proxy config failed", err, 1)
-        return err
+        return []error{err}
     }
 
     // 检查代理配置中的URL列表是否为空
@@ -72,7 +71,7 @@ func Refresh_items(lock *sync.Mutex) error {
         // 如果为空,记录错误日志并返回错误信息
         err := fmt.Errorf("no url in Proxy config")
         utils.Logger_caller("load Proxy url failed", err, 1)
-        return err
+        return []error{err}
     }
 
     // 标记是否需要更新服务器配置

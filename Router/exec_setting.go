@@ -49,8 +49,12 @@ func update_config(group *gin.RouterGroup,lock *sync.Mutex) {
 func refresh_items(group *gin.RouterGroup,lock *sync.Mutex) {
     refresh_router := group.Group("/refresh")
     refresh_router.GET("/items", func(ctx *gin.Context) {
-        if err := controller.Refresh_items(lock); err != nil {
-            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "refresh items failed."})
+        if errs := controller.Refresh_items(lock); errs != nil {
+            errors := make([]string, len(errs))
+            for i, err := range errs {
+                errors[i] = err.Error()
+            }
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": errors})
             return
         }
         ctx.JSON(http.StatusOK, gin.H{"message": true})
