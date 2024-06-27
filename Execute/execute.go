@@ -103,7 +103,7 @@ func Exec_update(label string, proxy_config utils.Box_config, server utils.Serve
 // servers: 服务器列表,每个服务器包含一个配置对象
 // proxy_config: 代理配置,用于更新服务器配置
 // lock: 用于并发控制的互斥锁
-func Group_update(servers []utils.Server, proxy_config utils.Box_config, lock *sync.Mutex) {
+func Group_update(servers []utils.Server, proxy_config utils.Box_config, lock *sync.Mutex) []error{
     // 持续尝试获取锁,以确保并发安全
 	for {
 		if lock.TryLock() {
@@ -115,19 +115,53 @@ func Group_update(servers []utils.Server, proxy_config utils.Box_config, lock *s
 	
     // 使用 WaitGroup 来等待所有更新操作完成
 	var servers_workflow sync.WaitGroup
+	servers_workflow.Add(len(servers) + 1)
+	// 创建错误通道和数组用于接收可能的错误
+	err_chan := make(chan error,3)
+	var err_list []error
+	// 创建计数通道用于接收更新操作的计数
+	count_chan := make(chan int,3)
     // 遍历服务器列表,对每台服务器启动一个并发更新任务
 	for _, server := range servers {
-		servers_workflow.Add(1)
         // 使用 goroutine 并发执行更新操作
 		go func(server utils.Server) {
             // 确保在子goroutine退出前通知 WaitGroup
-			defer servers_workflow.Done()
+			defer func ()  {
+				servers_workflow.Done()
+				count_chan <- 1	
+			}()
             // 尝试执行更新操作,并处理可能的错误
 			if err := Exec_update(server.Config, proxy_config, server, false, lock); err != nil {
 				utils.Logger_caller("update servers config failed", err, 1)
+				err_chan <- fmt.Errorf("update server %s config %s failed",server.Url,server.Config)
 			}
 		}(server)
 	}
+	// 创建协程等待所有子协程完成
+	go func ()  {
+		
+		defer func ()  {
+			servers_workflow.Done()
+			close(count_chan)
+			close(err_chan)
+		}()
+		// 阻塞等待所有子协程完成
+		// sum用于计数完成的协程数量
+		sum := 0
+		// 完成的协程会往计数通道发1,累加即可判断完成的协程数量
+		for count := range count_chan {
+			sum += count
+			if sum == len(servers) {
+				return
+			}
+		}
+	}()
+	// 获取错误通道的错误信息
+	for err := range err_chan {
+		err_list = append(err_list, err)
+	}
+
     // 等待所有更新操作完成
 	servers_workflow.Wait()
+	return err_list
 }

@@ -94,7 +94,9 @@ func Refresh_items(lock *sync.Mutex) []error {
     }
 
     // 执行服务器配置更新
-    execute.Group_update(servers, proxy_config.(utils.Box_config), lock)
+    if errs := execute.Group_update(servers, proxy_config.(utils.Box_config), lock);errs != nil{
+        return errs
+    }
 
     // 更新完成,返回nil表示无错误
     return nil

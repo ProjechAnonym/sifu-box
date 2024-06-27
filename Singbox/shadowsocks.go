@@ -92,7 +92,7 @@ func Base64_marshal_ss(link string) (map[string]interface{}, error) {
 
     // 构建shadowsocks配置结构体
 	ss := shadowsocks{
-		Type: "ss",
+		Type: "shadowsocks",
 		Tag: server_info[1],
 		Server: server_url.Hostname(),
 		Server_port: port,

@@ -24,8 +24,6 @@ func Add_items(box_config utils.Box_config) error {
     // 从配置中获取代理设置
     proxy_config, err := utils.Get_value("Proxy")
 	// 初始化变量
-	// index 用于存储新url的索引,为空则更新所有url的链接
-	var index []int
 	// urls 用于存储原url并添加新url
     urls := proxy_config.(utils.Box_config).Url
 	// rulesets 用于存储原规则集并添加新规则集
@@ -36,28 +34,38 @@ func Add_items(box_config utils.Box_config) error {
         utils.Logger_caller("Get proxy config failed", err, 1)
         return fmt.Errorf("get Proxy failed")
     }
-
-    // 根据新添加的规则集和URL更新配置
-	// 规则集为空则只更新新的url配置
-    if len(box_config.Rule_set) == 0 {
-		// 确定原先url长度,方便接下来进行指定url的更新
-        urls_length := len(urls)
-		// url为空说明没有添加,返回错误
-        if len(box_config.Url) == 0 {
-            return fmt.Errorf("no new links")
-        } else {
-            // 添加新URL到列表,并更新要刷新配置的url索引
-            urls = append(urls, box_config.Url...)
-            for i := range box_config.Url {
-                index = append(index, urls_length+i)
+    // 如果两个均为空则说明没有配置
+    if len(box_config.Url) == 0 && len(box_config.Rule_set) == 0{
+        return fmt.Errorf("no config")
+    }
+    // 遍历新添加的链接,确定哪个是可以添加的
+    for _,box_url := range box_config.Url{
+        // 添加标志,默认不添加
+        add_tag := true
+        for _,url := range proxy_config.(utils.Box_config).Url{
+            // 遍历已有的链接,如果标签一致则不添加
+            if box_url.Label == url.Label{
+                add_tag = false
+                break
             }
         }
-    } else {
-        // 如果指定了规则集,将其与代理配置中的规则集合并
-        rulesets = append(rulesets, box_config.Rule_set...)
-        if len(box_config.Url) != 0 {
-            // 如果指定了URL,将其与代理配置中的URL合并
-            urls = append(urls, box_config.Url...)
+        if add_tag{
+            urls = append(urls, box_url)
+        }
+    }
+    // 遍历新添加的规则集,确定哪个是可以添加的
+    for _,box_ruleset := range box_config.Rule_set{
+        // 添加标志,默认不添加
+        add_tag := true
+        for _,ruleset := range proxy_config.(utils.Box_config).Rule_set{
+            // 遍历已有的链接,如果标签一致则不添加
+            if box_ruleset.Label == ruleset.Label{
+                add_tag = false
+                break
+            }
+        }
+        if add_tag{
+            rulesets = append(rulesets, box_ruleset)
         }
     }
 
@@ -179,6 +187,29 @@ func Delete_items(items map[string][]int) error{
         // 记录设置代理配置失败的日志并返回错误
         utils.Logger_caller("Set proxy config failed", err, 1)
         return fmt.Errorf("set proxy failed")
+    }
+
+    if len(items["urls"]) != 0 {
+        var servers []utils.Server
+        if err := utils.Db.Model(&utils.Server{}).Find(&servers).Error;err != nil {
+            // 记录查询服务器列表失败的日志并返回错误
+            utils.Logger_caller("Query server list failed", err, 1)
+            return fmt.Errorf("query server list failed")
+        }
+        for _,server := range(servers){
+            change_tag := true
+            for _,url_label := range(new_proxy_config.Url){
+                if server.Config == url_label.Label{
+                    change_tag = false
+                    break
+                }
+            }
+            if change_tag{
+                if err := utils.Db.Model(&utils.Server{}).Where("url = ?",server.Url).Update("config",new_proxy_config.Url[0].Label).Error;err != nil{
+                    return err
+                }
+            }
+        }
     }
     // 删除操作成功，返回nil
     return nil
