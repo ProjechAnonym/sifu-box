@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	database "sifu-box/Database"
+	
 	execute "sifu-box/Execute"
 	middleware "sifu-box/Middleware"
 	router "sifu-box/Router"
@@ -39,7 +39,7 @@ func init(){
 		os.Exit(2)
 	}
 	if server_config.(utils.Server_config).Server_mode{
-		database.Get_database()
+		utils.Get_database()
 	}
 }
 // main函数是程序的入口点
@@ -62,9 +62,9 @@ func main() {
         // 每分钟执行一次配置的工作流程
         cron_id,_ := cron_task.AddFunc("@every 1m", func() {
             singbox.Config_workflow([]int{})
-            var servers []database.Server
+            var servers []utils.Server
             // 从数据库获取服务器列表
-            if err := database.Db.Find(&servers).Error; err != nil {
+            if err := utils.Db.Find(&servers).Error; err != nil {
                 utils.Logger_caller("get server list failed!", err, 1)
                 return
             }

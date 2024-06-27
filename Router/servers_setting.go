@@ -3,7 +3,7 @@ package router
 import (
 	"net/http"
 	controller "sifu-box/Controller"
-	database "sifu-box/Database"
+
 	middleware "sifu-box/Middleware"
 	utils "sifu-box/Utils"
 
@@ -21,7 +21,7 @@ func add_server(group *gin.RouterGroup) {
     // 定义路由：接收POST请求，路径为/add/server
     add_router.POST("/server",func(ctx *gin.Context) {
         // 定义一个结构体变量,用于存储从JSON请求体中解析出的服务器信息
-        var content database.Server
+        var content utils.Server
         
         // 尝试将请求体中的JSON数据绑定到content变量上
         if err := ctx.BindJSON(&content); err != nil {
@@ -38,7 +38,7 @@ func add_server(group *gin.RouterGroup) {
 		}
 		content.Localhost = is_localhost
         // 尝试将content变量中的服务器信息插入到数据库中
-        if err := database.Db.Create(&content).Error; err != nil {
+        if err := utils.Db.Create(&content).Error; err != nil {
             // 如果插入失败,记录错误日志并返回内部服务器错误
             utils.Logger_caller("Write to the database failed!", err, 1)
             ctx.JSON(http.StatusInternalServerError, gin.H{"error": "write to the database failed!"})
@@ -65,7 +65,7 @@ func remove_server(group *gin.RouterGroup) {
         
         // 使用GORM从数据库中删除URL对应的服务器记录
         // 如果删除操作失败,记录错误并返回内部服务器错误响应
-        if err := database.Db.Where("url = ?", url).Delete(&database.Server{}).Error; err != nil {
+        if err := utils.Db.Where("url = ?", url).Delete(&utils.Server{}).Error; err != nil {
             utils.Logger_caller("Delete from the database failed!", err, 1)
             ctx.JSON(http.StatusInternalServerError, gin.H{"error": "delete data from database failed!"})
             return

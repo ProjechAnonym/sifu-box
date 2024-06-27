@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
-	database "sifu-box/Database"
 	execute "sifu-box/Execute"
 	singbox "sifu-box/Singbox"
 	utils "sifu-box/Utils"
@@ -98,8 +97,8 @@ func Add_items(box_config utils.Box_config,lock *sync.Mutex) error {
     }
 
     if len(box_config.Rule_set) != 0 {
-        var servers []database.Server
-        if database.Db.Find(&servers).Error != nil {
+        var servers []utils.Server
+        if utils.Db.Find(&servers).Error != nil {
             utils.Logger_caller("Get servers failed", err, 1)
             return fmt.Errorf("get servers failed")
         }
@@ -210,12 +209,12 @@ func Delete_items(items map[string][]int,lock *sync.Mutex) error{
     }
     // 如果新链接集不为空,更新服务器配置
     if len(new_urls) != 0{
-        var servers []database.Server
-        if err := database.Db.Find(&servers).Error;err != nil {
+        var servers []utils.Server
+        if err := utils.Db.Find(&servers).Error;err != nil {
             utils.Logger_caller("Get servers failed", err, 1)
             return fmt.Errorf("get servers failed")
         }
-        var update_servers []database.Server
+        var update_servers []utils.Server
         // 服务器当前配置是否存在标志,默认不存在
         server_update := false
         // 遍历服务器列表,查看当前配置是否被删除

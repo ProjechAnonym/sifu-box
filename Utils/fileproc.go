@@ -20,7 +20,7 @@ func Encryption_md5(str string) (string,error) {
 
 func File_delete(dst string) error{
 	// 检查目标文件是否存在,若存在则删除
-	info, err := os.Stat(dst)
+	_, err := os.Stat(dst)
 	if err != nil {
         if os.IsNotExist(err) {
             // 文件不存在,不需要删除,直接返回
@@ -31,15 +31,9 @@ func File_delete(dst string) error{
             return err
         }
     }
-    // 如果是目录,返回错误
-    if info.IsDir() {
-        err := fmt.Errorf("cannot remove '%s': it is a directory", dst)
-        Logger_caller("Delete file failed!", err, 1)
-        return err
-    }
 
     // 尝试删除文件
-    if err := os.Remove(dst); err != nil {
+    if err := os.RemoveAll(dst); err != nil {
         Logger_caller("Delete file failed!", err, 1)
         return err
     }
@@ -54,19 +48,24 @@ func File_write(content []byte, dst string,perm []fs.FileMode) error {
     // 检查目标文件目录是否存在,若不存在则创建
     if _, err := os.Stat(filepath.Dir(dst)); err != nil {
         if os.IsNotExist(err) {
-            os.MkdirAll(filepath.Dir(dst), perm[0])
+            if err := os.MkdirAll(filepath.Dir(dst), perm[0]);err != nil{
+                Logger_caller("create dir failed", err,1)
+                return err
+            }
+        }else{
+            Logger_caller("check dir failed", err,1)
+            return err
         }
     }
 
-    // 检查目标文件是否存在,若存在则删除,为新建文件做准备
-    if err := File_delete(dst); err != nil{
-		Logger_caller("Delete file failed!", err,1)
-		return err
-	}
-
+    // // 检查目标文件是否存在,若存在则删除,为新建文件做准备
+    // if err := File_delete(dst); err != nil{
+	// 	Logger_caller("Delete file failed!", err,1)
+	// 	return err
+	// }
 
     // 打开(若不存在则创建)文件,准备进行写操作
-    file, err := os.OpenFile(dst, os.O_CREATE|os.O_RDWR, perm[1])
+    file, err := os.OpenFile(dst, os.O_CREATE|os.O_RDWR|os.O_TRUNC, perm[1])
     defer func() {
         // 确保文件在函数返回前关闭,避免资源泄露
         if err := file.Close(); err != nil {
@@ -139,4 +138,22 @@ func Dir_Create(src string,perm fs.FileMode) error{
         }
     }
     return nil
+}
+func File_read(src string) ([]byte,error){
+    // 打开源文件
+    src_file, err := os.Open(src)
+    if err != nil {
+        // 记录打开源文件失败的日志并返回错误
+        Logger_caller("Open file failed!", err,1)
+        return nil,err
+    }
+    // 确保在函数返回前关闭源文件
+    defer src_file.Close()
+    content,err := io.ReadAll(src_file)
+    if err != nil {
+        // 记录打开源文件失败的日志并返回错误
+        Logger_caller("Read file failed!", err,1)
+        return nil,err
+    }
+    return content,nil
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/url"
 	"path/filepath"
-	database "sifu-box/Database"
 	utils "sifu-box/Utils"
 	"sync"
 )
@@ -18,7 +17,7 @@ import (
 // - lock: 互斥锁,用于控制并发更新
 // 返回:
 // - error: 更新过程中遇到的任何错误
-func Exec_update(label string, proxy_config utils.Box_config, server database.Server,specific bool,lock *sync.Mutex) error {
+func Exec_update(label string, proxy_config utils.Box_config, server utils.Server,specific bool,lock *sync.Mutex) error {
 	// 特定更新的话则上锁
 	if specific{
 		for {
@@ -89,7 +88,7 @@ func Exec_update(label string, proxy_config utils.Box_config, server database.Se
 	}
 
 	// 成功后更新数据库中的服务器配置标签
-	if err := database.Db.Model(&server).Where("url = ?", server.Url).Update("config", label).Error; err != nil {
+	if err := utils.Db.Model(&server).Where("url = ?", server.Url).Update("config", label).Error; err != nil {
 		utils.Logger_caller("update database data fail", err, 1)
 		return err
 	}
@@ -104,7 +103,7 @@ func Exec_update(label string, proxy_config utils.Box_config, server database.Se
 // servers: 服务器列表,每个服务器包含一个配置对象
 // proxy_config: 代理配置,用于更新服务器配置
 // lock: 用于并发控制的互斥锁
-func Group_update(servers []database.Server, proxy_config utils.Box_config, lock *sync.Mutex) {
+func Group_update(servers []utils.Server, proxy_config utils.Box_config, lock *sync.Mutex) {
     // 持续尝试获取锁,以确保并发安全
 	for {
 		if lock.TryLock() {
@@ -120,7 +119,7 @@ func Group_update(servers []database.Server, proxy_config utils.Box_config, lock
 	for _, server := range servers {
 		servers_workflow.Add(1)
         // 使用 goroutine 并发执行更新操作
-		go func(server database.Server) {
+		go func(server utils.Server) {
             // 确保在子goroutine退出前通知 WaitGroup
 			defer servers_workflow.Done()
             // 尝试执行更新操作,并处理可能的错误

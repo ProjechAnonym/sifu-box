@@ -2,7 +2,6 @@ package controller
 
 import (
 	"fmt"
-	database "sifu-box/Database"
 	execute "sifu-box/Execute"
 	singbox "sifu-box/Singbox"
 	utils "sifu-box/Utils"
@@ -19,8 +18,8 @@ import (
 // 返回值: 错误信息,如果操作成功则为nil
 func Update_config(addr, config string,lock *sync.Mutex) error {
     // 从数据库中查询服务器信息
-    var server database.Server
-    if err := database.Db.Model(&server).Select("localhost", "url", "username", "password").Where("url = ?", addr).First(&server).Error; err != nil {
+    var server utils.Server
+    if err := utils.Db.Model(&server).Select("localhost", "url", "username", "password").Where("url = ?", addr).First(&server).Error; err != nil {
         // 日志记录查询服务器信息失败
         utils.Logger_caller("search url failed!", err, 1)
         return err
@@ -53,8 +52,8 @@ func Refresh_items(lock *sync.Mutex) error {
     }
 
     // 从数据库中获取服务器列表
-    var servers []database.Server
-    if err := database.Db.Find(&servers).Error; err != nil {
+    var servers []utils.Server
+    if err := utils.Db.Find(&servers).Error; err != nil {
         // 记录获取服务器失败的日志并返回错误信息
         utils.Logger_caller("Get servers failed", err, 1)
         return fmt.Errorf("get servers failed")
@@ -111,9 +110,9 @@ func Refresh_items(lock *sync.Mutex) error {
 //   error: 如果检查过程中出现错误,则返回错误信息
 func Check_status(addr, service string) (bool, error) {
     // 从数据库中查询服务信息
-    var server database.Server
+    var server utils.Server
     // 使用Gorm查询数据库,根据URL地址查找服务器信息
-    if err := database.Db.Model(&server).Where("url = ?", addr).First(&server).Error; err != nil {
+    if err := utils.Db.Model(&server).Where("url = ?", addr).First(&server).Error; err != nil {
         // 如果查询出错,记录日志并返回错误
         utils.Logger_caller("get data fail", err, 1)
         return false, err
@@ -121,11 +120,12 @@ func Check_status(addr, service string) (bool, error) {
 
     // 调用execute包中的Check_service函数检查指定服务的状态
     status, err := execute.Check_service(service, server)
+   
     if err != nil {
         // 如果检查服务时出错,记录日志
         utils.Logger_caller("check service fail", err, 1)
         // 如果错误不包含"exit status",则返回错误；否则忽略错误,返回服务状态为false
-        if !strings.Contains(err.Error(), "exit status") {
+        if (!strings.Contains(err.Error(), "exit status") && server.Localhost) || (!strings.Contains(err.Error(), "exited with status") && !server.Localhost){
             return false, err
         }
     }
@@ -147,8 +147,8 @@ func Check_status(addr, service string) (bool, error) {
 //   如果启动服务成功,则返回nil；否则返回相应的错误
 func Boot_service(addr, service string, lock *sync.Mutex) error {
     // 从数据库中查找与给定地址匹配的服务器配置
-    var server database.Server
-    if err := database.Db.Model(&server).Where("url = ?", addr).First(&server).Error; err != nil {
+    var server utils.Server
+    if err := utils.Db.Model(&server).Where("url = ?", addr).First(&server).Error; err != nil {
         utils.Logger_caller("get data fail", err, 1)
         return err
     }
@@ -199,9 +199,9 @@ func Set_interval(span []int,cron_task *cron.Cron,id *cron.EntryID,lock *sync.Mu
         *id,err = cron_task.AddFunc(new_time, func() {
             // 执行工作流配置的函数,此处未展示具体实现
             singbox.Config_workflow([]int{})
-            var servers []database.Server
+            var servers []utils.Server
             // 从数据库获取服务器列表
-            if err := database.Db.Find(&servers).Error; err != nil {
+            if err := utils.Db.Find(&servers).Error; err != nil {
                 // 记录获取服务器列表失败的日志
                 utils.Logger_caller("get server list failed!", err, 1)
                 return

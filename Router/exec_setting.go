@@ -64,7 +64,7 @@ func check_service(group *gin.RouterGroup){
         service := ctx.PostForm("service")
         status,err := controller.Check_status(url,service)
         if err != nil {
-            ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
             return
         }
         if status{
