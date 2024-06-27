@@ -27,6 +27,7 @@ func Sftp_delete(server Server,path string) error{
 	if err != nil {
 		// 记录连接失败的日志
 		Logger_caller("Failed to dial: ", err,1)
+		return err
 	}
 	defer client.Close()
 
@@ -35,6 +36,7 @@ func Sftp_delete(server Server,path string) error{
 	if err != nil {
 		// 记录初始化SFTP客户端失败的日志
 		Logger_caller("Failed to init sftp client: ", err,1)
+		return err
 	}
 	defer sftpClient.Close()
 
@@ -78,12 +80,14 @@ func Sftp_write(server Server,content []byte, dst string) error{
     client, err := ssh.Dial("tcp", addr, config)
     if err != nil {
         Logger_caller("Failed to dial: ", err,1)
+		return err
     }
     defer client.Close()
     // 初始化SFTP客户端
     sftpClient, err := sftp.NewClient(client)
     if err != nil {
         Logger_caller("Failed to init sftp client: ", err,1)
+		return err
     }
     defer sftpClient.Close()
     // 检查目标文件目录是否存在,不存在则创建
@@ -139,6 +143,7 @@ func Sftp_read(server Server,src string) ([]byte,error){
 	if err != nil {
 		// 记录连接服务器失败的日志
 		Logger_caller("Failed to dial: ", err,1)
+		return nil,err
 	}
 	defer client.Close()
 
@@ -147,6 +152,7 @@ func Sftp_read(server Server,src string) ([]byte,error){
 	if err != nil {
 		// 记录初始化SFTP客户端失败的日志
 		Logger_caller("Failed to init sftp client: ", err,1)
+		return nil,err
 	}
 	defer sftpClient.Close()
 

@@ -75,7 +75,20 @@ func remove_server(group *gin.RouterGroup) {
         ctx.JSON(http.StatusOK, gin.H{"message": true})
     })
 }
+func fetch_server(group *gin.RouterGroup){
+    fetch_router := group.Group("/fetch")
+    fetch_router.GET("/servers",func(ctx *gin.Context) {
+        var servers []utils.Server
+        if err := utils.Db.Model(&utils.Server{}).Select("url","config","localhost").Find(&servers).Error; err != nil{
+            utils.Logger_caller("get servers from database failed",err,1)
+            ctx.JSON(http.StatusInternalServerError,gin.H{"error":"connect to database failed"})
+            return
+        }
+        
+        ctx.JSON(http.StatusOK,servers)
+    })
 
+}
 // Setting_server 配置服务器路由组
 // 该函数旨在通过gin框架设置与服务器相关的路由规则
 // 该子路由组上应用Token认证的中间件,以确保只有经过授权的请求才能访问服务器设置相关的信息
@@ -93,4 +106,5 @@ func Setting_server(group *gin.RouterGroup){
     // 注册处理服务器添加相关请求的路由处理函数
     add_server(setting_router)
 	remove_server(setting_router)
+    fetch_server(setting_router)
 }
