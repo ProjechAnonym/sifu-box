@@ -14,7 +14,7 @@ dns:
       },
       {
         tag: proxy_dns,
-        address: https://1.1.1.1/dns-query,
+        address: https://120.53.53.53/dns-query,
         address_strategy: ipv4_only,
         strategy: prefer_ipv4,
         detour: direct,
