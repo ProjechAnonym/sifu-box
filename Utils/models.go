@@ -8,4 +8,5 @@ type Server struct {
 	Localhost bool   `json:"localhost" gorm:"not null;type:bool"`
 	Config 	  string `json:"config" gorm:"type:varchar(255)"`
 	Fingerprint string `json:"-" gorm:"type:varchar(255)"`
+	Secret string `json:"secret" gorm:"type:varchar(255)"`
 }

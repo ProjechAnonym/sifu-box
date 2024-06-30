@@ -79,7 +79,7 @@ func fetch_server(group *gin.RouterGroup){
     fetch_router := group.Group("/fetch")
     fetch_router.GET("/servers",func(ctx *gin.Context) {
         var servers []utils.Server
-        if err := utils.Db.Model(&utils.Server{}).Select("url","config","localhost").Find(&servers).Error; err != nil{
+        if err := utils.Db.Model(&utils.Server{}).Select("url","config","localhost","secret").Find(&servers).Error; err != nil{
             utils.Logger_caller("get servers from database failed",err,1)
             ctx.JSON(http.StatusInternalServerError,gin.H{"error":"connect to database failed"})
             return
