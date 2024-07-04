@@ -30,4 +30,5 @@ type Server_config struct {
 	Cors        Cors   `yaml:"cors"`
 	Key         string `yaml:"key"`
 	Server_mode bool   `yaml:"server_mode"`
+	Token 		string `yaml:"token"`
 }

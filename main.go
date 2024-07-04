@@ -120,6 +120,7 @@ func main() {
         router.Setting_server(api_group)
         router.Setting_box(api_group)
         router.Setting_exec(api_group, &lock,cron_task,&cron_id)
+        router.Setting_files(api_group)
         // 启动服务器监听8080端口
         server.Run(":8080")
     } else {
