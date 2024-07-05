@@ -67,10 +67,6 @@ func Fetch_links() (map[string][]map[string]string,error){
     // 初始化存储链接信息的映射
 	template_links := make(map[string][]map[string]string)
 	for _,dir := range(dirs){
-		// 跳过名为"Default"的目录
-		if dir.Name() == "Default"{
-			continue
-		}
         // 打开模板文件目录
 		template_file_dir,err := os.Open(filepath.Join(project_dir.(string),"static",dir.Name()))
 		if err != nil{
