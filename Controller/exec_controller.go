@@ -90,14 +90,18 @@ func Refresh_items(lock *sync.Mutex) []error {
         // 如果没有找到匹配的配置,将服务器配置更新为第一个URL的标签
         if !server_update {
             server.Config = proxy_config.(utils.Box_config).Url[0].Label
+            if err := utils.Db.Model(&utils.Server{}).Where("url = ?",server.Url).Update("config",proxy_config.(utils.Box_config).Url[0].Label).Error;err != nil{
+                return []error{err}
+            }
         }
     }
 
     // 执行服务器配置更新
-    if errs := execute.Group_update(servers, proxy_config.(utils.Box_config), lock);errs != nil{
-        return errs
+    if len(servers) != 0{
+        if errs := execute.Group_update(servers, proxy_config.(utils.Box_config), lock);errs != nil{
+            return errs
+        }
     }
-
     // 更新完成,返回nil表示无错误
     return nil
 }

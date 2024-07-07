@@ -198,14 +198,28 @@ func Delete_items(items map[string][]int) error{
         }
         for _,server := range(servers){
             change_tag := true
-            for _,url_label := range(new_proxy_config.Url){
-                if server.Config == url_label.Label{
-                    change_tag = false
-                    break
+            // 如果url列表为0则直接设置改变标签为真
+            if len(new_proxy_config.Url) == 0{
+                change_tag = true
+            }else{
+                for _,url_label := range(new_proxy_config.Url){
+                    if server.Config == url_label.Label{
+                        change_tag = false
+                        break
+                    }
                 }
             }
             if change_tag{
-                if err := utils.Db.Model(&utils.Server{}).Where("url = ?",server.Url).Update("config",new_proxy_config.Url[0].Label).Error;err != nil{
+                var new_label string
+                
+                if len(new_proxy_config.Url) == 0{
+                    // 如果url列表为0则直接设置新标签为空
+                    new_label = ""
+                }else{
+                    // 如果url列表不为0则设置为新url列表第一项
+                    new_label = new_proxy_config.Url[0].Label
+                }
+                if err := utils.Db.Model(&utils.Server{}).Where("url = ?",server.Url).Update("config",new_label).Error;err != nil{
                     return err
                 }
             }
