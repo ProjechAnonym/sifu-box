@@ -17,7 +17,7 @@ func Cors() cors.Config {
 	copy(allow_origins, origins)
 	cores_config := cors.Config{
 		AllowOrigins:     allow_origins,
-		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET"},
+		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET","DELETE"},
 		AllowHeaders:     []string{"Origin", "domain", "scheme", "Authorization", "content-type"},
 		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
 		AllowCredentials: true,
