@@ -9,4 +9,5 @@ type Server struct {
 	Config      string `json:"config" gorm:"type:varchar(255)"`
 	Fingerprint string `json:"-" gorm:"type:varchar(255)"`
 	Secret      string `json:"secret" gorm:"type:varchar(255)"`
+	Port        uint16 `json:"port" gorm:"not null;type:uint16"`
 }
