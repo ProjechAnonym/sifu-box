@@ -61,7 +61,7 @@ func main() {
         // 初始化cron任务调度器
         cron_task := cron.New()
         // 每分钟执行一次配置的工作流程
-        cron_id,_ := cron_task.AddFunc("@every 5m", func() {
+        cron_id,_ := cron_task.AddFunc("@every 30m", func() {
             singbox.Config_workflow([]int{})
             var servers []utils.Server
             // 从数据库获取服务器列表
@@ -88,6 +88,7 @@ func main() {
         server := gin.Default()
         // 使用日志、恢复和跨域中间件
         server.Use(middleware.Logger(), middleware.Recovery(true), cors.New(middleware.Cors()))
+        router.Setting_pages(server)
         // 设置API路由
         api_group := server.Group("/api")
         api_group.GET("verify",func(ctx *gin.Context) {
