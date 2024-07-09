@@ -59,8 +59,7 @@ func Del_key(keys ...string) error{
 	return nil
 }
 func Get_Dir() string {
-	// base_dir := filepath.Dir(os.Args[0])
-	base_dir := "/root/sifu-box"
+	base_dir := filepath.Dir(os.Args[0])
 	return base_dir
 }
 
