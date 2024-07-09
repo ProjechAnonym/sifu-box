@@ -61,7 +61,7 @@ func main() {
         // 初始化cron任务调度器
         cron_task := cron.New()
         // 每分钟执行一次配置的工作流程
-        cron_id,_ := cron_task.AddFunc("@every 30m", func() {
+        cron_id,_ := cron_task.AddFunc("30 4 * * 1", func() {
             singbox.Config_workflow([]int{})
             var servers []utils.Server
             // 从数据库获取服务器列表
