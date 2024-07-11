@@ -33,7 +33,7 @@ systemctl enable sifu-box
 systemctl start sifu-box
 ```
 
-关于 sing-box 和 mosdns 的配置有时效问题,请移步博客[sing-box 和 mosdns 配置]()
+关于 sing-box 和 mosdns 的配置有时效问题,请移步博客[sing-box 和 mosdns 配置](https://vercel-blog.sifulin.top/zh-cn/2024/07/11/two-sexy-bitches-singbox-and-mosdns/)
 
 ### 路径配置
 
