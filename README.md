@@ -66,7 +66,7 @@ url: [
       path: "https://sub2.smallstrawberry.com/api/v1/client/subscribe?toke", # 订阅链接
       proxy: true, # 是否使用代理下载配置文件,仅服务模式有效
       label: 一速云, # 机场的名称
-      remote: true, # 是否是远程订阅,如果否则path应为配置文件的绝对路径
+      remote: true, # 是否是远程订阅,如果是本地配置文件则path应为配置文件的绝对路径
     },
   ]
 rule_set: [
@@ -75,7 +75,7 @@ rule_set: [
       label: chatgpt, # 规则集的名称
       value: {
           type: local, # 远程规则集还是本地规则集,可选值: local, remote
-          path: /opt/singbox/chatgpt.txt, # 规则集的路径,如果type为local,则应为配置文件的绝对路径,如果type为remote,则应为订阅链接
+          path: /opt/singbox/chatgpt.json, # 规则集的路径,如果type为local,则应为配置文件的绝对路径,如果type为remote,则应为订阅链接
           format: binary, # 规则集文件的格式,可选值: binary, source,
           china: false, # 是否中国地区规则集,如果为true,则在singbox配置中会直连出站
         },
