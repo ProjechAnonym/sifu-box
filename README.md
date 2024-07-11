@@ -8,7 +8,32 @@ singbox 转换程序
 
 ### 命令
 
-还没写再说
+```bash
+apt-get update
+apt-get install -y tar sudo vim
+# 确保存在opt/sifubox文件夹,压缩包上传到root文件夹下,如果不是root用户可以改成绝对路径
+tar -xvf sifu-box-*.tar --strip-components 1 -C /opt/sifubox/
+cat > /etc/systemd/system/sifu-box.service <<EOF
+[Unit]
+Description=A config file transform Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/sifubox/sifu-box
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+systemctl daemon-reload
+# 开机自启
+systemctl enable sifu-box
+# 启动服务
+systemctl start sifu-box
+```
+
+关于 sing-box 和 mosdns 的配置有时效问题,请移步博客[sing-box 和 mosdns 配置]()
 
 ### 路径配置
 
@@ -17,6 +42,7 @@ sifu-box 本身的路径要求不严格,但是生成的 singbox 配置文件默�
 ### 必备文件
 
 ```
+
 .
 |-- dist
 |-- config
@@ -26,6 +52,7 @@ sifu-box 本身的路径要求不严格,但是生成的 singbox 配置文件默�
 |   `-- Default
 `-- template
     `-- Default.template.yaml
+
 ```
 
 1. `config` 目录下存放配置文件
