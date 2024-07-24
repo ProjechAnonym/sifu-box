@@ -1,4 +1,4 @@
 cors: { origins: ["*"] }
 key: sifu
 token: $199wsr0902*dianhua1532#
-server_mode: true
+server_mode: false

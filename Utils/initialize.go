@@ -60,6 +60,7 @@ func Del_key(keys ...string) error{
 }
 func Get_Dir() string {
 	base_dir := filepath.Dir(os.Args[0])
+	// base_dir := "E:/Myproject/sifu-box"
 	return base_dir
 }
 
