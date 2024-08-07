@@ -1,3 +1,4 @@
+config/proxy.config.dev.yaml
 log
 sifu-box.db
 static
