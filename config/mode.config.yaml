@@ -1,0 +1,6 @@
+mode: true
+token: sifu
+cors:
+  - "*"
+listen: "[::]:8080"
+key: gfdshf$vcg62&&*

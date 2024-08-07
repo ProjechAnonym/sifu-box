@@ -2,170 +2,74 @@ package singbox
 
 import (
 	"fmt"
-	"net/url"
-	utils "sifu-box/Utils"
+	"sifu-box/models"
 )
 
-// 根据模板获取规则集
-// 该函数结合了默认规则集和自定义规则集,根据模板配置生成最终的规则集列表
-// 参数 template 是配置模板的字符串表示
-// 返回值是一个包含多个规则集的切片,每个规则集是一个包含不同字段的映射表
-func get_ruleset(template string) ([]map[string]interface{}, error) {
-    // 从模板中获取默认规则集
-    default_rulesets, err := utils.Get_value(template, "route", "rule_set")
-    if err != nil {
-        // 如果获取默认规则集失败,记录错误并返回
-        utils.Logger_caller("Get default rulesets failed", err,1)
-        return nil, err
-    }
-
-    // 从配置中获取自定义规则集
-    proxy_config, err := utils.Get_value("Proxy")
-    custom_rulesets := proxy_config.(utils.Box_config).Rule_set
-    if err != nil {
-        // 如果获取自定义规则集失败,记录错误并返回
-        utils.Logger_caller("Get custom rule set failed", err,1)
-        return nil, err
-    }
-
-    // 初始化规则集切片,大小为默认规则集和自定义规则集长度之和
-    rulesets := make([]map[string]interface{}, len(default_rulesets.([]interface{}))+len(custom_rulesets))
-
-    // 遍历自定义规则集,根据类型创建新的规则集映射表,并追加到默认规则集中
-    for _, rule := range custom_rulesets {
-        // 提取自定义规则的标签和路径信息
-        tag := rule.Label
-        path := rule.Value.Path
-		format := rule.Value.Format
-        // 根据类型创建规则集映射表
-        ruleset := make(map[string]interface{})
-        switch rule.Value.Type{
-        case "local":
-            ruleset = map[string]interface{}{"tag": tag,"type": "local", "format": format, "path": path}
-        case "remote":
-			detour := rule.Value.Download_detour
-			interval := rule.Value.Update_interval
-            ruleset = map[string]interface{}{"tag": tag, "type": "remote",  "format": format, "url": path, "download_detour": detour, "update_interval": interval}
-        }
-
-        // 将新创建的规则集追加到默认规则集中
-        default_rulesets = append(default_rulesets.([]interface{}), ruleset)
-    }
-
-    // 将默认规则集中的每个规则集映射表添加到最终的规则集切片中
-    for i, ruleset := range default_rulesets.([]interface{}) {
-        rulesets[i] = ruleset.(map[string]interface{})
-    }
-
-    // 返回合并后的规则集切片
-    return rulesets, nil
+// SetRulesets 根据给定的服务映射创建新的规则集列表
+// 该函数接收一个map,其中key是服务名称,value是与该服务相关的规则集列表
+// 返回值是所有规则集的扁平化列表
+func SetRulesets(serviceMap map[string][]models.Ruleset) []models.Ruleset {
+    // 初始化一个新的规则集列表,用于存储所有服务的规则集
+	var newRulesets []models.Ruleset
+	
+    // 遍历服务映射,处理每个服务及其相关的规则集
+	for _, rulesets := range serviceMap {
+        // 遍历单个服务的所有规则集
+		for _,ruleset := range(rulesets){
+            // 将每个规则集添加到新的规则集列表中这包括复制规则集的各个字段
+			newRulesets = append(newRulesets, models.Ruleset{Type: ruleset.Type, Tag: ruleset.Tag, Download_detour: ruleset.Download_detour, Format: ruleset.Format, Path: ruleset.Path, Update_interval: ruleset.Update_interval, Url: ruleset.Url})
+		}
+	}
+    // 返回包含所有规则集的扁平化列表
+	return newRulesets
 }
+// SetRules 根据服务映射和提供者信息设置规则
+// serviceMap: 一个映射,其中包含服务名称和相应的规则集列表
+// provider: 提供者对象,包含提供者的相关信息和配置
+// 返回值: 一个切片,包含设置的规则,每个规则是一个映射,其中包含“域”、“规则集”和“出站”等键值对
+func SetRules(serviceMap map[string][]models.Ruleset, provider models.Provider) []map[string]interface{}{
+    // 初始化规则切片
+    var rules []map[string]interface{}
 
-// get_rules 根据模板和配置文件生成路由规则
-// template: 路由规则模板字符串
-// 返回值:
-// - 一个包含多个规则的map切片,每个规则是一个包含"rule_set"和"outbound"键值对的map
-// - 错误对象,如果在获取规则过程中发生错误
-func get_rules(template,link string,proxy bool) ([]map[string]interface{}, error) {
-    // 从模板中获取默认路由规则
-    base_rules, err := utils.Get_value(template, "route", "rules", "default")
-    if err != nil {
-        // 如果获取默认规则失败,记录错误并返回
-        utils.Logger_caller("Get origin rules failed", err,1)
-        return nil, err
+    // 处理远程提供者
+    if provider.Remote {
+        // 如果提供者是远程的,则添加一条包含其路径和选择性出站的规则
+        rules = append(rules, map[string]interface{}{"domain": provider.Path, "outbound": "select"})
     }
 
-    // 解析链接以获取域名
-    domain,err := url.Parse(link)
-    if err != nil {
-        // 日志记录域名解析失败
-        utils.Logger_caller(fmt.Sprintf("parse %s domain failed",link), err,1)
-        return nil, err
-    }
-    host := domain.Host
-
-    // 如果使用代理，添加针对当前域名的代理规则。
-    if proxy{
-        base_rules = append(base_rules.([]interface{}),map[string]interface{}{"domain_keyword":[]string{host},"outbound":"select"})
-    }
-    
-    // 从配置中获取自定义路由规则
-    proxy_config, err := utils.Get_value("Proxy")
-    custom_rules := proxy_config.(utils.Box_config).Rule_set
-    if err != nil {
-        // 如果获取自定义规则失败,记录错误并返回
-        utils.Logger_caller("Get custom rules failed", err,1)
-        return nil, err
-    }
-
-    // 从模板中获取分流路由规则
-    // 获取分流规则
-    shunt_rules, err := utils.Get_value(template, "route", "rules", "shunt")
-    if err != nil {
-        // 如果获取分流规则失败,记录错误并返回
-        utils.Logger_caller("Get shunt rules failed", err,1)
-        return nil, err
-    }
-
-    // 根据默认规则、自定义规则和分流规则的总数初始化规则切片
-    rules := make([]map[string]interface{}, len(base_rules.([]interface{}))+len(custom_rules)+len(shunt_rules.([]interface{})))
-
-    // 遍历自定义规则,根据规则的"china"值决定是直接路由还是选择路由
-    // 此处逻辑于上面相同
-    for _, rule := range custom_rules {
-        tag := rule.Label
-        switch rule.Value.China {
-        case true:
-            // 如果"china"为true,添加直接路由规则
-            base_rules = append(base_rules.([]interface{}), map[string]interface{}{"rule_set": tag, "outbound": "direct"})
-        case false:
-            // 如果"china"为false,添加选择路由规则
-            base_rules = append(base_rules.([]interface{}), map[string]interface{}{"rule_set": tag, "outbound": tag + "-select"})
+    // 遍历服务映射,根据服务名称和规则集设置规则
+    for key, rulesets := range serviceMap {
+        // 处理未指定服务名称的情况
+        if key == "" {
+            // 遍历规则集,根据是否针对中国用户添加不同的出站规则
+            for _, ruleset := range rulesets {
+                if ruleset.China {
+                    // 如果规则针对中国用户,则添加一条指向直接出站的规则
+                    rules = append(rules, map[string]interface{}{"rule_set": ruleset.Tag, "outbound": "direct"})
+                } else {
+                    // 如果规则不针对中国用户,则添加一条指向选择性出站的规则,出站名称由规则标签生成
+                    rules = append(rules, map[string]interface{}{"rule_set": ruleset.Tag, "outbound": fmt.Sprintf("select-%s", ruleset.Tag)})
+                }
+            }
+        } else {
+            // 处理指定了服务名称的情况
+            var rulesetsList []string
+            var china bool
+            var label string
+            // 遍历规则集,收集规则标签,并确定是否针对中国用户
+            for _, ruleset := range rulesets {
+                china = ruleset.China
+                label = ruleset.Label
+                rulesetsList = append(rulesetsList, ruleset.Tag)
+            }
+            // 根据是否针对中国用户,添加相应的出站规则
+            if china {
+                rules = append(rules, map[string]interface{}{"rule_set": rulesetsList, "outbound": "direct"})
+            } else {
+                rules = append(rules, map[string]interface{}{"rule_set": rulesetsList, "outbound": fmt.Sprintf("select-%s", label)})
+            }
         }
     }
-
-    // 将分流规则追加到默认规则之后
-    base_rules = append(base_rules.([]interface{}), shunt_rules.([]interface{})...)
-
-    // 将合并后的规则复制到最终的规则切片中
-    for i, rule_set := range base_rules.([]interface{}) {
-        rules[i] = rule_set.(map[string]interface{})
-    }
-
-    // 返回处理后的规则切片和nil错误
-    return rules, nil
-}
-
-// Merge_route 根据模板字符串合并路由规则和规则集
-// template: 模板字符串包含路由配置信息
-// 返回值:
-// - 一个map[string]interface{}类型的路由配置,包含规则集和规则
-// - 错误信息,如果在处理过程中出现错误
-func Merge_route(template,url string,proxy bool) (map[string]interface{}, error) {
-    // 从模板中提取规则集信息
-    rulesets, err := get_ruleset(template)
-    if err != nil {
-        return nil, err
-    }
-
-    // 从模板中提取路由规则信息
-    rules, err := get_rules(template,url,proxy)
-    if err != nil {
-        return nil, err
-    }
-
-    // 从模板中提取路由配置
-    route, err := utils.Get_value(template, "route")
-    if err != nil {
-        // 记录路由解析失败的日志
-        utils.Logger_caller(fmt.Sprintf("get route part from template %s failed",template), err,1)
-        return nil, err
-    }
-
-    // 将提取的规则集和规则合并到路由配置中
-    route.(map[string]interface{})["rule_set"] = rulesets
-    route.(map[string]interface{})["rules"] = rules
-
-    // 返回合并后的路由配置
-    return route.(map[string]interface{}), nil
+    // 返回设置的规则切片
+    return rules
 }

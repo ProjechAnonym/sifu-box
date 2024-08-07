@@ -1,13 +1,8 @@
 log
-sifu-box
-sifu-box.exe
 sifu-box.db
 static
-config/Proxy.config.yaml
-config/Proxy.config.dev.yaml
-temp/*.yaml
-temp/configbackup
-
+backup
+temp
 # Logs
 sifu-box-pages/logs
 sifu-box-pages/*.log
