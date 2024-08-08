@@ -2,7 +2,9 @@ package singbox
 
 import (
 	"fmt"
+	"net/url"
 	"sifu-box/models"
+	"sifu-box/utils"
 )
 
 // SetRulesets 根据给定的服务映射创建新的规则集列表
@@ -34,7 +36,13 @@ func SetRules(serviceMap map[string][]models.Ruleset, provider models.Provider) 
     // 处理远程提供者
     if provider.Remote {
         // 如果提供者是远程的,则添加一条包含其路径和选择性出站的规则
-        rules = append(rules, map[string]interface{}{"domain": provider.Path, "outbound": "select"})
+        providerPath,err := url.Parse(provider.Path)
+        if err != nil {
+            utils.LoggerCaller("解析域名失败",err,1)
+        }else{
+            providerDomain := providerPath.Hostname()
+            rules = append(rules, map[string]interface{}{"domain": providerDomain, "outbound": "select"})
+        }
     }
 
     // 遍历服务映射,根据服务名称和规则集设置规则
