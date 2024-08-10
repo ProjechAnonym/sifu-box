@@ -28,6 +28,7 @@ export default function Setting() {
   const status = useAppSelector((state) => state.auth.status);
   const login = useAppSelector((state) => state.auth.login);
   const load = useAppSelector((state) => state.auth.load);
+  const dark = useAppSelector((state) => state.mode.dark);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
@@ -41,7 +42,11 @@ export default function Setting() {
     <div className="h-full">
       <Load show={load} fullscreen={true} />
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent className="sifudark bg-background text-foreground">
+        <ModalContent
+          className={`${
+            dark ? "sifudark" : "sifulight"
+          } bg-background text-foreground`}
+        >
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">

@@ -21,7 +21,7 @@ import Load from "@/components/load";
 import ServiceMonitor from "@/components/home/serviceMonitor";
 import SwitchConfig from "@/components/home/swichConfig";
 import SetInterval from "@/components/home/setInterval";
-import ProxyServers from "@/layout/proxyServers";
+import SingboxDash from "@/layout/singboxDash";
 import { cloneDeep } from "lodash";
 import copy from "copy-to-clipboard";
 import { ClienAuth } from "@/utils/ClientAuth";
@@ -88,7 +88,11 @@ export default function Home() {
   return (
     <main className="h-full">
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent className="sifudark bg-background text-foreground">
+        <ModalContent
+          className={`${
+            dark ? "sifudark" : "sifulight"
+          } bg-background text-foreground`}
+        >
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
@@ -281,7 +285,7 @@ export default function Home() {
       </header>
       <Divider />
       {selectHost ? (
-        <ProxyServers
+        <SingboxDash
           updateServers={updateServers}
           setUpdateServers={(e) => setUpdateServers(e)}
           host={selectHost}

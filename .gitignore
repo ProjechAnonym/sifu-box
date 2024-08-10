@@ -1,5 +1,7 @@
 config/proxy.config.dev.yaml
 log
+sifu-box
+sifu-box.exe
 sifu-box.db
 static
 backup

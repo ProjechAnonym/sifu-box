@@ -74,7 +74,11 @@ export default function Proxy() {
         backdrop="blur"
         size="xl"
       >
-        <ModalContent className="sifudark bg-background text-foreground">
+        <ModalContent
+          className={`${
+            dark ? "sifudark" : "sifulight"
+          } bg-background text-foreground`}
+        >
           {(onClose) => (
             <form
               onSubmit={(e) => {

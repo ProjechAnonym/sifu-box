@@ -1,5 +1,5 @@
 import { useRef, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { setDark, setStatus, setSecret } from "@/redux/slice";
 import {
@@ -8,7 +8,6 @@ import {
   NavbarContent,
   NavbarItem,
   NavbarMenuToggle,
-  Link,
   Switch,
   Button,
   NavbarMenu,
@@ -62,7 +61,7 @@ export default function MenuBar(props: {
         {routes.map((item, i) => (
           <NavbarMenuItem key={`${item.label}-${i}`}>
             <Link
-              href={item.path}
+              to={item.path}
               className={`text-foreground gap-x-1 ${
                 location.pathname === item.path && "text-sky-500"
               }`}
@@ -80,7 +79,7 @@ export default function MenuBar(props: {
             isActive={location.pathname === item.path}
           >
             <Link
-              href={item.path}
+              to={item.path}
               className={`text-foreground gap-x-1 ${
                 location.pathname === item.path && "text-sky-500"
               }`}
