@@ -8,15 +8,11 @@ export async function GetServiceStatus(
   data.append("service", service);
   data.append("url", url);
   try {
-    const res = await axios.post(
-      "http://192.168.164.138:8080/api/exec/check",
-      data,
-      {
-        headers: {
-          Authorization: secret,
-        },
-      }
-    );
+    const res = await axios.post("/api/exec/check", data, {
+      headers: {
+        Authorization: secret,
+      },
+    });
     return res.status === 200 && res.data.message;
   } catch (e) {
     console.error(e);
@@ -32,15 +28,11 @@ export async function BootServiceUp(
   data.append("service", service);
   data.append("url", url);
   try {
-    const res = await axios.post(
-      "http://192.168.164.138:8080/api/exec/boot",
-      data,
-      {
-        headers: {
-          Authorization: secret,
-        },
-      }
-    );
+    const res = await axios.post("/api/exec/boot", data, {
+      headers: {
+        Authorization: secret,
+      },
+    });
     return res.status === 200;
   } catch (e) {
     console.error(e);
