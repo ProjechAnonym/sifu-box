@@ -1,0 +1,18 @@
+url:
+    - path: /root/sifu-box/temp/一元.yaml
+      proxy: false
+      label: 一元
+      remote: false
+    - path: https://naiyun0315.xn--8stx8olrwkucjq3b.com/api/v1/client/subscribe?to
+      proxy: true
+      label: 奈云
+      remote: true
+rule_set:
+    - label: chatgpt
+      value:
+        path: https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs
+        format: binary
+        type: remote
+        china: false
+        update_interval: 1d
+        download_detour: select
