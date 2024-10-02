@@ -1,4 +1,5 @@
 log:
+  disabled: true
   level: info
   timestamp: true
   output: /opt/singbox/singbox.log
