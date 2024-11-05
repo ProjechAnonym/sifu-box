@@ -7,7 +7,7 @@ singbox 转换程序
 将压缩包下载之后解压即可
 
 ### 命令
-
+**建议以高权限用户运行,因为该程序通过systemctl控制singbox的状态,权限不够会无法使用systemctl**
 ```bash
 apt-get update
 apt-get install -y tar sudo vim
