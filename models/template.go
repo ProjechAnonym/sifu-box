@@ -36,7 +36,6 @@ type Route struct {
 	Default_mark          uint                     `json:"default_mark,omitempty" yaml:"default_mark,omitempty"`
 }
 type Template struct {
-	Name            string                   `json:"-" yaml:"-"`
 	Log             map[string]interface{}   `json:"log,omitempty" yaml:"log,omitempty"`
 	Ntp             map[string]interface{}   `json:"ntp,omitempty" yaml:"ntp,omitempty"`
 	Experimental    map[string]interface{}   `json:"experimental,omitempty" yaml:"experimental,omitempty"`
