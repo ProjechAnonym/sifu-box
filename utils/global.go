@@ -34,7 +34,7 @@ func GetValue(keys ...string) (interface{}, error) {
 				return clone.Clone(tempGlobalVars[key]), nil
 			}
 			// 如果当前值是一个映射,将其作为新的全局变量集合,继续解析
-			if subMap, ok := tempGlobalVars[key].(map[string]interface{}); ok {
+			if subMap, ok := tempGlobalVars[key].(map[string]any); ok {
 				tempGlobalVars = subMap
 			} else {
 				// 如果当前值不是映射,则返回错误,表示键不正确
@@ -75,7 +75,7 @@ func SetValue(value interface{}, keys ...string) error {
 		} else {
 			
 			// 检查当前键的值是否为预期的map类型
-			if sub_map, ok := tempVars[key].(map[string]interface{}); ok {
+			if sub_map, ok := tempVars[key].(map[string]any); ok {
 				
 				// 如果是map类型,则继续深入到下一级
 				tempVars = sub_map
@@ -113,7 +113,7 @@ func DelValue(keys ...string) error {
         }
         
         // 尝试将当前值转换为字典类型
-        if subMap, ok := tempVars[key].(map[string]interface{}); ok {
+        if subMap, ok := tempVars[key].(map[string]any); ok {
             // 转换成功,继续深入下一层
             tempVars = subMap
         } else {

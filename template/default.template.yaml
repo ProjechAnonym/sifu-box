@@ -1,72 +1,62 @@
 log:
-  disabled: true
-  level: info
-  timestamp: true
-  output: /opt/singbox/singbox.log
-dns:
-  servers:
-    [
-      { tag: external, address: tls://8.8.8.8, detour: select },
-      { tag: internal, address: tls://223.5.5.5, detour: direct },
-      { tag: dns_block, address: rcode://refused },
-    ]
-  rules: [{ outbound: any, server: internal }]
-  strategy: prefer_ipv4
-  final: external
-  reverse_mapping: true
-inbounds:
-  [
-    {
-      "type": "tun",
-      "tag": "tun-in",
-      "interface_name": "tun0",
-      "address": ["172.18.0.1/30", "fdfe:dcba:9876::1/126"],
-      "mtu": 9000,
-      "auto_route": true,
-      "strict_route": true,
-      "stack": "mixed",
-    },
-  ]
-
-outbounds:
-  [
-    { type: dns, tag: dns-out },
-    { type: direct, tag: direct },
-    { type: block, tag: block },
-  ]
-# customOutbounds:
-#   [
-#     {
-#       tag: 自建,
-#       type: shadowsocks,
-#       server: https://example.com,
-#       server_port: 999,
-#       method: "chacha20-ietf-poly1305",
-#       password: "6e999edc-67d2-4719-b085-46fbf6383fd9",
-#     },
-#   ]
-route:
-  rule_set: []
-  rules:
-    [
-      { port: 53, outbound: dns-out },
-      { protocol: dns, outbound: dns-out },
-      { ip_is_private: true, outbound: direct },
-      { protocol: [quic], outbound: block },
-    ]
-
-  # 默认出站节点不能改,很多配置下载需要代理,我设置的都是select
-  final: select
-  auto_detect_interface: true
+    disabled: true
 experimental:
-  clash_api:
-    {
-      external_controller: 0.0.0.0:9090,
-      secret: "123456",
-      external_ui_download_url: "https://github.com/MetaCubeX/Yacd-meta/archive/gh-pages.zip",
-      external_ui_download_detour: "select",
-      external_ui: "ui",
-    }
-  cache_file:
-    enabled: true
-    path: /opt/singbox/cache.db
+    cache_file:
+        enabled: true
+        path: /opt/singbox/cache.db
+    clash_api:
+        external_controller: 0.0.0.0:9090
+        external_ui: ui
+        external_ui_download_detour: select
+        external_ui_download_url: https://github.com/MetaCubeX/Yacd-meta/archive/gh-pages.zip
+        secret: "123456"
+inbounds:
+    - address:
+        - 172.18.0.1/30
+        - fdfe:dcba:9876::1/126
+      auto_route: true
+      interface_name: tun0
+      mtu: 9000
+      stack: mixed
+      strict_route: true
+      tag: tun-in
+      type: tun
+dns:
+    final: external
+    strategy: prefer_ipv4
+    reverse_mapping: true
+    servers:
+        - tag: external
+          address: tls://8.8.8.8
+          detour: select
+        - tag: internal
+          address: 192.168.50.6
+          detour: direct
+        - tag: dns_block
+          address: rcode://refused
+    rules:
+        - domain_keyword:
+            - lzhlovelcl.top
+          server: internal
+        - outbound: any
+          server: internal
+route:
+    rules:
+        - outbound: dns-out
+          port: 53
+        - outbound: dns-out
+          protocol: dns
+        - ip_is_private: true
+          outbound: direct
+        - outbound: block
+          protocol:
+            - quic
+    final: select
+    auto_detect_interface: true
+outbounds:
+    - tag: dns-out
+      type: dns
+    - tag: direct
+      type: direct
+    - tag: block
+      type: block

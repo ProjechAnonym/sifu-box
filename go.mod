@@ -10,12 +10,12 @@ require (
 	github.com/huandu/go-clone v1.7.2
 	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/pkg/sftp v1.13.6
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.19.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/crypto v0.25.0
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/gorm v1.25.11
-	github.com/robfig/cron/v3 v3.0.1
 )
 
 require (

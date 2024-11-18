@@ -1,11 +1,11 @@
 providers:
   - name: 奈云
     proxy: false
-    path: https://naiyun0315.xn--8stx8olrwkucjq3b.com/api/v1/client/subscribe?token=745f0f0
+    path: https://submit.xz61.cn:20443/api/v1/client/subscribe?token=745f0f059c5256cf9b2e4cc4fc87ee81
     remote: true
-  - name: 一速云
-    proxy: true
-    path: https://sub1.smallstrawberry.com/api/v1/client/subscribe?token=59e183a0cafb418a8
+  - name: 夜煞云
+    proxy: false
+    path: https://su.iplcnetwork.com:8888/api/v1/client/nyth?token=aa751df806caf70136e33c9310531fe6
     remote: true
 rulesets:
   - type: remote
@@ -25,9 +25,53 @@ rulesets:
     update_interval: 1d
     label: china
     china: true
-  # - type: local
-  #   path: /opt/singbox/openai.srs
-  #   tag: openai
-  #   format: binary
-  #   china: false
-  #   dnsRule: external
+  - type: remote
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geoip/telegram.srs
+    format: binary
+    tag: telegram-ip
+    download_detour: select
+    update_interval: 1d
+    label: telegram
+    china: false
+  - type: remote
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geosite/telegram.srs
+    format: binary
+    tag: telegram-site
+    download_detour: select
+    update_interval: 1d
+    label: telegram
+    china: false
+    dnsRule: external
+  - type: remote
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geosite/github.srs
+    format: binary
+    tag: github
+    download_detour: select
+    update_interval: 1d
+    china: false
+    dnsRule: external
+  - type: remote
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geosite/openai.srs
+    format: binary
+    tag: openai
+    download_detour: select
+    update_interval: 1d
+    china: false
+    dnsRule: external
+  - type: remote
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geosite/netflix.srs
+    format: binary
+    tag: netflex-site
+    download_detour: select
+    update_interval: 1d
+    label: netflex
+    china: false
+    dnsRule: external
+  - type: remote
+    url: https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo-lite/geoip/netflix.srs
+    format: binary
+    tag: netflex-ip
+    download_detour: select
+    update_interval: 1d
+    label: netflex
+    china: false
