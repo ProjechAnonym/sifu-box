@@ -2,8 +2,12 @@ package controller
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"sifu-box/models"
 	"sifu-box/utils"
+
+	"gopkg.in/yaml.v3"
 )
 
 // GetTemplates 获取所有模板配置
@@ -26,4 +30,76 @@ func GetTemplates() ([]map[string]interface{}, error) {
     }
     // 返回包含所有模板信息的列表
     return templates,nil
+}
+
+// AddTemplate 添加一个新的模板到项目中
+// 参数:
+//   name - 模板的名称
+//   template - 模板的内容
+// 返回值:
+//   如果添加模板过程中发生错误，则返回错误
+func AddTemplate(name string, template models.Template) error {
+    // 获取项目目录路径
+    projectDir,err := utils.GetValue("project-dir")
+    if err != nil {
+        utils.LoggerCaller("获取项目目录失败", err, 1)
+        return fmt.Errorf("获取项目目录失败")
+    }
+    // 获取当前的模板配置
+    templates, err := utils.GetValue("templates")
+    if err != nil {
+        utils.LoggerCaller("获取模板配置失败", err, 1)
+        return fmt.Errorf("获取模板配置失败")
+    }
+    // 在模板配置中添加新的模板
+    templates.(map[string]models.Template)[name] = template
+    // 更新模板配置
+    if err := utils.SetValue(templates, "templates");err != nil {
+        utils.LoggerCaller("更新模板配置失败", err, 1)
+        return fmt.Errorf("更新模板配置失败")
+    }
+    // 序列化模板为yaml格式
+    templateYaml, err := yaml.Marshal(template)
+    if err != nil {  
+        utils.LoggerCaller("序列化yaml文件失败", err, 1)
+        return fmt.Errorf("序列化yaml文件失败")
+    }
+    // 将模板文件写入到项目目录中
+    if err := utils.FileWrite(templateYaml, filepath.Join(projectDir.(string), "template", fmt.Sprintf("%s.template.yaml",name))); err != nil { 
+        utils.LoggerCaller("写入模板文件失败", err, 1)
+        return fmt.Errorf("写入模板文件失败")
+    }
+    return nil
+}
+
+// RefreshTemplates 用于刷新模板，通过从项目目录中读取和解析模板文件来更新模板信息。
+// 它主要关注于读取和解析名为 "recover.template.yaml" 的文件，该文件用于定义恢复操作的模板。
+// 函数返回一个映射，其中键是模板名称，值是模板对象。如果在执行过程中遇到错误，将返回一个错误对象。
+func RefreshTemplates() (map[string]models.Template,error) {
+    // 尝试获取项目目录路径，这是后续读取配置文件的基础路径。
+    projectDir,err := utils.GetValue("project-dir")
+    if err != nil {
+        // 如果获取项目目录失败，记录错误并返回提示信息。
+        utils.LoggerCaller("获取项目目录失败", err, 1)
+        return nil,fmt.Errorf("获取项目目录失败")
+    }
+
+    // 读取项目目录下的恢复模板文件。
+    file,err := os.ReadFile(filepath.Join(projectDir.(string),"config","recover.template.yaml"))
+    if err != nil {
+        // 如果读取文件失败，记录错误并返回提示信息。
+        utils.LoggerCaller("读取恢复模板文件失败", err, 1)
+        return nil,fmt.Errorf("读取恢复模板文件失败")
+    }
+
+    // 解析读取到的文件内容到 Template 结构体。
+    var recoverTemplate models.Template
+    if err := yaml.Unmarshal(file,&recoverTemplate);err != nil {
+        // 如果解析文件失败，记录错误并返回提示信息。
+        utils.LoggerCaller("解析恢复模板文件失败", err, 1)
+        return nil,fmt.Errorf("解析恢复模板文件失败")
+    }
+
+    // 返回解析成功的模板信息。
+    return map[string]models.Template{"recover":recoverTemplate},nil
 }

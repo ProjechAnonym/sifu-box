@@ -35,9 +35,6 @@ dns:
     - tag: dns_block
       address: rcode://refused
   rules:
-    - domain_keyword:
-        - lzhlovelcl.top
-      server: internal
     - outbound: any
       server: internal
 route:

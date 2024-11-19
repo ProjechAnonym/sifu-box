@@ -1,7 +1,7 @@
 log:
   level: info
-  timestamp: true
-  output: /opt/singbox/singbox.log
+  # timestamp: true
+  # output: /opt/singbox/singbox.log
 dns:
   servers:
     [

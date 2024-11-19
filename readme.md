@@ -7,7 +7,9 @@ singbox 转换程序
 将压缩包下载之后解压即可
 
 ### 命令
-**建议以高权限用户运行,因为该程序通过systemctl控制singbox的状态,权限不够会无法使用systemctl**
+
+**建议以高权限用户运行,因为该程序通过 systemctl 控制 singbox 的状态,权限不够会无法使用 systemctl**
+
 ```bash
 apt-get update
 apt-get install -y tar sudo vim
@@ -47,6 +49,7 @@ sifu-box 本身的路径要求不严格,但是生成的 singbox 配置文件默�
 |-- dist
 |-- config
 | |-- proxy.config.yaml
+| |-- recover.template.yaml
 | `-- mode.config.yaml
 `-- template
     `-- default.template.yaml
