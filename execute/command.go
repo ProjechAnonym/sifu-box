@@ -81,7 +81,7 @@ func ReloadConfig(service string, host models.Host) (bool, error) {
     for _, result := range results {
         if strings.Contains(result, "ERROR") {
             // 如果日志中包含错误信息,记录错误并更新最终状态为失败
-            utils.LoggerCaller("重载配置失败", fmt.Errorf(result), 1)
+            utils.LoggerCaller("重载配置失败", fmt.Errorf("%s", result), 1)
             finalStatus = false
             break
         }

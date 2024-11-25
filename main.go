@@ -72,6 +72,7 @@ func main() {
 		route.SettingProxy(apiGroup,&lock)
 		route.SettingMigrate(apiGroup)
 		route.SettingTemplates(apiGroup)
+		route.SettingUpgrade(apiGroup,&lock)
 		route.SettingExec(apiGroup,&lock,cronTask,&cronId)
 		server.Run(serverMode.(models.Server).Listen)
 	}else{
