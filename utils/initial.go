@@ -129,8 +129,8 @@ func LoadTemplate() error{
     return nil
 }
 func GetProjectDir() string {
-	// base_dir := filepath.Dir(os.Args[0])
-	base_dir := "E:/Myproject/sifubox"
+	base_dir := filepath.Dir(os.Args[0])
+	// base_dir := "E:/Myproject/sifubox"
 	// base_dir := "/root/sifu-clash"
 	return base_dir
 }

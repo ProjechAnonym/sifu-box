@@ -2,8 +2,6 @@ package controller
 
 import (
 	"fmt"
-	"io"
-	"mime/multipart"
 	"os"
 	"sifu-box/execute"
 	"sifu-box/models"
@@ -17,31 +15,15 @@ import (
 //   file: 包含新版本应用程序的文件。
 //   path: 应用程序文件在目标主机上的路径。
 //   addr: 目标主机的地址。
-//   service: 需要升级的服务名称。
-//   lock: 用于同步访问的互斥锁，以防止并发升级。
+//   service: 需要升级的服务名称。。
 // 返回值:
 //   如果升级过程中发生错误，则返回错误。
-func UpgradeApp(file multipart.File, path, addr,service string,lock *sync.Mutex) error {
+func upgradeApp(content []byte, path,addr,service string) error {
     // 查询数据库以获取目标主机的信息。
     var host models.Host
     if err := utils.DiskDb.Table("hosts").Where("url = ?", addr).First(&host).Error; err != nil {
         utils.LoggerCaller("数据库查询失败", err, 1)
         return fmt.Errorf("数据库查询失败")
-    }
-
-    // 尝试获取锁，以确保在同一时间内只有一个升级操作在执行。
-    for {
-        if lock.TryLock() {
-            break
-        }
-    }
-    defer lock.Unlock()
-
-    // 读取文件内容。
-    content,err := io.ReadAll(file)
-    if err != nil {
-        utils.LoggerCaller("文件写入失败", err, 1)
-        return fmt.Errorf("文件写入失败")
     }
 
     // 停止目标主机上的服务。
@@ -100,4 +82,77 @@ func UpgradeApp(file multipart.File, path, addr,service string,lock *sync.Mutex)
     }
 
     return nil
+}
+
+// UpgradeWorkflow 执行工作流升级。
+// 该函数接收文件字节切片、地址切片、路径、服务名称和互斥锁作为参数，返回错误切片。
+// 它并行地在给定地址上执行升级操作，并收集升级过程中的错误。
+func UpgradeWorkflow(file []byte, addresses []string, path, service string, lock *sync.Mutex) []error {
+    // 尝试获取锁，以确保同一时间只有一个升级流程在执行。
+    for {
+        if lock.TryLock() {
+            break
+        }
+    }
+    defer lock.Unlock()
+    // upgradeTask 用于等待所有的更新操作完成
+    var upgradeTask sync.WaitGroup
+    // 初始化WaitGroup,添加主机数量加一的计数,用于等待所有更新完成
+    upgradeTask.Add(len(addresses) + 1)
+
+    // upgradeErrorsChan 用于收集更新过程中产生的错误
+    upgradeErrorsChan := make(chan error, len(addresses))
+    // upgradeErrors 用于存储所有的错误
+    var upgradeErrors []error
+
+    // upgradeCountChan 用于统计更新完成的主机数量
+    upgradeCountChan := make(chan int, len(addresses))
+
+    // 遍历主机列表,为每个主机启动一个更新操作
+    for _, addr := range addresses {
+        // 使用匿名协程执行更新操作
+        go func() {
+            // 更新完成后,减少WaitGroup的计数,并向countChan发送一个计数
+            defer func() {
+                upgradeTask.Done()
+                upgradeCountChan <- 1
+            }()
+
+            // 执行更新操作,如果发生错误,则记录错误并发送到upgradeErrorsChan
+            if err := upgradeApp(file, path, addr, service); err != nil {
+                upgradeErrorsChan <- fmt.Errorf("%s升级失败", addr)
+            }
+        }()
+    }
+    
+    // 使用匿名协程监控更新进度
+    go func() {
+        defer func() {
+            // 更新完成后,减少WaitGroup的计数,并关闭upgradeErrorsChan和upgradeCountChan
+            upgradeTask.Done()
+            close(upgradeErrorsChan)
+            close(upgradeCountChan)
+        }()
+
+        // sum 用于累计已完成的更新操作数量
+        sum := 0
+        // 遍历upgradeCountChan,统计更新完成的主机数量
+        for count := range upgradeCountChan {
+            sum += count
+            // 当所有主机都已完成更新时,退出协程
+            if sum == len(addresses) {
+                return
+            }
+        }
+    }()
+
+    // 遍历upgradeErrorsChan,收集所有的错误
+    for err := range upgradeErrorsChan {
+        upgradeErrors = append(upgradeErrors, err)
+    }
+
+    // 等待所有的更新操作完成
+    upgradeTask.Wait()
+    // 返回所有的错误列表
+    return upgradeErrors
 }

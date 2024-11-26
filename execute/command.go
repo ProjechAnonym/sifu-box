@@ -160,7 +160,7 @@ func StopService(service string, host models.Host) error {
     // 错误处理
     if err != nil {
         // 记录错误日志并返回错误
-        utils.LoggerCaller("启动服务失败", err, 1)
+        utils.LoggerCaller("停止服务失败", err, 1)
         return err
     }
     // 服务停止成功,返回nil
