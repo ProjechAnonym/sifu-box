@@ -103,3 +103,47 @@ func RefreshTemplates() (map[string]models.Template,error) {
     // 返回解析成功的模板信息。
     return map[string]models.Template{"recover":recoverTemplate},nil
 }
+
+// DeleteTemplate 删除指定名称的模板
+// 参数:
+//   name - 需要删除的模板名称
+// 返回值:
+//   如果删除操作成功，则返回nil；否则返回相应的错误
+func DeleteTemplate(name string) error{
+    // 禁止删除默认模板
+    if name == "default" {
+        return fmt.Errorf("无法删除默认模板")
+    }
+    
+    // 获取项目目录
+    projectDir,err := utils.GetValue("project-dir")
+    if err != nil {
+        utils.LoggerCaller("获取项目目录失败", err, 1)
+        return fmt.Errorf("获取项目目录失败")
+    }
+    
+    // 删除模板文件
+    if err := utils.FileDelete(filepath.Join(projectDir.(string), "template", fmt.Sprintf("%s.template.yaml", name))); err != nil{
+        utils.LoggerCaller("删除模板文件失败", err, 1)
+        return fmt.Errorf("删除模板文件失败")
+    }
+    
+    // 获取模板配置
+    templates, err := utils.GetValue("templates")
+    if err != nil {
+        utils.LoggerCaller("获取模板配置失败", err, 1)
+        return fmt.Errorf("获取模板配置失败")
+    }
+    
+    // 从模板配置中删除指定模板
+    delete(templates.(map[string]models.Template), name)
+    
+    // 更新模板配置
+    if err := utils.SetValue(templates, "templates");err != nil {
+        utils.LoggerCaller("更新模板配置失败", err, 1)
+        return fmt.Errorf("更新模板配置失败")
+    }
+    
+    // 删除操作成功
+    return nil
+}

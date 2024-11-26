@@ -53,6 +53,19 @@ func SettingTemplates(group *gin.RouterGroup){
         ctx.JSON(http.StatusOK, gin.H{"message": true})
     })
 
+    // 处理删除模板请求
+    route.DELETE("delete",func(ctx *gin.Context) {
+        // 获取查询参数name
+        name := ctx.Query("name")
+        // 调用控制器方法删除模板
+        if err := controller.DeleteTemplate(name); err != nil {
+            // 如果添加失败，返回500错误信息
+            ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+            return
+        }
+        ctx.JSON(http.StatusOK, gin.H{"message": true})
+    })
+
     // 处理模板刷新请求
     route.GET("/refresh", func(ctx *gin.Context){
         // 调用控制器方法刷新模板
