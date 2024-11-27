@@ -56,14 +56,24 @@ func SettingTemplates(group *gin.RouterGroup){
     // 处理删除模板请求
     route.DELETE("delete",func(ctx *gin.Context) {
         // 获取查询参数name
-        name := ctx.Query("name")
+        names := ctx.PostFormArray("names")
         // 调用控制器方法删除模板
-        if err := controller.DeleteTemplate(name); err != nil {
-            // 如果添加失败，返回500错误信息
-            ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-            return
+        errs := controller.DeleteTemplate(names)
+
+        if len(errs) == 0 {
+            ctx.JSON(http.StatusOK, gin.H{"message": true})
+        }else{
+            // 获取错误信息
+            errMsg := make([]string, len(errs))
+            // 如果有错误，将错误转换为字符串数组并返回500错误
+            if len(errs) > 0 {
+                for i, err := range errs {
+                    errMsg[i] = err.Error()
+                }
+            }
+            ctx.JSON(http.StatusInternalServerError, gin.H{"message": errMsg})
         }
-        ctx.JSON(http.StatusOK, gin.H{"message": true})
+        
     })
 
     // 处理模板刷新请求
