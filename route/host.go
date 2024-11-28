@@ -85,7 +85,7 @@ func SettingHost(group *gin.RouterGroup,lock *sync.Mutex) {
     })
 
     // 设置主机更换模板请求
-    route.POST("/swicth",func(ctx *gin.Context) {
+    route.POST("/switch",func(ctx *gin.Context) {
         // 获取需要更换模板的主机列表以及更换的模板
         urls := ctx.PostFormArray("urls")
         template := ctx.PostForm("template")
