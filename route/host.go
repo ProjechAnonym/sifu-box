@@ -23,7 +23,7 @@ func SettingHost(group *gin.RouterGroup) {
     route.GET("fetch", func(ctx *gin.Context) {
         var hosts []models.Host
         // 从数据库中查询主机信息
-        if err := utils.DiskDb.Select("url", "config", "localhost", "secret", "port").Find(&hosts).Error; err != nil {
+        if err := utils.DiskDb.Select("url", "config", "localhost", "secret", "port","template").Find(&hosts).Error; err != nil {
             // 记录日志并返回错误信息
             utils.LoggerCaller("从数据库中获取主机失败", err, 1)
             ctx.JSON(http.StatusInternalServerError, gin.H{"message": "连接数据库失败"})
@@ -53,7 +53,8 @@ func SettingHost(group *gin.RouterGroup) {
             return
         }
         content.Localhost = isLocalhost
-
+        // 设置模板为默认模板
+        content.Template = "default"
         // 将主机信息写入数据库
         if err := utils.DiskDb.Create(&content).Error; err != nil {
             // 记录日志并返回数据库写入错误信息
@@ -79,6 +80,21 @@ func SettingHost(group *gin.RouterGroup) {
         }
 
         // 返回成功删除信息
+        ctx.JSON(http.StatusOK, gin.H{"message": true})
+    })
+
+    // 设置主机更换模板请求
+    route.POST("/swicth",func(ctx *gin.Context) {
+        // 获取需要更换模板的主机列表以及更换的模板
+        urls := ctx.PostFormArray("urls")
+        template := ctx.PostForm("template")
+        
+        // 执行更换模板操作
+        if err := utils.DiskDb.Table("hosts").Where("url IN (?)", urls).Update("template",template).Error; err != nil {
+            utils.LoggerCaller("数据库查询失败", err, 1)
+            ctx.JSON(http.StatusInternalServerError, gin.H{"message": "数据库查询失败"})
+            return
+        }
         ctx.JSON(http.StatusOK, gin.H{"message": true})
     })
 }

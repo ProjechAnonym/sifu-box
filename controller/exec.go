@@ -24,7 +24,7 @@ func UpdateConfig(addr, config string, lock *sync.Mutex) error {
     // 使用DiskDb查询数据库,获取指定地址的主机信息
     // 查询条件是主机的URL等于传入的addr
     // 如果查询错误,记录日志并返回错误信息
-    if err := utils.DiskDb.Model(&host).Select("localhost", "url", "username", "password").Where("url = ?", addr).First(&host).Error; err != nil {
+    if err := utils.DiskDb.Model(&host).Select("localhost", "url", "username", "password","template").Where("url = ?", addr).First(&host).Error; err != nil {
         utils.LoggerCaller("获取主机失败", err, 1)
         return fmt.Errorf("获取主机失败")
     }

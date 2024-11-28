@@ -67,8 +67,7 @@ func ExecUpdate(label string, providers []models.Provider, host models.Host, spe
 	// 定义原配置文件路径、备份文件路径和新配置文件路径
 	originalPath := "/opt/singbox/config.json"
 	backupPath := filepath.Join(projectDir.(string), "backup", backupFile+".json")
-	newPath := filepath.Join(projectDir.(string), "static", "default", newFile+".json")
-
+	newPath := filepath.Join(projectDir.(string), "static", host.Template, newFile+".json")
 	// 更新配置文件
 	if err := UpdateFile(originalPath, newPath, backupPath, host); err != nil {
 		return err
