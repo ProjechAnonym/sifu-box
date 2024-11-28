@@ -6,6 +6,7 @@ import (
 	"sifu-box/middleware"
 	"sifu-box/models"
 	"sifu-box/utils"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +14,7 @@ import (
 // SettingHost 配置与主机相关的路由处理函数
 // 该函数设置了三个与主机相关的端点：获取主机列表、添加主机、删除主机
 // 参数 group: *gin.RouterGroup 类型,用于创建路由组
-func SettingHost(group *gin.RouterGroup) {
+func SettingHost(group *gin.RouterGroup,lock *sync.Mutex) {
     // 创建路由组,用于管理与主机相关的请求
     route := group.Group("/host")
     // 使用中间件进行令牌认证
@@ -95,6 +96,20 @@ func SettingHost(group *gin.RouterGroup) {
             ctx.JSON(http.StatusInternalServerError, gin.H{"message": "数据库查询失败"})
             return
         }
-        ctx.JSON(http.StatusOK, gin.H{"message": true})
+
+        // 更换模板需要对主机更换配置文件
+        errs := controller.SwitchTemplate(template,urls,lock)
+        if len(errs) == 0 {
+            // 没有错误,返回true
+            ctx.JSON(http.StatusOK, gin.H{"message": true})
+        }else{
+            // 获取错误信息
+            errsMsg := make([]string,len(errs))
+            for i,errMsg := range errs {
+                errsMsg[i] = errMsg.Error()
+            }
+            ctx.JSON(http.StatusInternalServerError, gin.H{"message": errsMsg})
+        }
+        
     })
 }

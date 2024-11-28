@@ -67,7 +67,7 @@ func main() {
 		route.SettingPages(server)
 		apiGroup := server.Group("/api")
 		apiGroup.GET("verify",middleware.TokenAuth())
-		route.SettingHost(apiGroup)
+		route.SettingHost(apiGroup,&lock)
 		route.SettingFiles(apiGroup)
 		route.SettingProxy(apiGroup,&lock)
 		route.SettingMigrate(apiGroup)
