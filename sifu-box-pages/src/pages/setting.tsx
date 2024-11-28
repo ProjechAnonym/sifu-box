@@ -1,21 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
-import {
-  Modal,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalBody,
-  useDisclosure,
-  Button,
-  Divider,
-} from "@nextui-org/react";
+import { Button, Divider, Tooltip } from "@nextui-org/react";
+import TemplateDash from "@/layout/templateDash";
 import Load from "@/components/load";
 import toast from "react-hot-toast";
-import HostAdd from "@/components/setting/addHost";
+import HostDash from "@/layout/HostDash";
 import { ClienAuth } from "@/utils/ClientAuth";
-import { AddHost } from "@/utils/host/Addhost";
+import { FetchHosts } from "@/utils/host/FetchHost";
+import { FetchTemplate } from "@/utils/template/FetchTemplate";
+import { GetConfig, ImportConfig } from "@/utils/migrate/Migration";
+import { HostValue } from "@/types/host";
+
 function redirectLogin(navigate: NavigateFunction) {
   navigate("/login");
   toast.error("Please login", { duration: 2000 });
@@ -23,90 +19,133 @@ function redirectLogin(navigate: NavigateFunction) {
 export default function Setting() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const recoverInput = useRef<HTMLInputElement>(null);
+  const sifuboxInput = useRef<HTMLInputElement>(null);
+  const headRef = useRef<HTMLHeadElement>(null);
+  const [headHeight, setHeadHeight] = useState(0);
+  const [updateTemplate, setUpdateTemplate] = useState(true);
+  const [updateHosts, setUpdateHosts] = useState(true);
+  const [hosts, setHosts] = useState<Array<HostValue> | null>(null);
+  const [templates, setTemplates] = useState<Array<{
+    Name: string;
+    Template: Object;
+  }> | null>(null);
   const secret = useAppSelector((state) => state.auth.secret);
   const status = useAppSelector((state) => state.auth.status);
   const login = useAppSelector((state) => state.auth.login);
   const load = useAppSelector((state) => state.auth.load);
   const dark = useAppSelector((state) => state.mode.dark);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [token, setToken] = useState("");
-  const [url, setUrl] = useState("");
-  const [port, setPort] = useState(0);
+
   useEffect(() => {
     !login && !status && dispatch(ClienAuth({ auto: true }));
     login && !status && !load && redirectLogin(navigate);
-  }, [status, login, load]);
+    headRef.current && setHeadHeight(headRef.current.clientHeight);
+    status &&
+      updateHosts &&
+      FetchHosts(secret)
+        .then((res) => {
+          res ? setHosts(res) : toast.error("Fetch servers failed");
+          setUpdateHosts(false);
+        })
+        .catch((err) =>
+          err.code === "ERR_NETWORK"
+            ? toast.error("网络错误")
+            : toast.error("Fetch servers failed")
+        );
+    status &&
+      updateTemplate &&
+      FetchTemplate(secret)
+        .then((res) => {
+          setTemplates(res);
+          setUpdateTemplate(false);
+        })
+        .catch((e) => {
+          setUpdateTemplate(false);
+          e.code === "ERR_NETWORK"
+            ? toast.error("网络错误")
+            : toast.error(e.response.data.message);
+        });
+  }, [
+    status,
+    login,
+    load,
+    headRef.current?.clientHeight,
+    updateTemplate,
+    updateHosts,
+  ]);
+
   return (
     <div className="h-full">
       <Load show={load} fullscreen={true} />
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-        <ModalContent
-          className={`${
-            dark ? "sifudark" : "sifulight"
-          } bg-background text-foreground`}
-        >
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                添加主机
-              </ModalHeader>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  toast.promise(
-                    AddHost(secret, {
-                      username,
-                      password,
-                      secret: token,
-                      url,
-                      port,
-                    }),
-                    {
-                      loading: "loading",
-                      success: (res) => {
-                        res && onClose();
-                        return `添加${url}成功`;
-                      },
-                      error: (err) => `${err.response.data.message}`,
-                    }
-                  );
-                }}
+      <header ref={headRef}>
+        <HostDash
+          secret={secret}
+          dark={dark}
+          hosts={hosts}
+          templates={templates}
+          setUpdateHosts={setUpdateHosts}
+        />
+        <div className="p-2 flex flex-wrap gap-2 items-center">
+          <Button onPress={() => GetConfig(secret)} color="primary" size="sm">
+            <span className="font-black text-lg">备份</span>
+          </Button>
+          <Button color="danger" size="sm">
+            <label htmlFor="recoverFile-upload" className="font-black text-lg">
+              恢复
+            </label>
+          </Button>
+          <input
+            type="file"
+            id="recoverFile-upload"
+            className="hidden"
+            onChange={(e) =>
+              e.target.files &&
+              toast.promise(ImportConfig(secret, e.target.files), {
+                loading: "loading",
+                success: (res) => {
+                  if (recoverInput.current) {
+                    recoverInput.current.value = "";
+                  }
+                  return res ? "恢复成功" : "恢复失败";
+                },
+                error: (err) => {
+                  if (recoverInput.current) {
+                    recoverInput.current.value = "";
+                  }
+                  return err.code === "ERR_NETWORK"
+                    ? "网络错误"
+                    : `${err.response.data.message}`;
+                },
+              })
+            }
+            ref={recoverInput}
+          />
+          <Tooltip content="上传sifu-box新版本,务必确保文件名为sifu-box">
+            <Button color="primary" size="sm">
+              <label
+                htmlFor="sifuboxFile-upload"
+                className="font-black text-md"
               >
-                <ModalBody>
-                  <HostAdd
-                    setPassword={setPassword}
-                    setPort={setPort}
-                    setToken={setToken}
-                    setUrl={setUrl}
-                    setUsername={setUsername}
-                    url={url}
-                    password={password}
-                    token={token}
-                    username={username}
-                    port={port}
-                  />
-                </ModalBody>
-                <ModalFooter className="w-full">
-                  <Button color="danger" onPress={onClose} type="button">
-                    <span className="text-lg font-black">关闭</span>
-                  </Button>
-                  <Button color="primary" type="submit">
-                    <span className="text-lg font-black">提交</span>
-                  </Button>
-                </ModalFooter>
-              </form>
-            </>
-          )}
-        </ModalContent>
-      </Modal>
-      <header className="p-2 flex flex-wrap gap-x-2 gap-y-1 items-center">
-        <Button onPress={onOpen} color="primary">
-          <span className="font-black text-lg">添加主机</span>
-        </Button>
+                上传sifu-box
+              </label>
+            </Button>
+          </Tooltip>
+          <input
+            type="file"
+            id="sifuboxFile-upload"
+            className="hidden"
+            ref={sifuboxInput}
+          />
+        </div>
       </header>
       <Divider />
+      <TemplateDash
+        secret={secret}
+        dark={dark}
+        headHeight={headHeight}
+        template={templates}
+        setUpdateTemplate={setUpdateTemplate}
+      />
     </div>
   );
 }

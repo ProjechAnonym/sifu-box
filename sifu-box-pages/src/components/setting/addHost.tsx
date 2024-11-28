@@ -1,29 +1,47 @@
+import { useState, useEffect } from "react";
 import { Input, Button } from "@nextui-org/react";
+import toast from "react-hot-toast";
+import { AddHost } from "@/utils/host/Addhost";
 export default function HostAdd(props: {
-  username: string;
-  password: string;
-  token: string;
-  url: string;
-  port: number;
-  setUsername: (username: string) => void;
-  setPassword: (password: string) => void;
-  setUrl: (url: string) => void;
-  setToken: (token: string) => void;
-  setPort: (port: number) => void;
+  secret: string;
+  submit: boolean;
+  setUpdateHosts: (updateHosts: boolean) => void;
+  setSubmit: (submit: boolean) => void;
+  onClose: () => void;
 }) {
-  const {
-    username,
-    password,
-    token,
-    url,
-    port,
-    setPassword,
-    setPort,
-    setToken,
-    setUrl,
-    setUsername,
-  } = props;
-
+  const { submit, setUpdateHosts, secret, setSubmit, onClose } = props;
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [token, setToken] = useState("");
+  const [url, setUrl] = useState("");
+  const [port, setPort] = useState(0);
+  useEffect(() => {
+    submit &&
+      toast.promise(
+        AddHost(secret, {
+          username,
+          password,
+          secret: token,
+          url,
+          port,
+        }),
+        {
+          loading: "loading",
+          success: (res) => {
+            res && onClose();
+            setUpdateHosts(true);
+            setSubmit(false);
+            return `添加${url}成功`;
+          },
+          error: (err) => {
+            setSubmit(false);
+            return err.code === "ERR_NETWORK"
+              ? "网络错误"
+              : `${err.response.data.message}`;
+          },
+        }
+      );
+  }, [submit]);
   return (
     <>
       <div className="flex flex-row gap-2">
@@ -93,6 +111,7 @@ export default function HostAdd(props: {
             setToken("");
             setPort(0);
           }}
+          type="button"
         >
           <span className="font-black text-lg">清空</span>
         </Button>

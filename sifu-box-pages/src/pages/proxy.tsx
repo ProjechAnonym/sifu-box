@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
@@ -32,6 +32,7 @@ function redirectLogin(navigate: NavigateFunction) {
 export default function Proxy() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const yamlInput = useRef<HTMLInputElement>(null);
   const status = useAppSelector((state) => state.auth.status);
   const login = useAppSelector((state) => state.auth.login);
   const load = useAppSelector((state) => state.auth.load);
@@ -197,9 +198,14 @@ export default function Proxy() {
                       success: (res) => {
                         res && setRenewProxy(true);
                         setFile(null);
+                        yamlInput.current!.value = "";
                         return "成功添加yaml文件";
                       },
-                      error: (err) => `${err.response.data.message}`,
+                      error: (err) => {
+                        setFile(null);
+                        yamlInput.current!.value = "";
+                        return `${err.response.data.message}`;
+                      },
                     })
                   : toast.error("请选择文件");
               }}
@@ -222,6 +228,7 @@ export default function Proxy() {
                 className="hidden"
                 onChange={(e) => setFile(e.target.files)}
                 multiple
+                ref={yamlInput}
               />
               <Button
                 type="submit"
@@ -285,7 +292,7 @@ export default function Proxy() {
       </div>
       <Divider />
       <div className="h-1/2 w-full">
-        {rulesets.length !== 0 ? (
+        {rulesets ? (
           <ScrollShadow className="h-full px-2">
             <CheckboxGroup
               label={
