@@ -16,13 +16,9 @@ export async function UpgradeApp(
   );
   formData.append("file", application);
   try {
-    const res = await axios.post(
-      "http://192.168.213.128:8080/api/upgrade/singbox",
-      formData,
-      {
-        headers: { Authorization: secret },
-      }
-    );
+    const res = await axios.post("/api/upgrade/singbox", formData, {
+      headers: { Authorization: secret },
+    });
     return res.status === 200;
   } catch (e) {
     console.error(e);

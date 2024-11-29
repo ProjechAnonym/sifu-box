@@ -8,14 +8,10 @@ export async function ModifyTemplate(
   const content = JSON.parse(jsonString);
   const contentYaml = stringify(content);
   try {
-    const res = await axios.post(
-      "http://192.168.213.128:8080/api/templates/set",
-      contentYaml,
-      {
-        headers: { Authorization: secret },
-        params: { name: name },
-      }
-    );
+    const res = await axios.post("/api/templates/set", contentYaml, {
+      headers: { Authorization: secret },
+      params: { name: name },
+    });
     return res.status === 200;
   } catch (e) {
     console.error(e);

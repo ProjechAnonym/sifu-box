@@ -2,12 +2,9 @@ import axios from "axios";
 import { HostRevData } from "@/types/host";
 export async function FetchHosts(secret: string) {
   try {
-    const response = await axios.get(
-      "http://192.168.213.128:8080/api/host/fetch",
-      {
-        headers: { Authorization: secret },
-      }
-    );
+    const response = await axios.get("/api/host/fetch", {
+      headers: { Authorization: secret },
+    });
     return response.status === 200
       ? response.data.map((server: HostRevData, i: number) => {
           return {

@@ -13,11 +13,9 @@ export async function SwitchTemplate(
   formdata.append("template", template);
   console.log(secret);
   try {
-    const res = await axios.post(
-      "http://192.168.213.128:8080/api/host/switch",
-      formdata,
-      { headers: { Authorization: secret } }
-    );
+    const res = await axios.post("/api/host/switch", formdata, {
+      headers: { Authorization: secret },
+    });
     return res.status === 200;
   } catch (e) {
     console.error(e);
