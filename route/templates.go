@@ -77,7 +77,7 @@ func SettingTemplates(group *gin.RouterGroup){
     })
 
     // 处理模板刷新请求
-    route.GET("/refresh", func(ctx *gin.Context){
+    route.GET("/recover", func(ctx *gin.Context){
         // 调用控制器方法刷新模板
         recoverTemplate,err := controller.RefreshTemplates()
         // 如果发生错误，返回500错误信息
