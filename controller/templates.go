@@ -138,6 +138,11 @@ func DeleteTemplate(names []string) []error{
             utils.LoggerCaller("删除模板文件失败", err, 1)
             errs = append(errs, fmt.Errorf("删除模板文件失败"))
         }
+        // 删除此模板生成的配置文件
+        if err := utils.FileDelete(filepath.Join(projectDir.(string), "static", name)); err != nil{
+            utils.LoggerCaller("删除模板文件失败", err, 1)
+            errs = append(errs, fmt.Errorf("删除模板文件失败"))
+        }
         // 从模板配置中移除该模板
         delete(templates.(map[string]models.Template), name)
     }
