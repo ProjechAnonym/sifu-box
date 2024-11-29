@@ -5,10 +5,10 @@ import { Button, Divider, Tooltip } from "@nextui-org/react";
 import TemplateDash from "@/layout/templateDash";
 import Load from "@/components/load";
 import toast from "react-hot-toast";
-import HostDash from "@/layout/HostDash";
+import SetHost from "@/components/setting/setHost";
 import { ClienAuth } from "@/utils/ClientAuth";
 import { FetchHosts } from "@/utils/host/FetchHost";
-import { FetchTemplate } from "@/utils/template/FetchTemplate";
+import { FetchTemplate, RecoverTemplate } from "@/utils/template/FetchTemplate";
 import { GetConfig, ImportConfig } from "@/utils/migrate/Migration";
 import { HostValue } from "@/types/host";
 
@@ -30,6 +30,11 @@ export default function Setting() {
     Name: string;
     Template: Object;
   }> | null>(null);
+  const [baseTemplate, setBaseTemplate] = useState<{
+    Name: string;
+    Template: Object;
+  } | null>(null);
+  const [updateBaseTemplate, setUpdateBaseTemplate] = useState(true);
   const secret = useAppSelector((state) => state.auth.secret);
   const status = useAppSelector((state) => state.auth.status);
   const login = useAppSelector((state) => state.auth.login);
@@ -65,6 +70,19 @@ export default function Setting() {
             ? toast.error("网络错误")
             : toast.error(e.response.data.message);
         });
+    status &&
+      updateBaseTemplate &&
+      RecoverTemplate(secret)
+        .then((res) => {
+          setBaseTemplate(res);
+          setUpdateBaseTemplate(false);
+        })
+        .catch((e) => {
+          setUpdateBaseTemplate(false);
+          e.code === "ERR_NETWORK"
+            ? toast.error("网络错误")
+            : toast.error(e.response.data.message);
+        });
   }, [
     status,
     login,
@@ -72,20 +90,21 @@ export default function Setting() {
     headRef.current?.clientHeight,
     updateTemplate,
     updateHosts,
+    updateBaseTemplate,
   ]);
 
   return (
     <div className="h-full">
       <Load show={load} fullscreen={true} />
-      <header ref={headRef}>
-        <HostDash
+      <header ref={headRef} className="p-2">
+        <SetHost
           secret={secret}
           dark={dark}
           hosts={hosts}
           templates={templates}
           setUpdateHosts={setUpdateHosts}
         />
-        <div className="p-2 flex flex-wrap gap-2 items-center">
+        <div className="flex flex-wrap gap-2 items-center my-2">
           <Button onPress={() => GetConfig(secret)} color="primary" size="sm">
             <span className="font-black text-lg">备份</span>
           </Button>
@@ -140,6 +159,7 @@ export default function Setting() {
       </header>
       <Divider />
       <TemplateDash
+        baseTemplate={baseTemplate}
         secret={secret}
         dark={dark}
         headHeight={headHeight}

@@ -45,7 +45,7 @@ export default function SetHost(props: {
   }, [secret, errors]);
 
   return (
-    <header className="flex flex-wrap gap-2 items-center">
+    <div className="flex flex-wrap gap-2 items-center">
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <ModalContent
           className={`${
@@ -228,10 +228,9 @@ export default function SetHost(props: {
           </footer>
         </PopoverContent>
       </Popover>
-
       <Button onPress={onOpen} color="primary" size="sm">
         <span className="font-black text-md">添加主机</span>
       </Button>
-    </header>
+    </div>
   );
 }

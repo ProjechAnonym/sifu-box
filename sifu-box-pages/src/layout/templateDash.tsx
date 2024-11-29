@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
   Input,
   Button,
@@ -8,29 +8,43 @@ import {
   CardHeader,
   CardBody,
   CardFooter,
+  useDisclosure,
 } from "@nextui-org/react";
+import SetTemplate from "@/components/setting/setTemplate";
 import toast from "react-hot-toast";
 import { DeleteTemplate } from "@/utils/template/DeleteTemplate";
+
 export default function TemplateDash(props: {
   dark: boolean;
   secret: string;
   headHeight: number;
-  setUpdateTemplate: (updateTemplate: boolean) => void;
   template: Array<{
     Name: string;
     Template: Object;
   }> | null;
+  baseTemplate: { Name: string; Template: Object } | null;
+  setUpdateTemplate: (updateTemplate: boolean) => void;
 }) {
-  const { dark, secret, headHeight, template, setUpdateTemplate } = props;
-
+  const {
+    dark,
+    secret,
+    headHeight,
+    template,
+    setUpdateTemplate,
+    baseTemplate,
+  } = props;
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const [search, setSearch] = useState("");
-
+  const [newTemplate, setNewTemplate] = useState(false);
   const [displayTemplate, setDisplayTemplate] = useState<Array<{
     Name: string;
     Template: Object;
   }> | null>(null);
+  const [editTemplate, setEditTemplate] = useState<{
+    Name: string;
+    Template: Object;
+  } | null>();
   const [selected, setSelected] = useState<Array<string>>([]);
-  useEffect(() => {}, [secret]);
   useMemo(() => {
     template &&
       search &&
@@ -44,6 +58,15 @@ export default function TemplateDash(props: {
       className="p-2 overflow-auto"
       style={{ height: `calc(100% - ${headHeight}px)` }}
     >
+      <SetTemplate
+        isOpen={isOpen}
+        onClose={onClose}
+        dark={dark}
+        template={editTemplate ? editTemplate : null}
+        newTemplate={newTemplate}
+        secret={secret}
+        setUpdateTemplate={setUpdateTemplate}
+      />
       <header className="flex flex-row items-center gap-2 h-12">
         <Input
           variant="underlined"
@@ -54,7 +77,15 @@ export default function TemplateDash(props: {
           value={search}
           onValueChange={setSearch}
         />
-        <Button color="primary" size="sm">
+        <Button
+          color="primary"
+          size="sm"
+          onPress={() => {
+            onOpen();
+            setNewTemplate(true);
+            baseTemplate && setEditTemplate(baseTemplate);
+          }}
+        >
           <span className="text-lg font-black">添加</span>
         </Button>
         <Button
@@ -114,10 +145,11 @@ export default function TemplateDash(props: {
                 <CardFooter
                   className={`${
                     dark ? "bg-zinc-800" : "bg-slate-100"
-                  } flex justify-end`}
+                  } flex justify-end gap-2`}
                 >
                   {value.Name !== "default" && (
                     <Button
+                      size="sm"
                       color="danger"
                       onPress={() =>
                         toast.promise(DeleteTemplate(secret, [value.Name]), {
@@ -138,6 +170,17 @@ export default function TemplateDash(props: {
                       <span className="font-black text-lg">删除</span>
                     </Button>
                   )}
+                  <Button
+                    color="primary"
+                    size="sm"
+                    onPress={() => {
+                      onOpen();
+                      setNewTemplate(false);
+                      setEditTemplate(displayTemplate[i]);
+                    }}
+                  >
+                    <span className="font-black text-lg">修改</span>
+                  </Button>
                 </CardFooter>
               </Card>
             ))}
