@@ -82,6 +82,13 @@ export default function SetTemplate(props: {
                 size="sm"
                 color="primary"
                 onPress={() => {
+                  try {
+                    JSON.parse(content);
+                  } catch (e) {
+                    console.error(e);
+                    toast.error("模板内容解析失败");
+                    return;
+                  }
                   toast.promise(ModifyTemplate(secret, name, content), {
                     loading: "loading",
                     success: (res) => {
