@@ -8,6 +8,7 @@ import {
   Textarea,
   Button,
   Input,
+  Tooltip,
 } from "@nextui-org/react";
 import toast from "react-hot-toast";
 import { ModifyTemplate } from "@/utils/template/ModifyTemplate";
@@ -44,11 +45,11 @@ export default function SetTemplate(props: {
       >
         {(onClose) => (
           <>
-            <ModalHeader className="flex flex-row gap-x-6 items-center">
+            <ModalHeader className="flex flex-row gap-4 items-center">
               {template ? template.Name : "模板失效"}
               {newTemplate && (
                 <Input
-                  className="w-28"
+                  className="w-24"
                   size="sm"
                   variant="underlined"
                   label={<span className="font-black">模板名称</span>}
@@ -56,6 +57,18 @@ export default function SetTemplate(props: {
                   onValueChange={setName}
                 />
               )}
+              <Tooltip
+                classNames={{
+                  content: [`${dark ? "bg-zinc-800" : "bg-slate-100"}`],
+                }}
+                content={
+                  <span className="text-red-600 text-sm font-black w-48 p-2">
+                    出于安全,新添加或修改的模板不会直接生成配置文件。代理页面点击刷新才会生成配置文件并更新使用该模板的主机的配置.
+                  </span>
+                }
+              >
+                <i className="bi bi-question-circle-fill" />
+              </Tooltip>
             </ModalHeader>
             <ModalBody>
               <Textarea

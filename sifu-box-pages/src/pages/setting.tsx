@@ -139,7 +139,18 @@ export default function Setting() {
             }
             ref={recoverInput}
           />
-          <Tooltip content="上传sifu-box新版本,务必确保文件名为sifu-box">
+          <Tooltip
+            content={
+              <span
+                className={`${dark ? "sifudark" : "sifulight"} text-foreground`}
+              >
+                上传sifu-box新版本,务必确保文件名为sifu-box
+              </span>
+            }
+            classNames={{
+              content: [`${dark ? "bg-zinc-800" : "bg-slate-100"}`],
+            }}
+          >
             <Button color="primary" size="sm">
               <label
                 htmlFor="sifuboxFile-upload"

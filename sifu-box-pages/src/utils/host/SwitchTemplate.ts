@@ -11,7 +11,6 @@ export async function SwitchTemplate(
     formdata.append("urls", value.toString().split("-")[0]);
   });
   formdata.append("template", template);
-  console.log(secret);
   try {
     const res = await axios.post("/api/host/switch", formdata, {
       headers: { Authorization: secret },

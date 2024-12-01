@@ -28,7 +28,10 @@ export default function DefaultLayout(props: { children: ReactNode }) {
       >
         {children}
       </div>
-      <FooterBar height_callback={(height) => set_Footer_Height(height)} />
+      <FooterBar
+        height_callback={(height) => set_Footer_Height(height)}
+        dark={dark}
+      />
     </div>
   );
 }

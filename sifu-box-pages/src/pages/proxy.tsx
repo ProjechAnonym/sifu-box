@@ -133,7 +133,20 @@ export default function Proxy() {
             <Button size="sm" color="primary" onPress={onOpen}>
               <span className="text-lg font-black">添加</span>
             </Button>
-            <Tooltip content="根据配置重新生成json文件">
+            <Tooltip
+              classNames={{
+                content: [`${dark ? "bg-zinc-800" : "bg-slate-100"}`],
+              }}
+              content={
+                <span
+                  className={`${
+                    dark ? "sifudark" : "sifulight"
+                  } text-foreground`}
+                >
+                  根据配置重新生成json文件
+                </span>
+              }
+            >
               <Button
                 size="sm"
                 color="primary"
@@ -156,7 +169,20 @@ export default function Proxy() {
                 <span className="text-lg font-black">刷新</span>
               </Button>
             </Tooltip>
-            <Tooltip content="删除选中的机场链接和规则集">
+            <Tooltip
+              classNames={{
+                content: [`${dark ? "bg-zinc-800" : "bg-slate-100"}`],
+              }}
+              content={
+                <span
+                  className={`${
+                    dark ? "sifudark" : "sifulight"
+                  } text-foreground`}
+                >
+                  删除选中的机场链接和规则集
+                </span>
+              }
+            >
               <Button
                 size="sm"
                 color="danger"

@@ -37,7 +37,18 @@ export default function ServiceMonitor(props: {
           )}
         </div>
         <div className="flex flex-row gap-x-1">
-          <Tooltip content="boot up">
+          <Tooltip
+            content={
+              <span
+                className={`${dark ? "sifudark" : "sifulight"} text-foreground`}
+              >
+                boot up
+              </span>
+            }
+            classNames={{
+              content: [`${dark ? "bg-zinc-800" : "bg-slate-100"}`],
+            }}
+          >
             <Button
               isIconOnly
               size="sm"
@@ -58,7 +69,18 @@ export default function ServiceMonitor(props: {
               <i className="bi bi-capslock-fill" />
             </Button>
           </Tooltip>
-          <Tooltip content="check status">
+          <Tooltip
+            content={
+              <span
+                className={`${dark ? "sifudark" : "sifulight"} text-foreground`}
+              >
+                check status
+              </span>
+            }
+            classNames={{
+              content: [`${dark ? "bg-zinc-800" : "bg-slate-100"}`],
+            }}
+          >
             <Button
               isIconOnly
               size="sm"
@@ -82,7 +104,18 @@ export default function ServiceMonitor(props: {
               <i className="bi bi-radar" />
             </Button>
           </Tooltip>
-          <Tooltip content="stop sing-box">
+          <Tooltip
+            content={
+              <span
+                className={`${dark ? "sifudark" : "sifulight"} text-foreground`}
+              >
+                stop sing-box
+              </span>
+            }
+            classNames={{
+              content: [`${dark ? "bg-zinc-800" : "bg-slate-100"}`],
+            }}
+          >
             <Button
               isIconOnly
               size="sm"
