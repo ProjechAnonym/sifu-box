@@ -74,7 +74,9 @@ func main() {
 		route.SettingTemplates(apiGroup)
 		route.SettingUpgrade(apiGroup,&lock)
 		route.SettingExec(apiGroup,&lock,cronTask,&cronId)
-		server.Run(serverMode.(models.Server).Listen)
+		if err := server.Run(serverMode.(models.Server).Listen); err != nil {
+			utils.LoggerCaller("监听端口失败",err,1)
+		}
 	}else{
 		singbox.Workflow()
 	}
