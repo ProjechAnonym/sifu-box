@@ -43,9 +43,9 @@ dns:
 route:
   # 默认的出站规则,就是一些很基本不调就上不了网的
   rules:
-    - outbound: dns-out
+    - outbound: hijack-dns
       port: 53
-    - outbound: dns-out
+    - action: hijack-dns
       protocol: dns
     - ip_is_private: true
       outbound: direct
@@ -56,8 +56,6 @@ route:
   final: select
   auto_detect_interface: true
 outbounds:
-  - tag: dns-out
-    type: dns
   - tag: direct
     type: direct
   - tag: block

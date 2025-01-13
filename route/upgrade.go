@@ -49,7 +49,7 @@ func SettingUpgrade(group *gin.RouterGroup,lock *sync.Mutex) {
             return
         }
         // 执行升级工作流
-        upgradeErrors := controller.UpgradeWorkflow(content,addresses,filepath.Join("/opt","singbox","sing-box"),"sing-box",lock)
+        upgradeErrors := controller.UpgradeWorkflow(content,addresses,filepath.Join("/opt","singbox","bin","sing-box"),"sing-box",lock)
         if len(upgradeErrors) == 0 {
             // 如果没有升级错误，返回200和成功消息
             ctx.JSON(http.StatusOK,gin.H{"message":true})

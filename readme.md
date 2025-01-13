@@ -39,7 +39,7 @@ systemctl start sifu-box
 
 ### 路径配置
 
-sifu-box 本身的路径要求不严格,但是生成的 singbox 配置文件默认设置在`/opt/singbox/config.json`路径下,此外 singbox 的启动关闭是通过`systemctl`命令控制的,务必确保配置了系统服务
+sifu-box 路径要求为在`/opt/singbox/bin/sing-box`,不在这个路径的话 sing-box 自动升级功能是无法使用的。生成的 singbox 配置文件默认设置在`/opt/singbox/config.json`路径下,此外 singbox 的启动关闭是通过`systemctl`命令控制的,务必确保配置了系统服务
 
 ### 必备文件
 

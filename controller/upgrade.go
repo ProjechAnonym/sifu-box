@@ -18,7 +18,7 @@ import (
 //   service: 需要升级的服务名称。。
 // 返回值:
 //   如果升级过程中发生错误，则返回错误。
-func upgradeApp(content []byte, path,addr,service string) error {
+func upgradeApp(content []byte, path, addr, service string) error {
     // 查询数据库以获取目标主机的信息。
     var host models.Host
     if err := utils.DiskDb.Table("hosts").Where("url = ?", addr).First(&host).Error; err != nil {
