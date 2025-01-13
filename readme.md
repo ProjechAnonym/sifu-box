@@ -22,7 +22,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/opt/sifubox/sifu-box
+ExecStart=/opt/sifubox/bin/sifu-box
 Restart=on-failure
 
 [Install]
