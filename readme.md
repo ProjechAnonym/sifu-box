@@ -47,6 +47,8 @@ sifu-box 路径要求为在`/opt/singbox/bin/sing-box`,不在这个路径的话 
 
 .
 |-- dist
+|-- bin
+| `-- sifu-box
 |-- config
 | |-- proxy.config.yaml
 | |-- recover.template.yaml
