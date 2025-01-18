@@ -71,7 +71,7 @@ providers: [
     # 订阅链接列表,每个订阅链接应包含如下几项
     {
       path: "https://sub2.smallstrawberry.com/api/v1/client/subscribe?toke", # 订阅链接
-      proxy: true, # 是否使用代理下载配置文件,仅服务模式有效
+      detour: select, # 是否使用代理下载配置文件,仅服务模式有效
       name: 一速云, # 机场的名称
       remote: true, # 是否是远程订阅,如果是本地配置文件则path应为配置文件的绝对路径
     },
@@ -85,7 +85,7 @@ rulesets: [
       url: https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs, # 规则集的链接,仅type为remote时有效
       format: binary, # 规则集文件的格式,可选值: binary, source,
       china: false, # 是否中国地区规则集,如果为true,则在singbox配置中会直连出站
-      dnsRule: "external", # 与singbox的dns搭配使用,命中该规则集的dns请求会从指定的dns服务器出站
+      outbound: "external", # 与singbox的dns搭配使用,命中该规则集的dns请求会从指定的dns服务器出站
       label: china, # 规则集的组标签,与tag不同,这个是搭配使用的,比如china-ip和china-site会在route中共同组成一个规则出站
       download_detour: select, # 下载时使用的出站策略,默认为select
       update_interval: 1d, # 更新时间间隔,默认为1天

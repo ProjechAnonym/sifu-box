@@ -1,0 +1,150 @@
+providers:
+  - name: "github"
+    path: "github.com/golang/go"
+    detour: select
+    remote: false
+  - name: "github1"
+    path: "github1.com/golang/go"
+    detour: select
+    remote: false
+rulesets:
+  - tag: chatgpt # 规则集的名称
+    type: local # 远程规则集还是本地规则集,可选值: local, remote
+    path: /opt/singbox/chatgpt.json # 规则集的路径,仅type为local时有效
+    format: binary # 规则集文件的格式,可选值: binary, source,
+    china: false # 是否中国地区规则集,如果为true,则在singbox配置中会直连出站
+    outbound: external # 与singbox的dns搭配使用,命中该规则集的dns请求会从指定的dns服务器出站
+    label: china # 规则集的组标签,与tag不同,这个是搭配使用的,比如china-ip和china-site会在route中共同组成一个规则出站
+    download_detour: select # 下载时使用的出站策略,默认为select
+    update_interval: 1d # 更新时间间隔,默认为1天
+  - tag: chatgpt1 # 规则集的名称
+    type: local # 远程规则集还是本地规则集,可选值: local, remote
+    path: /opt/singbox/chatgpt1.json # 规则集的路径,仅type为local时有效
+    format: binary # 规则集文件的格式,可选值: binary, source,
+    china: false # 是否中国地区规则集,如果为true,则在singbox配置中会直连出站
+    outbound: external # 与singbox的dns搭配使用,命中该规则集的dns请求会从指定的dns服务器出站
+    label: china # 规则集的组标签,与tag不同,这个是搭配使用的,比如china-ip和china-site会在route中共同组成一个规则出站
+    download_detour: select # 下载时使用的出站策略,默认为select
+    update_interval: 1d # 更新时间间隔,默认为1天
+templates:
+  default:
+    log:
+      disabled: true
+    experimental:
+      cache_file:
+        enabled: true
+      clash_api:
+        external_controller: 0.0.0.0:9090
+        external_ui: ui
+        external_ui_download_detour: select
+        external_ui_download_url: https://github.com/MetaCubeX/Yacd-meta/archive/gh-pages.zip
+        secret: "123456"
+    inbounds:
+      - address:
+          - 172.18.0.1/30
+          - fdfe:dcba:9876::1/126
+        auto_route: true
+        interface_name: tun0
+        mtu: 9000
+        stack: mixed
+        strict_route: true
+        tag: tun-in
+        type: tun
+    dns:
+      final: external
+      strategy: prefer_ipv4
+      reverse_mapping: true
+      servers:
+        - tag: external
+          address: tls://8.8.8.8
+          detour: select
+        - tag: internal
+          address: 223.5.5.5
+          detour: direct
+        - tag: dns_block
+          address: rcode://refused
+      rules:
+        - outbound:
+            - any
+          action: route
+          server: internal
+    route:
+      # 默认的出站规则,就是一些很基本不调就上不了网的
+      rules:
+        - action: hijack-dns
+          port:
+            - 53
+        - action: hijack-dns
+          protocol:
+            - dns
+        - action: route
+          outbound: direct
+          ip_is_private: true
+        - protocol:
+            - quic
+          action: reject
+      # 默认出站节点不能改,很多配置下载需要代理,我设置的都是select
+      final: select
+      auto_detect_interface: true
+    outbounds:
+      - tag: direct
+        type: direct
+      - tag: block
+        type: block
+  ios:
+    log:
+      disabled: true
+    experimental:
+      cache_file:
+        enabled: true
+      clash_api:
+        external_controller: 0.0.0.0:9090
+        external_ui: ui
+        external_ui_download_detour: select
+        external_ui_download_url: https://github.com/MetaCubeX/Yacd-meta/archive/gh-pages.zip
+        secret: "123456"
+    inbounds:
+      - address:
+          - 172.18.0.1/30
+          - fdfe:dcba:9876::1/126
+        auto_route: true
+        interface_name: tun0
+        mtu: 9000
+        stack: mixed
+        strict_route: true
+        tag: tun-in
+        type: tun
+    dns:
+      final: external
+      strategy: prefer_ipv4
+      reverse_mapping: true
+      servers:
+        - tag: external
+          address: tls://8.8.8.8
+          detour: select
+        - tag: internal
+          address: 223.5.5.5
+          detour: direct
+        - tag: dns_block
+          address: rcode://refused
+      rules: [{ outbound: [any], action: route, server: internal }]
+
+    route:
+      # 默认的出站规则,就是一些很基本不调就上不了网的
+      rules:
+        [
+          { action: hijack-dns, port: [53] },
+          { action: hijack-dns, protocol: [dns] },
+          { ip_is_private: true, action: route, outbound: direct },
+          { protocol: [quic], action: reject },
+        ]
+      # 默认出站节点不能改,很多配置下载需要代理,我设置的都是select
+      final: select
+      auto_detect_interface: true
+    outbounds:
+      - tag: direct
+        type: direct
+      - tag: block
+        type: block
+server:
+  enabled: true

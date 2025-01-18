@@ -1,13 +1,18 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"sifu-box/ent"
 	"sifu-box/models"
+	"sifu-box/utils"
 
+	"entgo.io/ent/dialect"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/natefinch/lumberjack"
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
@@ -17,34 +22,88 @@ import (
 
 var workflowLogger *zap.Logger
 var buntClient *buntdb.DB
+var entClient *ent.Client
 var workDir string
 func init() {
 	var err error
 	workDir = getWorkDir()
+	initLogger := getLogger(workDir, "init")
+	defer initLogger.Sync()
 	workflowLogger = getLogger(workDir, "workflow")
 	buntClient, err = buntdb.Open(":memory:")
 	if err != nil {
 		workflowLogger.Error(fmt.Sprintf("连接Buntdb数据库失败: [%s]",err.Error()))
 		panic(err)
 	}
-	
-	
-	file,_ := os.Open(filepath.Join(workDir, "static", "default.template.yaml"))
-	defer file.Close()
-	content, _ := io.ReadAll(file)
-	var template models.Template
-	yaml.Unmarshal(content, &template)
-	
-	
-	a,_ := json.MarshalIndent(template, "", "  ")
-	fmt.Println(string(a))
+	initLogger.Info("内存数据库BuntDB初始化完成")
+	entClient, err = ent.Open(dialect.SQLite, fmt.Sprintf("file:%s/sifu-box.db?cache=shared&_fk=1", workDir))
+	if err != nil {
+		workflowLogger.Error(fmt.Sprintf("连接Ent数据库失败: [%s]",err.Error()))
+		panic(err)
+	}
+	initLogger.Info("连接Ent数据库完成")
+	if err = entClient.Schema.Create(context.Background()); err != nil {
+		workflowLogger.Error(fmt.Sprintf("创建表资源失败: [%s]",err.Error()))
+		panic(err)
+	}
+	initLogger.Info("自动迁移Ent数据库完成")
+	if err := loadSetting(workDir, buntClient, initLogger); err != nil {
+		panic(err)
+	}
+	initLogger.Info("加载配置文件完成")
+	if err := setDefaultTemplate(workDir, buntClient, initLogger); err != nil {
+		panic(err)
+	}
+	settingStr, err := utils.GetValue(buntClient, "setting", initLogger)
+	if err != nil {
+		initLogger.Error(fmt.Sprintf("获取配置文件失败: [%s]",err.Error()))
+		panic(err)
+	}
+	var setting models.Setting
+	if err := json.Unmarshal([]byte(settingStr), &setting); err != nil {
+		initLogger.Error(fmt.Sprintf("解析配置文件失败: [%s]",err.Error()))
+		panic(err)
+	}
+	if setting.Server.Enabled {
+		providers := make([]*ent.ProviderCreate, len(setting.Providers))
+		for i, provider := range setting.Providers {
+			providers[i] = entClient.Provider.Create().SetName(provider.Name).SetDetour(provider.Detour).SetPath(provider.Path).SetRemote(provider.Remote)
+		}
+		if _, err := entClient.Provider.CreateBulk(providers...).Save(context.Background()); err != nil {
+			if !ent.IsConstraintError(err) {
+				initLogger.Error(fmt.Sprintf("保存数据失败: [%s]", err.Error()))
+			}
+		}
+		initLogger.Info("数据库写入机场信息完成")
+		rulesets := make([]*ent.RuleSetCreate, len(setting.Rulesets))
+		for i, ruleset := range setting.Rulesets {
+			rulesets[i] = entClient.RuleSet.Create().
+											SetTag(ruleset.Tag).
+											SetOutbound(ruleset.Outbound).
+											SetPath(ruleset.Path).
+											SetType(ruleset.Type).
+											SetFormat(ruleset.Format).
+											SetChina(ruleset.China).
+											SetLabel(ruleset.Label).
+											SetDownloadDetour(ruleset.DownloadDetour).
+											SetUpdateInterval(ruleset.UpdateInterval)
+		}
+		if _, err := entClient.RuleSet.CreateBulk(rulesets...).Save(context.Background()); err != nil {
+			if !ent.IsConstraintError(err) {
+				initLogger.Error(fmt.Sprintf("保存数据失败: [%s]", err.Error()))
+			}
+		}
+		initLogger.Info("数据库写入规则集信息完成")
+	}
 }
 
 func main() {
 	defer func() {
 		workflowLogger.Sync()
 		buntClient.Close()
+		entClient.Close()
 	}()
+
 }
 
 func getWorkDir() string {
@@ -62,7 +121,7 @@ func getEncoder() zapcore.Encoder {
 
 func getWriter(level, task, workDir string) zapcore.WriteSyncer {
 	lumberJackLogger := &lumberjack.Logger{
-		Filename:   fmt.Sprintf("%s/logs/sifu-stock-%s-%s.log", workDir, task, level),
+		Filename:   fmt.Sprintf("%s/logs/sifu-box-%s-%s.log", workDir, task, level),
 		MaxSize:    1,
 		MaxBackups: 1,
 		MaxAge:     1,
@@ -83,3 +142,60 @@ func getLogger(workDir, task string) *zap.Logger{
 	return logger
 }
 
+func setDefaultTemplate(workDir string, buntClient *buntdb.DB, logger *zap.Logger) error {
+	file, err := os.Open(filepath.Join(workDir, "static", "default.template.yaml"))
+	if err != nil {
+		logger.Error(fmt.Sprintf("打开默认模板文件失败: [%s]",err.Error()))
+		return err
+	}
+	defer file.Close()
+	content, err := io.ReadAll(file)
+	if err != nil {
+		logger.Error(fmt.Sprintf("读取默认模板文件失败: [%s]",err.Error()))
+		return err
+	}
+	var template models.Template
+	if err := yaml.Unmarshal(content, &template); err != nil {
+		logger.Error(fmt.Sprintf("解析默认模板文件失败: [%s]",err.Error()))
+		return err
+	}
+	templateByte, err := json.Marshal(template)
+	if err != nil {
+		logger.Error(fmt.Sprintf("序列化默认模板文件失败: [%s]",err.Error()))
+		return err
+	}
+	if err := utils.SetValue(buntClient, "template:default", string(templateByte), logger); err != nil {
+		logger.Error(fmt.Sprintf("默认模板文件写入buntDB失败: [%s]",err.Error()))
+		return err
+	}
+	return nil
+}
+
+func loadSetting(workDir string, buntClient *buntdb.DB, logger *zap.Logger) error{
+	file, err := os.Open(filepath.Join(workDir, "config", "config.yaml"))
+	if err != nil {
+		logger.Error(fmt.Sprintf("打开默认模板文件失败: [%s]",err.Error()))
+		return err
+	}
+	defer file.Close()
+	content, err := io.ReadAll(file)
+	if err != nil {
+		logger.Error(fmt.Sprintf("读取默认模板文件失败: [%s]",err.Error()))
+		return err
+	}
+	var setting models.Setting
+	if err := yaml.Unmarshal(content, &setting); err != nil {
+		logger.Error(fmt.Sprintf("解析默认模板文件失败: [%s]",err.Error()))
+		return err
+	}
+	settingByte, err := json.Marshal(setting)
+	if err != nil {
+		logger.Error(fmt.Sprintf("序列化默认模板文件失败: [%s]",err.Error()))
+		return err
+	}
+	if err := utils.SetValue(buntClient, "setting", string(settingByte), logger); err != nil {
+		logger.Error(fmt.Sprintf("默认模板文件写入buntDB失败: [%s]",err.Error()))
+		return err
+	}
+	return nil
+}

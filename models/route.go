@@ -62,7 +62,7 @@ type RouteRule struct {
 	RouteLogic               `json:",inline" yaml:",inline"`
 }
 
-type RuleSet struct {
+type RouteRuleSet struct {
 	Type           string `json:"type" yaml:"type"`
 	Tag            string `json:"tag" yaml:"tag"`
 	Format         string `json:"format" yaml:"format"`
@@ -72,11 +72,11 @@ type RuleSet struct {
 	Path           string `json:"path,omitempty" yaml:"path,omitempty"`
 }
 type Route struct {
-	RuleSet             []RuleSet   `json:"rule_set,omitempty" yaml:"rule_set,omitempty"`
-	Rules               []RouteRule `json:"rules" yaml:"rules"`
-	Final               string      `json:"final,omitempty" yaml:"final,omitempty"`
-	AutoDetectInterface bool        `json:"auto_detect_interface" yaml:"auto_detect_interface"`
-	OverrideAndroidVpn  bool        `json:"override_android_vpn,omitempty" yaml:"override_android_vpn,omitempty"`
-	DefaultInterface    string      `json:"default_interface,omitempty" yaml:"default_interface,omitempty"`
-	DefaultMark         uint        `json:"default_mark,omitempty" yaml:"default_mark,omitempty"`
+	RuleSet             []RouteRuleSet `json:"rule_set,omitempty" yaml:"rule_set,omitempty"`
+	Rules               []RouteRule    `json:"rules" yaml:"rules"`
+	Final               string         `json:"final,omitempty" yaml:"final,omitempty"`
+	AutoDetectInterface bool           `json:"auto_detect_interface" yaml:"auto_detect_interface"`
+	OverrideAndroidVpn  bool           `json:"override_android_vpn,omitempty" yaml:"override_android_vpn,omitempty"`
+	DefaultInterface    string         `json:"default_interface,omitempty" yaml:"default_interface,omitempty"`
+	DefaultMark         uint           `json:"default_mark,omitempty" yaml:"default_mark,omitempty"`
 }
