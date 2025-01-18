@@ -6,6 +6,7 @@ type DNSLogic struct {
 	Mode  string    `json:"mode,omitempty" yaml:"mode,omitempty"`
 }
 type DNSAction struct {
+	Action       string `json:"action,omitempty" yaml:"action,omitempty"`
 	Server       string `json:"server,omitempty" yaml:"server,omitempty"`
 	DisableCache bool   `json:"disable_cache,omitempty" yaml:"disable_cache,omitempty"`
 	RewriteTTL   int    `json:"rewrite_ttl,omitempty" yaml:"rewrite_ttl,omitempty"`
@@ -50,8 +51,8 @@ type DNSRule struct {
 	RuleSetIPCIDRAcceptEmpty bool          `json:"rule_set_ip_cidr_accept_empty,omitempty" yaml:"rule_set_ip_cidr_accept_empty,omitempty"`
 	Invert                   bool          `json:"invert,omitempty" yaml:"invert,omitempty"`
 	Outbound                 []string      `json:"outbound,omitempty" yaml:"outbound,omitempty"`
-	DNSLogic
-	DNSAction
+	DNSLogic                 `json:",inline" yaml:",inline"`
+	DNSAction                `json:",inline" yaml:",inline"`
 }
 
 type FakeIP struct {
@@ -69,14 +70,14 @@ type NameServer struct {
 	ClientSubnet    string `json:"client_subnet,omitempty" yaml:"client_subnet,omitempty"`
 }
 type DNS struct {
-	Final            string                   `json:"final,omitempty" yaml:"final,omitempty"`
-	Strategy         string                   `json:"strategy,omitempty" yaml:"strategy,omitempty"`
-	DisableCache     bool                     `json:"disable_cache,omitempty" yaml:"disable_cache,omitempty"`
-	DisableExpire    bool                     `json:"disable_expire,omitempty" yaml:"disable_expire,omitempty"`
-	IndependentCache bool                     `json:"independent_cache,omitempty" yaml:"independent_cache,omitempty"`
-	ReverseMapping   bool                     `json:"reverse_mapping,omitempty" yaml:"reverse_mapping,omitempty"`
-	ClientSubnet     string                   `json:"client_subnet,omitempty" yaml:"client_subnet,omitempty"`
-	Fakeip           *FakeIP                  `json:"fakeip,omitempty" yaml:"fakeip,omitempty"`
-	Servers          []NameServer             `json:"servers" yaml:"servers"`
-	Rules            []map[string]interface{} `json:"rules" yaml:"rules"`
+	Final            string       `json:"final,omitempty" yaml:"final,omitempty"`
+	Strategy         string       `json:"strategy,omitempty" yaml:"strategy,omitempty"`
+	DisableCache     bool         `json:"disable_cache,omitempty" yaml:"disable_cache,omitempty"`
+	DisableExpire    bool         `json:"disable_expire,omitempty" yaml:"disable_expire,omitempty"`
+	IndependentCache bool         `json:"independent_cache,omitempty" yaml:"independent_cache,omitempty"`
+	ReverseMapping   bool         `json:"reverse_mapping,omitempty" yaml:"reverse_mapping,omitempty"`
+	ClientSubnet     string       `json:"client_subnet,omitempty" yaml:"client_subnet,omitempty"`
+	Fakeip           *FakeIP      `json:"fakeip,omitempty" yaml:"fakeip,omitempty"`
+	Servers          []NameServer `json:"servers" yaml:"servers"`
+	Rules            []DNSRule    `json:"rules" yaml:"rules"`
 }

@@ -58,8 +58,8 @@ type RouteRule struct {
 	RuleSet                  []string `json:"rule_set,omitempty" yaml:"rule_set,omitempty"`
 	RuleSetIPCIDRMatchSource bool     `json:"rule_set_ip_cidr_match_source,omitempty" yaml:"rule_set_ip_cidr_match_source,omitempty"`
 	Invert                   bool     `json:"invert,omitempty" yaml:"invert,omitempty"`
-	RouteAction
-	RouteLogic
+	RouteAction              `json:",inline" yaml:",inline"`
+	RouteLogic               `json:",inline" yaml:",inline"`
 }
 
 type RuleSet struct {

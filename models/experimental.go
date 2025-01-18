@@ -22,7 +22,7 @@ type ClashAPI struct {
 }
 type CacheFile struct {
 	Enabled      bool   `json:"enabled" yaml:"enabled"`
-	Path         string `json:"path" yaml:"path"`
+	Path         string `json:"path,omitempty" yaml:"path,omitempty"`
 	CacheID      string `json:"cache_id,omitempty" yaml:"cache_id,omitempty"`
 	StoreFakeIP  bool   `json:"store_fakeip,omitempty" yaml:"store_fakeip,omitempty"`
 	StoreRdrc    bool   `json:"store_rdrc,omitempty" yaml:"store_rdrc,omitempty"`

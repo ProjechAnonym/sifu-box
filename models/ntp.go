@@ -5,5 +5,5 @@ type NTP struct {
 	Server     string `json:"server,omitempty" yaml:"server,omitempty"`
 	ServerPort int    `json:"server_port,omitempty" yaml:"server_port,omitempty"`
 	Interval   string `json:"interval,omitempty" yaml:"interval,omitempty"`
-	Dial
+	Dial       `json:",inline" yaml:",inline"`
 }
