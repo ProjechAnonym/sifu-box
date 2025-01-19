@@ -11,6 +11,7 @@ import (
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
 	"sifu-box/models"
+	"sifu-box/singbox"
 	"sifu-box/utils"
 
 	"entgo.io/ent/dialect"
@@ -79,21 +80,21 @@ func init() {
 			}	
 		}
 		initLogger.Info("数据库写入机场信息完成")
-		for _, ruleCollection:= range setting.Rulesets {
-			exist, err := entClient.RuleSet.Query().Where(ruleset.TagEQ(ruleCollection.Tag)).Exist(context.Background())
+		for _, collectionInfo := range setting.Rulesets {
+			exist, err := entClient.RuleSet.Query().Where(ruleset.TagEQ(collectionInfo.Tag)).Exist(context.Background())
 			if err != nil {
 				initLogger.Error(fmt.Sprintf("获取数据库数据失败: [%s]",err.Error()))
 			}
 			if !exist {
-				if _, err := entClient.RuleSet.Create().SetTag(ruleCollection.Tag).
-														SetOutbound(ruleCollection.Outbound).
-														SetPath(ruleCollection.Path).
-														SetType(ruleCollection.Type).
-														SetFormat(ruleCollection.Format).
-														SetChina(ruleCollection.China).
-														SetLabel(ruleCollection.Label).
-														SetDownloadDetour(ruleCollection.DownloadDetour).
-														SetUpdateInterval(ruleCollection.UpdateInterval).
+				if _, err := entClient.RuleSet.Create().SetTag(collectionInfo.Tag).
+														SetOutbound(collectionInfo.Outbound).
+														SetPath(collectionInfo.Path).
+														SetType(collectionInfo.Type).
+														SetFormat(collectionInfo.Format).
+														SetChina(collectionInfo.China).
+														SetLabel(collectionInfo.Label).
+														SetDownloadDetour(collectionInfo.DownloadDetour).
+														SetUpdateInterval(collectionInfo.UpdateInterval).
 														Save(context.Background()); err != nil {
 					initLogger.Error(fmt.Sprintf("保存数据失败: [%s]", err.Error()))
 				}
@@ -109,6 +110,7 @@ func main() {
 		buntClient.Close()
 		entClient.Close()
 	}()
+	singbox.Workflow(entClient, buntClient, workflowLogger)
 
 }
 
@@ -149,7 +151,7 @@ func getLogger(workDir, task string) *zap.Logger{
 }
 
 func setDefaultTemplate(workDir string, buntClient *buntdb.DB, logger *zap.Logger) error {
-	file, err := os.Open(filepath.Join(workDir, "static", "default.template.yaml"))
+	file, err := os.Open(filepath.Join(workDir, "static", "template", "default.template.yaml"))
 	if err != nil {
 		logger.Error(fmt.Sprintf("打开默认模板文件失败: [%s]",err.Error()))
 		return err

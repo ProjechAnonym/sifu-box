@@ -20,9 +20,15 @@ type RuleSet struct {
 type Server struct {
 	Enabled bool `json:"enabled" yaml:"enabled"`
 }
+type Singbox struct {
+	WorkDir    string `json:"work_dir" yaml:"work_dir"`
+	ConfigPath string `json:"config_path" yaml:"config_path"`
+	BinaryPath string `json:"binary_path" yaml:"binary_path"`
+}
 type Setting struct {
 	Providers []Provider          `json:"providers,omitempty" yaml:"providers,omitempty"`
 	Rulesets  []RuleSet           `json:"rulesets,omitempty" yaml:"rulesets,omitempty"`
 	Templates map[string]Template `json:"templates,omitempty" yaml:"templates,omitempty"`
 	Server    Server              `json:"server" yaml:"server"`
+	Singbox   *Singbox            `json:"singbox" yaml:"singbox"`
 }

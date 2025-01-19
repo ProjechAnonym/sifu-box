@@ -31,3 +31,30 @@ type Listen struct {
 	DomainStrategy            string `json:"domain_strategy,omitempty" yaml:"domain_strategy,omitempty"`
 	UDPDisableDomainUnmapping bool   `json:"udp_disable_domain_unmapping,omitempty" yaml:"udp_disable_domain_unmapping,omitempty"`
 }
+
+type TCPBrutal struct {
+	Enabled  bool `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	UpMbps   int  `json:"up_mbps,omitempty" yaml:"up_mbps,omitempty"`
+	DownMbps int  `json:"down_mbps,omitempty" yaml:"down_mbps,omitempty"`
+}
+
+type Multiplex struct {
+	Enabled        bool      `json:"enabled,omitempty" yaml:"enabled,omitempty"`
+	Protocol       string    `json:"protocol,omitempty" yaml:"protocol,omitempty"`
+	MaxConnections int       `json:"max_connections,omitempty" yaml:"max_connections,omitempty"`
+	MinStreams     int       `json:"min_streams,omitempty" yaml:"min_streams,omitempty"`
+	MaxStreams     int       `json:"max_streams,omitempty" yaml:"max_streams,omitempty"`
+	Padding        bool      `json:"padding,omitempty" yaml:"padding,omitempty"`
+	Brutal         TCPBrutal `json:"brutal,omitempty" yaml:"brutal,omitempty"`
+}
+
+type TransportWS struct {
+	Path                string            `json:"path,omitempty" yaml:"path,omitempty"`
+	Headers             map[string]string `json:"headers,omitempty" yaml:"headers,omitempty"`
+	MaxEarlyData        int               `json:"max_early_data,omitempty" yaml:"max_early_data,omitempty"`
+	EarlyDataHeaderName string            `json:"early_data_header_name,omitempty" yaml:"early_data_header_name,omitempty"`
+}
+type Transport struct {
+	Type        string `json:"type,omitempty" yaml:"type,omitempty"`
+	TransportWS `json:",inline" yaml:",inline"`
+}

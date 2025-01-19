@@ -27,7 +27,6 @@ type Tun struct {
 	IncludePackage         []string  `json:"include_package,omitempty" yaml:"include_package,omitempty"`
 	ExcludePackage         []string  `json:"exclude_package,omitempty" yaml:"exclude_package,omitempty"`
 	Platform               *Platform `json:"platform,omitempty" yaml:"platform,omitempty"`
-	Listen                 `json:",inline" yaml:",inline"`
 }
 
 type Platform struct {
@@ -42,7 +41,8 @@ type HTTPProxy struct {
 	MatchDomain  []string `json:"match_domain,omitempty" yaml:"match_domain,omitempty"`
 }
 type Inbounds struct {
-	Type string `json:"type" yaml:"type"`
-	Tag  string `json:"tag" yaml:"tag"`
-	Tun  `json:",inline" yaml:",inline"`
+	Type   string `json:"type" yaml:"type"`
+	Tag    string `json:"tag" yaml:"tag"`
+	Tun    `json:",inline" yaml:",inline"`
+	Listen `json:",inline" yaml:",inline"`
 }
