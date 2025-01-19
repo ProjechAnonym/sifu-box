@@ -8,6 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"sifu-box/ent"
+	"sifu-box/ent/provider"
+	"sifu-box/ent/ruleset"
 	"sifu-box/models"
 	"sifu-box/utils"
 
@@ -65,32 +67,36 @@ func init() {
 		panic(err)
 	}
 	if setting.Server.Enabled {
-		providers := make([]*ent.ProviderCreate, len(setting.Providers))
-		for i, provider := range setting.Providers {
-			providers[i] = entClient.Provider.Create().SetName(provider.Name).SetDetour(provider.Detour).SetPath(provider.Path).SetRemote(provider.Remote)
-		}
-		if _, err := entClient.Provider.CreateBulk(providers...).Save(context.Background()); err != nil {
-			if !ent.IsConstraintError(err) {
-				initLogger.Error(fmt.Sprintf("保存数据失败: [%s]", err.Error()))
+		for _, supplier := range setting.Providers {
+			exist, err := entClient.Provider.Query().Where(provider.NameEQ(supplier.Name)).Exist(context.Background())
+			if err != nil {
+				initLogger.Error(fmt.Sprintf("获取数据库数据失败: [%s]",err.Error()))
 			}
+			if !exist {
+				if _, err := entClient.Provider.Create().SetName(supplier.Name).SetDetour(supplier.Detour).SetPath(supplier.Path).SetRemote(supplier.Remote).Save(context.Background()); err != nil {
+					initLogger.Error(fmt.Sprintf("保存数据失败: [%s]", err.Error()))
+				}
+			}	
 		}
 		initLogger.Info("数据库写入机场信息完成")
-		rulesets := make([]*ent.RuleSetCreate, len(setting.Rulesets))
-		for i, ruleset := range setting.Rulesets {
-			rulesets[i] = entClient.RuleSet.Create().
-											SetTag(ruleset.Tag).
-											SetOutbound(ruleset.Outbound).
-											SetPath(ruleset.Path).
-											SetType(ruleset.Type).
-											SetFormat(ruleset.Format).
-											SetChina(ruleset.China).
-											SetLabel(ruleset.Label).
-											SetDownloadDetour(ruleset.DownloadDetour).
-											SetUpdateInterval(ruleset.UpdateInterval)
-		}
-		if _, err := entClient.RuleSet.CreateBulk(rulesets...).Save(context.Background()); err != nil {
-			if !ent.IsConstraintError(err) {
-				initLogger.Error(fmt.Sprintf("保存数据失败: [%s]", err.Error()))
+		for _, ruleCollection:= range setting.Rulesets {
+			exist, err := entClient.RuleSet.Query().Where(ruleset.TagEQ(ruleCollection.Tag)).Exist(context.Background())
+			if err != nil {
+				initLogger.Error(fmt.Sprintf("获取数据库数据失败: [%s]",err.Error()))
+			}
+			if !exist {
+				if _, err := entClient.RuleSet.Create().SetTag(ruleCollection.Tag).
+														SetOutbound(ruleCollection.Outbound).
+														SetPath(ruleCollection.Path).
+														SetType(ruleCollection.Type).
+														SetFormat(ruleCollection.Format).
+														SetChina(ruleCollection.China).
+														SetLabel(ruleCollection.Label).
+														SetDownloadDetour(ruleCollection.DownloadDetour).
+														SetUpdateInterval(ruleCollection.UpdateInterval).
+														Save(context.Background()); err != nil {
+					initLogger.Error(fmt.Sprintf("保存数据失败: [%s]", err.Error()))
+				}
 			}
 		}
 		initLogger.Info("数据库写入规则集信息完成")
