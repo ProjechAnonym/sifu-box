@@ -25,8 +25,8 @@ const (
 	FieldDownloadDetour = "download_detour"
 	// FieldUpdateInterval holds the string denoting the update_interval field in the database.
 	FieldUpdateInterval = "update_interval"
-	// FieldOutbound holds the string denoting the outbound field in the database.
-	FieldOutbound = "outbound"
+	// FieldNameServer holds the string denoting the name_server field in the database.
+	FieldNameServer = "name_server"
 	// FieldChina holds the string denoting the china field in the database.
 	FieldChina = "china"
 	// Table holds the table name of the ruleset in the database.
@@ -43,7 +43,7 @@ var Columns = []string{
 	FieldLabel,
 	FieldDownloadDetour,
 	FieldUpdateInterval,
-	FieldOutbound,
+	FieldNameServer,
 	FieldChina,
 }
 
@@ -72,8 +72,8 @@ var (
 	DownloadDetourValidator func(string) error
 	// UpdateIntervalValidator is a validator for the "update_interval" field. It is called by the builders before save.
 	UpdateIntervalValidator func(string) error
-	// OutboundValidator is a validator for the "outbound" field. It is called by the builders before save.
-	OutboundValidator func(string) error
+	// NameServerValidator is a validator for the "name_server" field. It is called by the builders before save.
+	NameServerValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the RuleSet queries.
@@ -119,9 +119,9 @@ func ByUpdateInterval(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdateInterval, opts...).ToFunc()
 }
 
-// ByOutbound orders the results by the outbound field.
-func ByOutbound(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOutbound, opts...).ToFunc()
+// ByNameServer orders the results by the name_server field.
+func ByNameServer(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNameServer, opts...).ToFunc()
 }
 
 // ByChina orders the results by the china field.

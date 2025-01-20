@@ -125,16 +125,16 @@ func (rsu *RuleSetUpdate) SetNillableUpdateInterval(s *string) *RuleSetUpdate {
 	return rsu
 }
 
-// SetOutbound sets the "outbound" field.
-func (rsu *RuleSetUpdate) SetOutbound(s string) *RuleSetUpdate {
-	rsu.mutation.SetOutbound(s)
+// SetNameServer sets the "name_server" field.
+func (rsu *RuleSetUpdate) SetNameServer(s string) *RuleSetUpdate {
+	rsu.mutation.SetNameServer(s)
 	return rsu
 }
 
-// SetNillableOutbound sets the "outbound" field if the given value is not nil.
-func (rsu *RuleSetUpdate) SetNillableOutbound(s *string) *RuleSetUpdate {
+// SetNillableNameServer sets the "name_server" field if the given value is not nil.
+func (rsu *RuleSetUpdate) SetNillableNameServer(s *string) *RuleSetUpdate {
 	if s != nil {
-		rsu.SetOutbound(*s)
+		rsu.SetNameServer(*s)
 	}
 	return rsu
 }
@@ -222,9 +222,9 @@ func (rsu *RuleSetUpdate) check() error {
 			return &ValidationError{Name: "update_interval", err: fmt.Errorf(`ent: validator failed for field "RuleSet.update_interval": %w`, err)}
 		}
 	}
-	if v, ok := rsu.mutation.Outbound(); ok {
-		if err := ruleset.OutboundValidator(v); err != nil {
-			return &ValidationError{Name: "outbound", err: fmt.Errorf(`ent: validator failed for field "RuleSet.outbound": %w`, err)}
+	if v, ok := rsu.mutation.NameServer(); ok {
+		if err := ruleset.NameServerValidator(v); err != nil {
+			return &ValidationError{Name: "name_server", err: fmt.Errorf(`ent: validator failed for field "RuleSet.name_server": %w`, err)}
 		}
 	}
 	return nil
@@ -263,8 +263,8 @@ func (rsu *RuleSetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := rsu.mutation.UpdateInterval(); ok {
 		_spec.SetField(ruleset.FieldUpdateInterval, field.TypeString, value)
 	}
-	if value, ok := rsu.mutation.Outbound(); ok {
-		_spec.SetField(ruleset.FieldOutbound, field.TypeString, value)
+	if value, ok := rsu.mutation.NameServer(); ok {
+		_spec.SetField(ruleset.FieldNameServer, field.TypeString, value)
 	}
 	if value, ok := rsu.mutation.China(); ok {
 		_spec.SetField(ruleset.FieldChina, field.TypeBool, value)
@@ -387,16 +387,16 @@ func (rsuo *RuleSetUpdateOne) SetNillableUpdateInterval(s *string) *RuleSetUpdat
 	return rsuo
 }
 
-// SetOutbound sets the "outbound" field.
-func (rsuo *RuleSetUpdateOne) SetOutbound(s string) *RuleSetUpdateOne {
-	rsuo.mutation.SetOutbound(s)
+// SetNameServer sets the "name_server" field.
+func (rsuo *RuleSetUpdateOne) SetNameServer(s string) *RuleSetUpdateOne {
+	rsuo.mutation.SetNameServer(s)
 	return rsuo
 }
 
-// SetNillableOutbound sets the "outbound" field if the given value is not nil.
-func (rsuo *RuleSetUpdateOne) SetNillableOutbound(s *string) *RuleSetUpdateOne {
+// SetNillableNameServer sets the "name_server" field if the given value is not nil.
+func (rsuo *RuleSetUpdateOne) SetNillableNameServer(s *string) *RuleSetUpdateOne {
 	if s != nil {
-		rsuo.SetOutbound(*s)
+		rsuo.SetNameServer(*s)
 	}
 	return rsuo
 }
@@ -497,9 +497,9 @@ func (rsuo *RuleSetUpdateOne) check() error {
 			return &ValidationError{Name: "update_interval", err: fmt.Errorf(`ent: validator failed for field "RuleSet.update_interval": %w`, err)}
 		}
 	}
-	if v, ok := rsuo.mutation.Outbound(); ok {
-		if err := ruleset.OutboundValidator(v); err != nil {
-			return &ValidationError{Name: "outbound", err: fmt.Errorf(`ent: validator failed for field "RuleSet.outbound": %w`, err)}
+	if v, ok := rsuo.mutation.NameServer(); ok {
+		if err := ruleset.NameServerValidator(v); err != nil {
+			return &ValidationError{Name: "name_server", err: fmt.Errorf(`ent: validator failed for field "RuleSet.name_server": %w`, err)}
 		}
 	}
 	return nil
@@ -555,8 +555,8 @@ func (rsuo *RuleSetUpdateOne) sqlSave(ctx context.Context) (_node *RuleSet, err 
 	if value, ok := rsuo.mutation.UpdateInterval(); ok {
 		_spec.SetField(ruleset.FieldUpdateInterval, field.TypeString, value)
 	}
-	if value, ok := rsuo.mutation.Outbound(); ok {
-		_spec.SetField(ruleset.FieldOutbound, field.TypeString, value)
+	if value, ok := rsuo.mutation.NameServer(); ok {
+		_spec.SetField(ruleset.FieldNameServer, field.TypeString, value)
 	}
 	if value, ok := rsuo.mutation.China(); ok {
 		_spec.SetField(ruleset.FieldChina, field.TypeBool, value)

@@ -551,7 +551,7 @@ type RuleSetMutation struct {
 	label           *string
 	download_detour *string
 	update_interval *string
-	outbound        *string
+	name_server     *string
 	china           *bool
 	clearedFields   map[string]struct{}
 	done            bool
@@ -909,40 +909,40 @@ func (m *RuleSetMutation) ResetUpdateInterval() {
 	m.update_interval = nil
 }
 
-// SetOutbound sets the "outbound" field.
-func (m *RuleSetMutation) SetOutbound(s string) {
-	m.outbound = &s
+// SetNameServer sets the "name_server" field.
+func (m *RuleSetMutation) SetNameServer(s string) {
+	m.name_server = &s
 }
 
-// Outbound returns the value of the "outbound" field in the mutation.
-func (m *RuleSetMutation) Outbound() (r string, exists bool) {
-	v := m.outbound
+// NameServer returns the value of the "name_server" field in the mutation.
+func (m *RuleSetMutation) NameServer() (r string, exists bool) {
+	v := m.name_server
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldOutbound returns the old "outbound" field's value of the RuleSet entity.
+// OldNameServer returns the old "name_server" field's value of the RuleSet entity.
 // If the RuleSet object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RuleSetMutation) OldOutbound(ctx context.Context) (v string, err error) {
+func (m *RuleSetMutation) OldNameServer(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOutbound is only allowed on UpdateOne operations")
+		return v, errors.New("OldNameServer is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOutbound requires an ID field in the mutation")
+		return v, errors.New("OldNameServer requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOutbound: %w", err)
+		return v, fmt.Errorf("querying old value for OldNameServer: %w", err)
 	}
-	return oldValue.Outbound, nil
+	return oldValue.NameServer, nil
 }
 
-// ResetOutbound resets all changes to the "outbound" field.
-func (m *RuleSetMutation) ResetOutbound() {
-	m.outbound = nil
+// ResetNameServer resets all changes to the "name_server" field.
+func (m *RuleSetMutation) ResetNameServer() {
+	m.name_server = nil
 }
 
 // SetChina sets the "china" field.
@@ -1037,8 +1037,8 @@ func (m *RuleSetMutation) Fields() []string {
 	if m.update_interval != nil {
 		fields = append(fields, ruleset.FieldUpdateInterval)
 	}
-	if m.outbound != nil {
-		fields = append(fields, ruleset.FieldOutbound)
+	if m.name_server != nil {
+		fields = append(fields, ruleset.FieldNameServer)
 	}
 	if m.china != nil {
 		fields = append(fields, ruleset.FieldChina)
@@ -1065,8 +1065,8 @@ func (m *RuleSetMutation) Field(name string) (ent.Value, bool) {
 		return m.DownloadDetour()
 	case ruleset.FieldUpdateInterval:
 		return m.UpdateInterval()
-	case ruleset.FieldOutbound:
-		return m.Outbound()
+	case ruleset.FieldNameServer:
+		return m.NameServer()
 	case ruleset.FieldChina:
 		return m.China()
 	}
@@ -1092,8 +1092,8 @@ func (m *RuleSetMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldDownloadDetour(ctx)
 	case ruleset.FieldUpdateInterval:
 		return m.OldUpdateInterval(ctx)
-	case ruleset.FieldOutbound:
-		return m.OldOutbound(ctx)
+	case ruleset.FieldNameServer:
+		return m.OldNameServer(ctx)
 	case ruleset.FieldChina:
 		return m.OldChina(ctx)
 	}
@@ -1154,12 +1154,12 @@ func (m *RuleSetMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdateInterval(v)
 		return nil
-	case ruleset.FieldOutbound:
+	case ruleset.FieldNameServer:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetOutbound(v)
+		m.SetNameServer(v)
 		return nil
 	case ruleset.FieldChina:
 		v, ok := value.(bool)
@@ -1238,8 +1238,8 @@ func (m *RuleSetMutation) ResetField(name string) error {
 	case ruleset.FieldUpdateInterval:
 		m.ResetUpdateInterval()
 		return nil
-	case ruleset.FieldOutbound:
-		m.ResetOutbound()
+	case ruleset.FieldNameServer:
+		m.ResetNameServer()
 		return nil
 	case ruleset.FieldChina:
 		m.ResetChina()

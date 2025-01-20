@@ -87,7 +87,7 @@ func init() {
 			}
 			if !exist {
 				if _, err := entClient.RuleSet.Create().SetTag(collectionInfo.Tag).
-														SetOutbound(collectionInfo.Outbound).
+														SetNameServer(collectionInfo.NameServer).
 														SetPath(collectionInfo.Path).
 														SetType(collectionInfo.Type).
 														SetFormat(collectionInfo.Format).

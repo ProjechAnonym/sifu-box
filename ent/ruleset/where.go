@@ -83,9 +83,9 @@ func UpdateInterval(v string) predicate.RuleSet {
 	return predicate.RuleSet(sql.FieldEQ(FieldUpdateInterval, v))
 }
 
-// Outbound applies equality check predicate on the "outbound" field. It's identical to OutboundEQ.
-func Outbound(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldOutbound, v))
+// NameServer applies equality check predicate on the "name_server" field. It's identical to NameServerEQ.
+func NameServer(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldEQ(FieldNameServer, v))
 }
 
 // China applies equality check predicate on the "china" field. It's identical to ChinaEQ.
@@ -548,69 +548,69 @@ func UpdateIntervalContainsFold(v string) predicate.RuleSet {
 	return predicate.RuleSet(sql.FieldContainsFold(FieldUpdateInterval, v))
 }
 
-// OutboundEQ applies the EQ predicate on the "outbound" field.
-func OutboundEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldOutbound, v))
+// NameServerEQ applies the EQ predicate on the "name_server" field.
+func NameServerEQ(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldEQ(FieldNameServer, v))
 }
 
-// OutboundNEQ applies the NEQ predicate on the "outbound" field.
-func OutboundNEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNEQ(FieldOutbound, v))
+// NameServerNEQ applies the NEQ predicate on the "name_server" field.
+func NameServerNEQ(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldNEQ(FieldNameServer, v))
 }
 
-// OutboundIn applies the In predicate on the "outbound" field.
-func OutboundIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIn(FieldOutbound, vs...))
+// NameServerIn applies the In predicate on the "name_server" field.
+func NameServerIn(vs ...string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldIn(FieldNameServer, vs...))
 }
 
-// OutboundNotIn applies the NotIn predicate on the "outbound" field.
-func OutboundNotIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotIn(FieldOutbound, vs...))
+// NameServerNotIn applies the NotIn predicate on the "name_server" field.
+func NameServerNotIn(vs ...string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldNotIn(FieldNameServer, vs...))
 }
 
-// OutboundGT applies the GT predicate on the "outbound" field.
-func OutboundGT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGT(FieldOutbound, v))
+// NameServerGT applies the GT predicate on the "name_server" field.
+func NameServerGT(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldGT(FieldNameServer, v))
 }
 
-// OutboundGTE applies the GTE predicate on the "outbound" field.
-func OutboundGTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGTE(FieldOutbound, v))
+// NameServerGTE applies the GTE predicate on the "name_server" field.
+func NameServerGTE(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldGTE(FieldNameServer, v))
 }
 
-// OutboundLT applies the LT predicate on the "outbound" field.
-func OutboundLT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLT(FieldOutbound, v))
+// NameServerLT applies the LT predicate on the "name_server" field.
+func NameServerLT(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldLT(FieldNameServer, v))
 }
 
-// OutboundLTE applies the LTE predicate on the "outbound" field.
-func OutboundLTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLTE(FieldOutbound, v))
+// NameServerLTE applies the LTE predicate on the "name_server" field.
+func NameServerLTE(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldLTE(FieldNameServer, v))
 }
 
-// OutboundContains applies the Contains predicate on the "outbound" field.
-func OutboundContains(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContains(FieldOutbound, v))
+// NameServerContains applies the Contains predicate on the "name_server" field.
+func NameServerContains(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldContains(FieldNameServer, v))
 }
 
-// OutboundHasPrefix applies the HasPrefix predicate on the "outbound" field.
-func OutboundHasPrefix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasPrefix(FieldOutbound, v))
+// NameServerHasPrefix applies the HasPrefix predicate on the "name_server" field.
+func NameServerHasPrefix(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldHasPrefix(FieldNameServer, v))
 }
 
-// OutboundHasSuffix applies the HasSuffix predicate on the "outbound" field.
-func OutboundHasSuffix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasSuffix(FieldOutbound, v))
+// NameServerHasSuffix applies the HasSuffix predicate on the "name_server" field.
+func NameServerHasSuffix(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldHasSuffix(FieldNameServer, v))
 }
 
-// OutboundEqualFold applies the EqualFold predicate on the "outbound" field.
-func OutboundEqualFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEqualFold(FieldOutbound, v))
+// NameServerEqualFold applies the EqualFold predicate on the "name_server" field.
+func NameServerEqualFold(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldEqualFold(FieldNameServer, v))
 }
 
-// OutboundContainsFold applies the ContainsFold predicate on the "outbound" field.
-func OutboundContainsFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContainsFold(FieldOutbound, v))
+// NameServerContainsFold applies the ContainsFold predicate on the "name_server" field.
+func NameServerContainsFold(v string) predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldContainsFold(FieldNameServer, v))
 }
 
 // ChinaEQ applies the EQ predicate on the "china" field.

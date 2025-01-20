@@ -30,8 +30,8 @@ type RuleSet struct {
 	DownloadDetour string `json:"download_detour,omitempty"`
 	// UpdateInterval holds the value of the "update_interval" field.
 	UpdateInterval string `json:"update_interval,omitempty"`
-	// Outbound holds the value of the "outbound" field.
-	Outbound string `json:"outbound,omitempty"`
+	// NameServer holds the value of the "name_server" field.
+	NameServer string `json:"name_server,omitempty"`
 	// China holds the value of the "china" field.
 	China        bool `json:"china,omitempty"`
 	selectValues sql.SelectValues
@@ -46,7 +46,7 @@ func (*RuleSet) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case ruleset.FieldID:
 			values[i] = new(sql.NullInt64)
-		case ruleset.FieldTag, ruleset.FieldType, ruleset.FieldPath, ruleset.FieldFormat, ruleset.FieldLabel, ruleset.FieldDownloadDetour, ruleset.FieldUpdateInterval, ruleset.FieldOutbound:
+		case ruleset.FieldTag, ruleset.FieldType, ruleset.FieldPath, ruleset.FieldFormat, ruleset.FieldLabel, ruleset.FieldDownloadDetour, ruleset.FieldUpdateInterval, ruleset.FieldNameServer:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -111,11 +111,11 @@ func (rs *RuleSet) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				rs.UpdateInterval = value.String
 			}
-		case ruleset.FieldOutbound:
+		case ruleset.FieldNameServer:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field outbound", values[i])
+				return fmt.Errorf("unexpected type %T for field name_server", values[i])
 			} else if value.Valid {
-				rs.Outbound = value.String
+				rs.NameServer = value.String
 			}
 		case ruleset.FieldChina:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -180,8 +180,8 @@ func (rs *RuleSet) String() string {
 	builder.WriteString("update_interval=")
 	builder.WriteString(rs.UpdateInterval)
 	builder.WriteString(", ")
-	builder.WriteString("outbound=")
-	builder.WriteString(rs.Outbound)
+	builder.WriteString("name_server=")
+	builder.WriteString(rs.NameServer)
 	builder.WriteString(", ")
 	builder.WriteString("china=")
 	builder.WriteString(fmt.Sprintf("%v", rs.China))

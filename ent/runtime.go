@@ -182,18 +182,18 @@ func init() {
 			return nil
 		}
 	}()
-	// rulesetDescOutbound is the schema descriptor for outbound field.
-	rulesetDescOutbound := rulesetFields[7].Descriptor()
-	// ruleset.OutboundValidator is a validator for the "outbound" field. It is called by the builders before save.
-	ruleset.OutboundValidator = func() func(string) error {
-		validators := rulesetDescOutbound.Validators
+	// rulesetDescNameServer is the schema descriptor for name_server field.
+	rulesetDescNameServer := rulesetFields[7].Descriptor()
+	// ruleset.NameServerValidator is a validator for the "name_server" field. It is called by the builders before save.
+	ruleset.NameServerValidator = func() func(string) error {
+		validators := rulesetDescNameServer.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
 		}
-		return func(outbound string) error {
+		return func(name_server string) error {
 			for _, fn := range fns {
-				if err := fn(outbound); err != nil {
+				if err := fn(name_server); err != nil {
 					return err
 				}
 			}

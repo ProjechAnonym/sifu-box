@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 type ShadowSocks struct {
@@ -24,20 +24,16 @@ type ShadowSocks struct {
 func (s *ShadowSocks) Transform(message map[string]interface{}, logger *zap.Logger) (Outbound, error) {
 	shadowSocksContent, err := yaml.Marshal(message)
 	if err != nil {
-		logger.Error(fmt.Sprintf("序列化json字符串失败: [%s]", err.Error()))
-		return nil, fmt.Errorf("序列化json字符串失败")
+		logger.Error(fmt.Sprintf("序列化yaml字符串失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("序列化yaml字符串失败")
 	}
 	var shadowSocks ShadowSocks
 	if err := yaml.Unmarshal(shadowSocksContent, &shadowSocks); err != nil {
-		logger.Error(fmt.Sprintf("反序列化json字符串失败: [%s]", err.Error()))
-		return nil, fmt.Errorf("反序列化json字符串失败")
+		logger.Error(fmt.Sprintf("反序列化yaml字符串失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("反序列化yaml字符串失败")
 	}
 	shadowSocks.Type = "shadowsocks"
-	if !shadowSocks.UDP {
-		shadowSocks.Network = "tcp"
-	}else{
-		shadowSocks.Network = ""
-	}
+	shadowSocks.Network = ""
 	return &shadowSocks, nil
 }
 

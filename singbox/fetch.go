@@ -1,7 +1,6 @@
 package singbox
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,77 +10,89 @@ import (
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )
-
-func fetchProviderInfo(provider models.Provider, client *http.Client, logger *zap.Logger) (string, error) {
-	if provider.Remote {
-		fetchFromRemote(provider, client, logger)
-	}else{
-		fetchFromLocal(provider, logger)
-	}
-	
-		// fmt.Println(outbounds)
-		// b , _ := json.Marshal(outbounds)
-		// fmt.Println(string(b))
-		
-	
-	return "", nil
-}
-
-func fetchFromRemote(provider models.Provider, client *http.Client, logger *zap.Logger) (string, error) {
+func fetchFromRemote(provider models.Provider, client *http.Client, logger *zap.Logger) ([]models.Outbound, error) {
 	req, err := http.NewRequest("GET", provider.Path, nil)
 	if err != nil {
 		logger.Error(fmt.Sprintf("创建请求失败: [%s]", err.Error()))
-		return "", fmt.Errorf("创建请求失败")
+		return nil, fmt.Errorf("'%s'出错: 创建请求失败", provider.Name)
 	}
 	res, err := client.Do(req)
 	if err != nil {
 		logger.Error(fmt.Sprintf("发送请求失败: [%s]", err.Error()))
-		return "", fmt.Errorf("发送请求失败")
+		return nil, fmt.Errorf("'%s'出错: 发送请求失败", provider.Name)
 	}
 	defer res.Body.Close()
 	if res.StatusCode == 200 {
 		content, err := io.ReadAll(res.Body)
 		if err != nil {
-			logger.Error(fmt.Sprintf("读取响应失败: [%s]", err.Error()))
-			return "", fmt.Errorf("读取响应失败")
+			logger.Error(fmt.Sprintf("读取'%s'响应失败: [%s]",  provider.Name, err.Error()))
+			return nil, fmt.Errorf("读取'%s'响应失败", provider.Name)
 		}
-		parseFileContent(content, logger)
+		outbounds, err := parseFileContent(content, logger)
+		if err != nil {
+			logger.Error(fmt.Sprintf("解析'%s'文件失败: [%s]", provider.Name, err.Error()))
+			return nil, fmt.Errorf("'%s'出错: %s", provider.Name, err.Error())
+		}
+		return outbounds, nil
 	}
-	return "", nil
+	return nil, fmt.Errorf("'%s'未知响应, 状态码: %d", provider.Name, res.StatusCode)
 }
 
-func fetchFromLocal(provider models.Provider, logger *zap.Logger) (string, error) {
+func fetchFromLocal(provider models.Provider, logger *zap.Logger) ([]models.Outbound, error) {
 	file, err := os.Open(provider.Path)
 	if err != nil {
 		logger.Error(fmt.Sprintf("打开'%s'文件失败: [%s]", provider.Name, err.Error()))
-		return "", fmt.Errorf("打开'%s'文件失败", provider.Name)
+		return nil, fmt.Errorf("打开'%s'文件失败", provider.Name)
 	}
 	defer file.Close()
 	content, err := io.ReadAll(file)
 	if err != nil {
 		logger.Error(fmt.Sprintf("读取'%s'文件失败: [%s]", provider.Name, err.Error()))
-		return "", fmt.Errorf("读取'%s'文件失败", provider.Name)
+		return nil, fmt.Errorf("读取'%s'文件失败", provider.Name)
 	}
-	parseFileContent(content, logger)
-	return "", nil
+	outbounds, err := parseFileContent(content, logger)
+	if err != nil {
+		logger.Error(fmt.Sprintf("解析'%s'文件失败: [%s]", provider.Name, err.Error()))
+		return nil, fmt.Errorf("'%s'出错: %s", provider.Name, err.Error())
+	}
+	return outbounds, nil
 }
 
-func parseFileContent(content []byte, logger *zap.Logger) (string, error) {
+func parseFileContent(content []byte, logger *zap.Logger) ([]models.Outbound, error) {
 	var providerInfo map[string]interface{}
 	if err := yaml.Unmarshal(content, &providerInfo); err != nil {
 		logger.Error(fmt.Sprintf("解析响应失败: [%s]", err.Error()))
-		return "", fmt.Errorf("解析响应失败")
+		return nil, fmt.Errorf("解析响应失败")
 	}
 	var outbounds []models.Outbound
-	for _, proxy := range providerInfo["proxies"].([]interface{}) {
-		switch proxy.(map[string]interface{})["type"].(string) {
+	proxies, ok := providerInfo["proxies"].([]interface{})
+	if !ok {
+		return nil, fmt.Errorf("'proxies'字段丢失或不正确")
+	}
+	for _, proxy := range proxies {
+		proxyMap, ok := proxy.(map[string]interface{})
+		if !ok {
+			logger.Error("该节点不是map类型")
+			continue
+		}
+		protocol, ok := proxyMap["type"].(string)
+		if !ok {
+			logger.Error("该节点没有'type'字段")
+			continue
+		}
+		name, ok := proxyMap["name"].(string)
+		if !ok {
+			logger.Error("该节点没有'name'字段")
+			continue
+		}
+		switch protocol {
 			case "ss":
 				shadowSocks := models.ShadowSocks{}
 				err := error(nil)
 				var outbound models.Outbound = &shadowSocks
-				outbound, err = outbound.Transform(proxy.(map[string]interface{}), logger)
+				outbound, err = outbound.Transform(proxyMap, logger)
 				if err != nil {
-					logger.Error(fmt.Sprintf("'%s'节点解析ShadowSocks代理失败: [%s]", proxy.(map[string]interface{})["name"].(string), err.Error()))
+					logger.Error(fmt.Sprintf("'%s'节点解析ShadowSocks代理失败: [%s]", name, err.Error()))
 					continue
 				}
 				outbounds = append(outbounds, outbound)
@@ -89,9 +100,9 @@ func parseFileContent(content []byte, logger *zap.Logger) (string, error) {
 				vmess := models.VMess{}
 				err := error(nil)
 				var outbound models.Outbound = &vmess
-				outbound, err = outbound.Transform(proxy.(map[string]interface{}), logger)
+				outbound, err = outbound.Transform(proxyMap, logger)
 				if err != nil {
-					logger.Error(fmt.Sprintf("'%s'节点解析Vmess代理失败: [%s]", proxy.(map[string]interface{})["name"].(string), err.Error()))
+					logger.Error(fmt.Sprintf("'%s'节点解析Vmess代理失败: [%s]", name, err.Error()))
 					continue
 				}
 				outbounds = append(outbounds, outbound)
@@ -99,20 +110,13 @@ func parseFileContent(content []byte, logger *zap.Logger) (string, error) {
 				trojan := models.Trojan{}
 				err := error(nil)
 				var outbound models.Outbound = &trojan
-				outbound, err = outbound.Transform(proxy.(map[string]interface{}), logger)
+				outbound, err = outbound.Transform(proxyMap, logger)
 				if err != nil {
-					logger.Error(fmt.Sprintf("'%s'节点解析Trojan代理失败: [%s]", proxy.(map[string]interface{})["name"].(string), err.Error()))
+					logger.Error(fmt.Sprintf("'%s'节点解析Trojan代理失败: [%s]", name, err.Error()))
 					continue
 				}
 				outbounds = append(outbounds, outbound)
 		}
 	}
-	
-
-
-	a,_ := json.Marshal(outbounds)
-	fmt.Println(string(a))
-	// a,_ := json.Marshal(outbounds)
-	// fmt.Println(string(a))
-	return "", nil
+	return outbounds, nil
 }

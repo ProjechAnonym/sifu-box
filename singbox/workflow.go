@@ -15,20 +15,21 @@ import (
 func Workflow(entClient *ent.Client, buntClient *buntdb.DB, logger *zap.Logger) ([]string, error) {
 	settingStr, err := utils.GetValue(buntClient, "setting", logger)
 	if err != nil {
-		logger.Error(fmt.Sprintf("获取设置信息失败: [%s]", err.Error()))
-		return nil, err
+		logger.Error(fmt.Sprintf("获取配置信息失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("获取配置信息失败")
 	}
 	var setting models.Setting
 	if err := json.Unmarshal([]byte(settingStr), &setting); err != nil {
-		logger.Error(fmt.Sprintf("解析设置信息失败: [%s]", err.Error()))
-		return nil, err
+		logger.Error(fmt.Sprintf("解析配置信息失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("解析配置信息失败")
 	}
 	var providers []models.Provider
+	var rulesets []models.RuleSet
 	if setting.Server.Enabled {
 		providerList, err := entClient.Provider.Query().All(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取机场信息失败: [%s]", err.Error()))
-			return nil, err
+			return nil, fmt.Errorf("获取机场信息失败")
 		}
 		for _, provider := range providerList {
 			providers = append(providers, models.Provider{
@@ -38,10 +39,30 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, logger *zap.Logger) 
 				Detour: provider.Detour,
 			})
 		}
+
+		rulesetsList, err := entClient.RuleSet.Query().All(context.Background())
+		if err != nil {
+			logger.Error(fmt.Sprintf("获取路由规则集信息失败: [%s]", err.Error()))
+			return nil, fmt.Errorf("获取路由规则集信息失败")
+		}
+		for _, ruleset := range rulesetsList {
+			rulesets = append(rulesets, models.RuleSet{
+				Type: ruleset.Type,
+				Tag: ruleset.Tag,
+				Format: ruleset.Format,
+				China: ruleset.China,
+				NameServer: ruleset.NameServer,
+				Label: ruleset.Label,
+				Path: ruleset.Path,
+				DownloadDetour: ruleset.DownloadDetour,
+				UpdateInterval: ruleset.UpdateInterval,
+			})
+		}
 	}else{
 		providers = setting.Providers
+		rulesets = setting.Rulesets
 	}
-	merge(providers, logger)
+	merge(providers, rulesets, logger)
 	// templateMap := setting.Templates
 
 	

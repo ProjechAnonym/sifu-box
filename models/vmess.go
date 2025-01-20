@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 type VMess struct {
@@ -28,13 +28,13 @@ type VMess struct {
 func (v *VMess) Transform(message map[string]interface{}, logger *zap.Logger) (Outbound, error) {
 	vmessContent, err := yaml.Marshal(message)
 	if err != nil {
-		logger.Error(fmt.Sprintf("序列化json字符串失败: [%s]", err.Error()))
-		return nil, fmt.Errorf("序列化json字符串失败")
+		logger.Error(fmt.Sprintf("序列化yaml字符串失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("序列化yaml字符串失败")
 	}
 	var vmess VMess
 	if err := yaml.Unmarshal(vmessContent, &vmess); err != nil {
-		logger.Error(fmt.Sprintf("反序列化json字符串失败: [%s]", err.Error()))
-		return nil, fmt.Errorf("反序列化json字符串失败")
+		logger.Error(fmt.Sprintf("反序列化yaml字符串失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("反序列化yaml字符串失败")
 	}
 	
 	network, ok := message["network"]
@@ -43,23 +43,19 @@ func (v *VMess) Transform(message map[string]interface{}, logger *zap.Logger) (O
 		case "ws":
 			wsOptContent, err := yaml.Marshal(message["ws-opts"])
 			if err != nil {
-				logger.Error(fmt.Sprintf("'%s' 序列化ws-opts字段失败: [%s]", message["name"].(string), err.Error()))
+				logger.Error(fmt.Sprintf("序列化ws-opts字段失败: [%s]", err.Error()))
 				return nil, fmt.Errorf("序列化ws-opts字段失败")
 			}
 			var transport Transport
 			if err := yaml.Unmarshal(wsOptContent, &transport); err != nil {
-				logger.Error(fmt.Sprintf("'%s' 反序列化ws-opts字段失败: [%s]", message["name"].(string), err.Error()))
+				logger.Error(fmt.Sprintf("反序列化ws-opts字段失败: [%s]", err.Error()))
 				return nil, fmt.Errorf("序列化ws-opts字段失败")
 			}
 			transport.Type = "ws"
 			vmess.Transport = &transport
 		}
 	}
-	if !vmess.UDP {
-		vmess.Network = "tcp"
-	}else{
-		vmess.Network = ""
-	}
+	vmess.Network = ""
 	return &vmess, nil
 }
 func (v *VMess) GetTag() string {

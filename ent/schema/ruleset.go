@@ -20,7 +20,7 @@ func (RuleSet) Fields() []ent.Field {
 		field.String("label").NotEmpty().MaxLen(30),
 		field.String("download_detour").NotEmpty().MaxLen(30),
 		field.String("update_interval").NotEmpty().MaxLen(10),
-		field.String("outbound").NotEmpty().MaxLen(30),
+		field.String("name_server").NotEmpty().MaxLen(30),
 		field.Bool("china"),
 	}
 }

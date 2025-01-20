@@ -12,7 +12,7 @@ type RuleSet struct {
 	Path           string `json:"path" yaml:"path"`
 	Format         string `json:"format" yaml:"format"`
 	China          bool   `json:"china" yaml:"china"`
-	Outbound       string `json:"outbound" yaml:"outbound"`
+	NameServer     string `json:"name_server,omitempty" yaml:"name_server,omitempty"`
 	Label          string `json:"label" yaml:"label"`
 	DownloadDetour string `json:"download_detour" yaml:"download_detour"`
 	UpdateInterval string `json:"update_interval" yaml:"update_interval"`

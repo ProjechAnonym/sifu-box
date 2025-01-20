@@ -61,9 +61,9 @@ func (rsc *RuleSetCreate) SetUpdateInterval(s string) *RuleSetCreate {
 	return rsc
 }
 
-// SetOutbound sets the "outbound" field.
-func (rsc *RuleSetCreate) SetOutbound(s string) *RuleSetCreate {
-	rsc.mutation.SetOutbound(s)
+// SetNameServer sets the "name_server" field.
+func (rsc *RuleSetCreate) SetNameServer(s string) *RuleSetCreate {
+	rsc.mutation.SetNameServer(s)
 	return rsc
 }
 
@@ -163,12 +163,12 @@ func (rsc *RuleSetCreate) check() error {
 			return &ValidationError{Name: "update_interval", err: fmt.Errorf(`ent: validator failed for field "RuleSet.update_interval": %w`, err)}
 		}
 	}
-	if _, ok := rsc.mutation.Outbound(); !ok {
-		return &ValidationError{Name: "outbound", err: errors.New(`ent: missing required field "RuleSet.outbound"`)}
+	if _, ok := rsc.mutation.NameServer(); !ok {
+		return &ValidationError{Name: "name_server", err: errors.New(`ent: missing required field "RuleSet.name_server"`)}
 	}
-	if v, ok := rsc.mutation.Outbound(); ok {
-		if err := ruleset.OutboundValidator(v); err != nil {
-			return &ValidationError{Name: "outbound", err: fmt.Errorf(`ent: validator failed for field "RuleSet.outbound": %w`, err)}
+	if v, ok := rsc.mutation.NameServer(); ok {
+		if err := ruleset.NameServerValidator(v); err != nil {
+			return &ValidationError{Name: "name_server", err: fmt.Errorf(`ent: validator failed for field "RuleSet.name_server": %w`, err)}
 		}
 	}
 	if _, ok := rsc.mutation.China(); !ok {
@@ -228,9 +228,9 @@ func (rsc *RuleSetCreate) createSpec() (*RuleSet, *sqlgraph.CreateSpec) {
 		_spec.SetField(ruleset.FieldUpdateInterval, field.TypeString, value)
 		_node.UpdateInterval = value
 	}
-	if value, ok := rsc.mutation.Outbound(); ok {
-		_spec.SetField(ruleset.FieldOutbound, field.TypeString, value)
-		_node.Outbound = value
+	if value, ok := rsc.mutation.NameServer(); ok {
+		_spec.SetField(ruleset.FieldNameServer, field.TypeString, value)
+		_node.NameServer = value
 	}
 	if value, ok := rsc.mutation.China(); ok {
 		_spec.SetField(ruleset.FieldChina, field.TypeBool, value)

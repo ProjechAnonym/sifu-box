@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 type Trojan struct {
@@ -24,43 +24,39 @@ type Trojan struct {
 func (t *Trojan) Transform(message map[string]interface{}, logger *zap.Logger) (Outbound, error) {
 	trojanContent, err := yaml.Marshal(message)
 	if err != nil {
-		logger.Error(fmt.Sprintf("序列化json字符串失败: [%s]", err.Error()))
-		return nil, fmt.Errorf("序列化json字符串失败")
+		logger.Error(fmt.Sprintf("序列化yaml字符串失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("序列化yaml字符串失败")
 	}
 	var trojan Trojan
 	if err := yaml.Unmarshal(trojanContent, &trojan); err != nil {
-		logger.Error(fmt.Sprintf("反序列化json字符串失败: [%s]", err.Error()))
-		return nil, fmt.Errorf("反序列化json字符串失败")
+		logger.Error(fmt.Sprintf("反序列化yaml字符串失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("反序列化yaml字符串失败")
 	}
-	network, ok := message["network"]
+	network, ok := message["network"].(string)
 	if ok {
-		switch network.(string) {
+		switch network {
 		case "ws":
 			wsOptContent, err := yaml.Marshal(message["ws-opts"])
 			if err != nil {
-				logger.Error(fmt.Sprintf("'%s' 序列化ws-opts字段失败: [%s]", message["name"].(string), err.Error()))
+				logger.Error(fmt.Sprintf("序列化ws-opts字段失败: [%s]", err.Error()))
 				return nil, fmt.Errorf("序列化ws-opts字段失败")
 			}
 			var transport Transport
 			if err := yaml.Unmarshal(wsOptContent, &transport); err != nil {
-				logger.Error(fmt.Sprintf("'%s' 反序列化ws-opts字段失败: [%s]", message["name"].(string), err.Error()))
+				logger.Error(fmt.Sprintf("反序列化ws-opts字段失败: [%s]", err.Error()))
 				return nil, fmt.Errorf("序列化ws-opts字段失败")
 			}
 			transport.Type = "ws"
 			trojan.Transport = &transport
 		}
 	}
-	if _, ok := message["skip-cert-verify"]; ok {
-		trojan.TLS = &TLS{Enabled: true, Insecure: message["skip-cert-verify"].(bool)}
+	if insecure, ok := message["skip-cert-verify"].(bool); ok {
+		trojan.TLS = &TLS{Enabled: true, Insecure: insecure}
 	}
-	if _, ok := message["sni"]; ok {
-		trojan.TLS.ServerName = message["sni"].(string)
+	if sni, ok := message["sni"].(string); ok {
+		trojan.TLS.ServerName = sni
 	}
-	if !trojan.UDP {
-		trojan.Network = "tcp"
-	}else{
-		trojan.Network = ""
-	}
+	trojan.Network = ""
 	return &trojan, nil
 }
 func (t *Trojan) GetTag() string {
