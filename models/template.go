@@ -1,6 +1,11 @@
 package models
 
-type Outbounds interface{}
+import "go.uber.org/zap"
+
+type Outbound interface {
+	Transform(message map[string]interface{}, logger *zap.Logger) (Outbound, error)
+	GetTag() string
+}
 
 type Template struct {
 	Log          *Log          `json:"log,omitempty" yaml:"log,omitempty"`
@@ -9,6 +14,5 @@ type Template struct {
 	Inbounds     []Inbounds    `json:"inbounds" yaml:"inbounds"`
 	Dns          DNS           `json:"dns" yaml:"dns"`
 	Route        Route         `json:"route" yaml:"route"`
-	Outbounds    []Outbounds   `json:"outbounds" yaml:"outbounds"`
-	UDP          bool          `json:"udp,omitempty" yaml:"udp,omitempty"`
+	Outbounds    []interface{}  `json:"outbounds" yaml:"outbounds"`
 }

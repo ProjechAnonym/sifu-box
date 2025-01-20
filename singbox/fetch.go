@@ -1,6 +1,7 @@
 package singbox
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -71,30 +72,46 @@ func parseFileContent(content []byte, logger *zap.Logger) (string, error) {
 		logger.Error(fmt.Sprintf("解析响应失败: [%s]", err.Error()))
 		return "", fmt.Errorf("解析响应失败")
 	}
-	fmt.Println(providerInfo["proxies"])
-	var outbounds []models.Outbounds
-	for _, outbound := range providerInfo["proxies"].([]interface{}) {
-		switch outbound.(map[string]interface{})["type"].(string) {
+	var outbounds []models.Outbound
+	for _, proxy := range providerInfo["proxies"].([]interface{}) {
+		switch proxy.(map[string]interface{})["type"].(string) {
 			case "ss":
-				shadowSocks, err := marshShadowSocks(outbound.(map[string]interface{}), logger)
+				shadowSocks := models.ShadowSocks{}
+				err := error(nil)
+				var outbound models.Outbound = &shadowSocks
+				outbound, err = outbound.Transform(proxy.(map[string]interface{}), logger)
 				if err != nil {
-					logger.Error(fmt.Sprintf("'%s'解析ShadowSocks代理失败: [%s]", outbound.(map[string]interface{})["name"].(string), err.Error()))
+					logger.Error(fmt.Sprintf("'%s'节点解析ShadowSocks代理失败: [%s]", proxy.(map[string]interface{})["name"].(string), err.Error()))
 					continue
 				}
-				outbounds = append(outbounds, *shadowSocks)
+				outbounds = append(outbounds, outbound)
 			case "vmess":
-				vmess, err := marshVmess(outbound.(map[string]interface{}), logger)
+				vmess := models.VMess{}
+				err := error(nil)
+				var outbound models.Outbound = &vmess
+				outbound, err = outbound.Transform(proxy.(map[string]interface{}), logger)
 				if err != nil {
-					logger.Error(fmt.Sprintf("'%s'解析vmess代理失败: [%s]", outbound.(map[string]interface{})["name"].(string), err.Error()))
+					logger.Error(fmt.Sprintf("'%s'节点解析Vmess代理失败: [%s]", proxy.(map[string]interface{})["name"].(string), err.Error()))
 					continue
 				}
-				outbounds = append(outbounds, *vmess)
+				outbounds = append(outbounds, outbound)
 			case "trojan":
-
+				trojan := models.Trojan{}
+				err := error(nil)
+				var outbound models.Outbound = &trojan
+				outbound, err = outbound.Transform(proxy.(map[string]interface{}), logger)
+				if err != nil {
+					logger.Error(fmt.Sprintf("'%s'节点解析Trojan代理失败: [%s]", proxy.(map[string]interface{})["name"].(string), err.Error()))
+					continue
+				}
+				outbounds = append(outbounds, outbound)
 		}
 	}
-	// a,_ := json.Marshal(outbounds)
-	// fmt.Println(string(a))
+	
+
+
+	a,_ := json.Marshal(outbounds)
+	fmt.Println(string(a))
 	// a,_ := json.Marshal(outbounds)
 	// fmt.Println(string(a))
 	return "", nil
