@@ -1,5 +1,11 @@
 package models
 
+import (
+	"fmt"
+
+	"go.uber.org/zap"
+)
+
 type RouteLogic struct {
 	Type  string      `json:"type,omitempty" yaml:"type,omitempty"`
 	Mode  string      `json:"mode,omitempty" yaml:"mode,omitempty"`
@@ -79,4 +85,26 @@ type Route struct {
 	OverrideAndroidVpn  bool           `json:"override_android_vpn,omitempty" yaml:"override_android_vpn,omitempty"`
 	DefaultInterface    string         `json:"default_interface,omitempty" yaml:"default_interface,omitempty"`
 	DefaultMark         uint           `json:"default_mark,omitempty" yaml:"default_mark,omitempty"`
+}
+
+func (r *Route) SetRuleSet(rulesetList []RuleSet, logger *zap.Logger) {
+	routeRuleSets := make([]RouteRuleSet, len(rulesetList))
+	for i, ruleSet := range rulesetList {
+		routeRuleSets[i] = RouteRuleSet{
+			Type:           ruleSet.Type,
+			Tag:            ruleSet.Tag,
+			Format:         ruleSet.Format,
+			DownloadDetour: ruleSet.DownloadDetour,
+			UpdateInterval: ruleSet.UpdateInterval,
+		}
+		switch ruleSet.Type {
+		case "local":
+			routeRuleSets[i].Path = ruleSet.Path
+		case "remote":
+			routeRuleSets[i].URL = ruleSet.Path
+		default:
+			logger.Error(fmt.Sprintf("规则集类型错误, 不存在'%s'类型", ruleSet.Type))
+		}
+	}
+	r.RuleSet = routeRuleSets
 }

@@ -81,3 +81,14 @@ type DNS struct {
 	Servers          []NameServer `json:"servers" yaml:"servers"`
 	Rules            []DNSRule    `json:"rules" yaml:"rules"`
 }
+
+func (d *DNS) SetDNSRules(rulesetList []RuleSet) {
+	var rules []DNSRule
+	for _, ruleset := range rulesetList {
+		if ruleset.NameServer != "" {
+			rule := DNSRule{RuleSet: []string{ruleset.Tag}, DNSAction: DNSAction{Server: ruleset.NameServer, Action: "route"}}
+			rules = append(rules, rule)
+		}
+	}
+	d.Rules = rules
+}

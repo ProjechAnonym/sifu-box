@@ -1,6 +1,7 @@
 package singbox
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sifu-box/models"
@@ -62,34 +63,26 @@ func merge(providerList []models.Provider, rulesetsList []models.RuleSet, templa
 			for i, outbound := range outbounds {
 				tags[i] = outbound.GetTag()
 			}
-			if err := addURLTestOutbound(outbounds, tags, logger); err != nil {
+			outbounds, tags, err = addURLTestOutbound(outbounds, tags, logger)
+			if err != nil {
 				logger.Error(fmt.Sprintf("'%s'生成auto出站失败: [%s]", provider.Name, err.Error()))
 				errChan <- fmt.Errorf("'%s'出错: %s", provider.Name, err.Error())
 				return
 			}
-			targets := filterRulesetList(rulesetsList)
-			var selector models.Selector
-			selectorMap := map[string]interface{}{"type": "selector", "interrupt_exist_connections": false, "outbounds": tags, "tag": "select"}
-			outbound = &selector
-			outbound, err = outbound.Transform(selectorMap, logger)
+			outbounds, err = addSelectorOutbound(provider.Name, outbounds, rulesetsList, tags, logger)
 			if err != nil {
 				logger.Error(fmt.Sprintf("'%s'生成默认selector出站失败: [%s]", provider.Name, err.Error()))
 			}
-			outbounds = append(outbounds, outbound)
-			for _, target := range targets {
-				selectorMap["tag"] = target
-				outbound = &selector
-				outbound, err = outbound.Transform(selectorMap, logger)
-				if err != nil {
-					logger.Error(fmt.Sprintf("'%s'生成%s出站失败: [%s]", provider.Name, target, err.Error()))
-				}
-				outbounds = append(outbounds, outbound)
+			for _, template := range templates {
+				template.Dns.SetDNSRules(rulesetsList)
+				template.Route.SetRuleSet(rulesetsList, logger)
+				a, _ := json.Marshal(template)
+				fmt.Println(string(a))
 			}
 			
 		}()
 	}
 	jobs.Wait()	
-	fmt.Println(errors)
 	return nil
 }
 
