@@ -62,7 +62,8 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, logger *zap.Logger) 
 		providers = setting.Providers
 		rulesets = setting.Rulesets
 	}
-	merge(providers, rulesets, logger)
+	templates := setting.Templates
+	merge(providers, rulesets, templates, logger)
 	// templateMap := setting.Templates
 
 	

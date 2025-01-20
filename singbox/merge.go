@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func merge(providerList []models.Provider, rulesetsList []models.RuleSet, logger *zap.Logger) []error{
+func merge(providerList []models.Provider, rulesetsList []models.RuleSet, templates map[string]models.Template, logger *zap.Logger) []error{
 	providers, errors := formatProviderURL(providerList, logger)
 	if errors != nil {
 		return errors
@@ -62,16 +62,11 @@ func merge(providerList []models.Provider, rulesetsList []models.RuleSet, logger
 			for i, outbound := range outbounds {
 				tags[i] = outbound.GetTag()
 			}
-			var urlTest models.URLTest
-			URLTestMap := map[string]interface{}{"type":"urltest", "interrupt_exist_connections":false, "tag":"auto", "outbounds": tags}
-			var outbound models.Outbound = &urlTest
-			outbound, err = outbound.Transform(URLTestMap, logger)
-			if err != nil {
+			if err := addURLTestOutbound(outbounds, tags, logger); err != nil {
 				logger.Error(fmt.Sprintf("'%s'生成auto出站失败: [%s]", provider.Name, err.Error()))
 				errChan <- fmt.Errorf("'%s'出错: %s", provider.Name, err.Error())
 				return
 			}
-			tags = append(tags, outbound.GetTag())
 			targets := filterRulesetList(rulesetsList)
 			var selector models.Selector
 			selectorMap := map[string]interface{}{"type": "selector", "interrupt_exist_connections": false, "outbounds": tags, "tag": "select"}
@@ -98,13 +93,3 @@ func merge(providerList []models.Provider, rulesetsList []models.RuleSet, logger
 	return nil
 }
 
-func filterRulesetList(rulesetsList []models.RuleSet) []string {
-	targets := []string{}
-	targetsMap := map[string]bool{}
-	for _, ruleset := range rulesetsList {
-		if targetsMap[ruleset.Label] {continue}
-		targetsMap[ruleset.Label] = true
-		targets = append(targets, ruleset.Label)
-	}
-	return targets
-}
