@@ -14,5 +14,5 @@ type Template struct {
 	Inbounds     []Inbounds    `json:"inbounds" yaml:"inbounds"`
 	Dns          DNS           `json:"dns" yaml:"dns"`
 	Route        Route         `json:"route" yaml:"route"`
-	Outbounds    []interface{}  `json:"outbounds" yaml:"outbounds"`
+	Outbounds    []interface{} `json:"outbounds" yaml:"outbounds"`
 }

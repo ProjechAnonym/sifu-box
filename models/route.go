@@ -89,7 +89,7 @@ type Route struct {
 }
 
 func (r *Route) SetRuleSet(rulesetList []RuleSet, logger *zap.Logger) {
-	routeRuleSets := make([]RouteRuleSet, len(rulesetList))
+	routeRuleSets := make([]RouteRuleSet, len(rulesetList) + len(r.RuleSet))
 	for i, ruleSet := range rulesetList {
 		routeRuleSets[i] = RouteRuleSet{
 			Type:           ruleSet.Type,
@@ -107,11 +107,15 @@ func (r *Route) SetRuleSet(rulesetList []RuleSet, logger *zap.Logger) {
 			logger.Error(fmt.Sprintf("规则集类型错误, 不存在'%s'类型", ruleSet.Type))
 		}
 	}
+	for i, ruleSet := range r.RuleSet {
+		routeRuleSets[i + len(rulesetList)] = ruleSet
+	}
 	r.RuleSet = routeRuleSets
 }
 
 func (r *Route) SetRules(provider Provider, rulesets []RuleSet, logger *zap.Logger) {
 	var rules []RouteRule
+	rules = append(rules, r.Rules...)
 	if provider.Remote {
 		providerURL, err := url.Parse(provider.Path)
 		if err != nil {
@@ -119,24 +123,12 @@ func (r *Route) SetRules(provider Provider, rulesets []RuleSet, logger *zap.Logg
 		}
 		rules = append(rules, RouteRule{Domain: []string{providerURL.Hostname()},RouteAction: RouteAction{Action: "route", Outbound: provider.Detour}})
 	}
-	targetMap := make(map[string]struct{a: []RouteSet, china: bool})
 	for _, ruleset := range rulesets {
-		if ruleset.Label == "" {
-			logger.Error(fmt.Sprintf("规则集'%s'缺少标签", ruleset.Tag))
-			continue
-		}
-		if _, exist := targetMap[ruleset.Label]; !exist {
-			targetMap[ruleset.Label] = []RuleSet{ruleset}
+		if ruleset.China {
+			rules = append(rules, RouteRule{RuleSet: []string{ruleset.Tag}, RouteAction: RouteAction{Action: "route", Outbound: "direct"}})
 		}else{
-			targetMap[ruleset.Label] = append(targetMap[ruleset.Label], ruleset)
+			rules = append(rules, RouteRule{RuleSet: []string{ruleset.Tag}, RouteAction: RouteAction{Action: "route", Outbound: ruleset.Label}})
 		}
-	}
-	for label, rulesets := range targetMap {
-		rulesetsTag := make([]string, len(rulesets))
-		for i, ruleset := range rulesets {
-			rulesetsTag[i] = ruleset.Tag
-		}
-		rules = append(rules, RouteRule{RuleSet: rulesetsTag, RouteAction: RouteAction{Action: "route", Outbound: label}})
 	}
 	r.Rules = rules
 }

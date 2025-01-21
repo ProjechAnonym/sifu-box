@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"sifu-box/models"
 	"sync"
 
@@ -76,8 +77,14 @@ func merge(providerList []models.Provider, rulesetsList []models.RuleSet, templa
 			for _, template := range templates {
 				template.Dns.SetDNSRules(rulesetsList)
 				template.Route.SetRuleSet(rulesetsList, logger)
+				template.Route.SetRules(provider, rulesetsList, logger)
+				interfaceOutbounds := make([]interface{}, len(outbounds))
+				for i, outbound := range outbounds {
+					interfaceOutbounds[i] = outbound
+				}
+				template.Outbounds = interfaceOutbounds 
 				a, _ := json.Marshal(template)
-				fmt.Println(string(a))
+				os.WriteFile("E:\\MyProject\\sifu-box@1.1.0\\static\\test.json",a,0666)
 			}
 			
 		}()

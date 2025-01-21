@@ -84,6 +84,7 @@ type DNS struct {
 
 func (d *DNS) SetDNSRules(rulesetList []RuleSet) {
 	var rules []DNSRule
+	rules = append(rules, d.Rules...)
 	for _, ruleset := range rulesetList {
 		if ruleset.NameServer != "" {
 			rule := DNSRule{RuleSet: []string{ruleset.Tag}, DNSAction: DNSAction{Server: ruleset.NameServer, Action: "route"}}
