@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"net/url"
 
 	"go.uber.org/zap"
 )
@@ -107,4 +108,35 @@ func (r *Route) SetRuleSet(rulesetList []RuleSet, logger *zap.Logger) {
 		}
 	}
 	r.RuleSet = routeRuleSets
+}
+
+func (r *Route) SetRules(provider Provider, rulesets []RuleSet, logger *zap.Logger) {
+	var rules []RouteRule
+	if provider.Remote {
+		providerURL, err := url.Parse(provider.Path)
+		if err != nil {
+			logger.Error(fmt.Sprintf("解析'%s'订阅链接'%s'失败", provider.Name, provider.Path))
+		}
+		rules = append(rules, RouteRule{Domain: []string{providerURL.Hostname()},RouteAction: RouteAction{Action: "route", Outbound: provider.Detour}})
+	}
+	targetMap := make(map[string]struct{a: []RouteSet, china: bool})
+	for _, ruleset := range rulesets {
+		if ruleset.Label == "" {
+			logger.Error(fmt.Sprintf("规则集'%s'缺少标签", ruleset.Tag))
+			continue
+		}
+		if _, exist := targetMap[ruleset.Label]; !exist {
+			targetMap[ruleset.Label] = []RuleSet{ruleset}
+		}else{
+			targetMap[ruleset.Label] = append(targetMap[ruleset.Label], ruleset)
+		}
+	}
+	for label, rulesets := range targetMap {
+		rulesetsTag := make([]string, len(rulesets))
+		for i, ruleset := range rulesets {
+			rulesetsTag[i] = ruleset.Tag
+		}
+		rules = append(rules, RouteRule{RuleSet: rulesetsTag, RouteAction: RouteAction{Action: "route", Outbound: label}})
+	}
+	r.Rules = rules
 }
