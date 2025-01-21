@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
+	"sifu-box/ent/template"
 	"sync"
 
 	"entgo.io/ent"
@@ -76,6 +77,7 @@ func checkColumn(table, column string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			provider.Table: provider.ValidColumn,
 			ruleset.Table:  ruleset.ValidColumn,
+			template.Table: template.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

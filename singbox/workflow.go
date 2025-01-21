@@ -25,6 +25,7 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, logger *zap.Logger) 
 	}
 	var providers []models.Provider
 	var rulesets []models.RuleSet
+	templateMap := make(map[string]models.Template)
 	if setting.Server.Enabled {
 		providerList, err := entClient.Provider.Query().All(context.Background())
 		if err != nil {
@@ -58,12 +59,21 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, logger *zap.Logger) 
 				UpdateInterval: ruleset.UpdateInterval,
 			})
 		}
+
+		templates, err := entClient.Template.Query().All(context.Background())
+		if err != nil {
+			logger.Error(fmt.Sprintf("获取路由规则集信息失败: [%s]", err.Error()))
+			return nil, fmt.Errorf("获取路由规则集信息失败")
+		}
+		for _, template := range templates {
+			templateMap[template.Name] = template.Content
+		}
 	}else{
 		providers = setting.Providers
 		rulesets = setting.Rulesets
+		templateMap = setting.Templates
 	}
-	templates := setting.Templates
-	merge(providers, rulesets, templates, logger)
+	merge(providers, rulesets, templateMap, logger)
 	// templateMap := setting.Templates
 
 	

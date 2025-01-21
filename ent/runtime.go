@@ -6,6 +6,7 @@ import (
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
 	"sifu-box/ent/schema"
+	"sifu-box/ent/template"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -194,6 +195,26 @@ func init() {
 		return func(name_server string) error {
 			for _, fn := range fns {
 				if err := fn(name_server); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	templateFields := schema.Template{}.Fields()
+	_ = templateFields
+	// templateDescName is the schema descriptor for name field.
+	templateDescName := templateFields[0].Descriptor()
+	// template.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	template.NameValidator = func() func(string) error {
+		validators := templateDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
 					return err
 				}
 			}

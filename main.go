@@ -10,6 +10,7 @@ import (
 	"sifu-box/ent"
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
+	"sifu-box/ent/template"
 	"sifu-box/models"
 	"sifu-box/singbox"
 	"sifu-box/utils"
@@ -101,6 +102,22 @@ func init() {
 			}
 		}
 		initLogger.Info("数据库写入规则集信息完成")
+
+		for key, templateContent := range setting.Templates {
+			exist, err := entClient.Template.Query().Where(template.NameEQ(key)).Exist(context.Background())
+			if err != nil {
+				initLogger.Error(fmt.Sprintf("获取数据库数据失败: [%s]",err.Error()))
+			}
+			if !exist {
+				if _, err := entClient.Template.Create().
+												SetName(key).
+												SetContent(templateContent).
+												Save(context.Background()); err != nil {
+					initLogger.Error(fmt.Sprintf("保存数据失败: [%s]", err.Error()))
+				}
+			}
+		}
+		initLogger.Info("数据库写入模板信息完成")
 	}
 }
 

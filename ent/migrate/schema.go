@@ -41,10 +41,23 @@ var (
 		Columns:    RuleSetsColumns,
 		PrimaryKey: []*schema.Column{RuleSetsColumns[0]},
 	}
+	// TemplatesColumns holds the columns for the "templates" table.
+	TemplatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
+		{Name: "content", Type: field.TypeJSON},
+	}
+	// TemplatesTable holds the schema information for the "templates" table.
+	TemplatesTable = &schema.Table{
+		Name:       "templates",
+		Columns:    TemplatesColumns,
+		PrimaryKey: []*schema.Column{TemplatesColumns[0]},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ProvidersTable,
 		RuleSetsTable,
+		TemplatesTable,
 	}
 )
 

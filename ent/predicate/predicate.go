@@ -11,3 +11,6 @@ type Provider func(*sql.Selector)
 
 // RuleSet is the predicate function for ruleset builders.
 type RuleSet func(*sql.Selector)
+
+// Template is the predicate function for template builders.
+type Template func(*sql.Selector)
