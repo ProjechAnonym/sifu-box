@@ -78,13 +78,9 @@ func merge(providerList []models.Provider, rulesetsList []models.RuleSet, templa
 				template.Dns.SetDNSRules(rulesetsList)
 				template.Route.SetRuleSet(rulesetsList, logger)
 				template.Route.SetRules(provider, rulesetsList, logger)
-				interfaceOutbounds := make([]interface{}, len(outbounds))
-				for i, outbound := range outbounds {
-					interfaceOutbounds[i] = outbound
-				}
-				template.Outbounds = interfaceOutbounds 
+				template.SetOutbounds(outbounds) 
 				a, _ := json.Marshal(template)
-				os.WriteFile("E:\\MyProject\\sifu-box@1.1.0\\static\\test.json",a,0666)
+				os.WriteFile(fmt.Sprintf("E:\\MyProject\\sifu-box@1.1.0\\static\\%s.json",provider.Name),a,0666)
 			}
 			
 		}()

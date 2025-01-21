@@ -16,3 +16,11 @@ type Template struct {
 	Route        Route         `json:"route" yaml:"route"`
 	Outbounds    []interface{} `json:"outbounds" yaml:"outbounds"`
 }
+
+func (t *Template) SetOutbounds(outbounds []Outbound) {
+	interfaceOutbounds := make([]interface{}, len(outbounds))
+	for i, outbound := range outbounds {
+		interfaceOutbounds[i] = outbound
+	}
+	t.Outbounds = interfaceOutbounds
+}
