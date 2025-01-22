@@ -4,4 +4,4 @@ singbox:
   binary_path: /opt/singbox/singbox
 
 server:
-  enabled: true
+  enabled: false
