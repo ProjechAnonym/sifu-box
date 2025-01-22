@@ -128,7 +128,8 @@ func main() {
 		entClient.Close()
 	}()
 	singbox.Workflow(entClient, buntClient, nil, nil, workDir, setting.Server.Enabled, workflowLogger)
-
+	
+	
 }
 
 func getWorkDir() string {

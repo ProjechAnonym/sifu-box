@@ -8,11 +8,11 @@ import (
 	"go.uber.org/zap"
 )
 
-// formatProviderURL 函数处理一个Provider切片，为每个远程机场的URL添加“clash”标签参数(如果尚未存在)。
-// 这个函数接收一个Provider切片和一个Logger对象，用于记录处理过程中的错误信息。
-// 它返回一个更新后的Provider切片和一个错误切片，包含处理过程中遇到的任何错误。
+// formatProviderURL 函数处理一个Provider切片, 为每个远程机场的URL添加"clash"标签参数(如果尚未存在)
+// 这个函数接收一个Provider切片和一个Logger对象, 用于记录处理过程中的错误信息
+// 它返回一个更新后的Provider切片和一个错误切片, 包含处理过程中遇到的任何错误
 func formatProviderURL(providers []models.Provider, logger *zap.Logger) ([]models.Provider, []error) {
-    // 初始化一个错误切片,用于存储处理过程中遇到的错误
+    // 初始化一个错误切片, 用于存储处理过程中遇到的错误
     var errors []error
 
     // 遍历Provider切片
@@ -30,10 +30,10 @@ func formatProviderURL(providers []models.Provider, logger *zap.Logger) ([]model
 
             // 获取URL查询参数
             params := providerURL.Query()
-            // 初始化一个标志变量,用于标记是否已存在“clash”标签
+            // 初始化一个标志变量,用于标记是否已存在"clash"标签
             clashTag := false
 
-            // 遍历查询参数,检查是否存在“flag”为“clash”的参数
+            // 遍历查询参数,检查是否存在"flag"为"clash"的参数
             for key, values := range params {
                 if key == "flag" && values[0] == "clash" {
                     clashTag = true
@@ -41,7 +41,7 @@ func formatProviderURL(providers []models.Provider, logger *zap.Logger) ([]model
                 }
             }
 
-            // 如果不存在“clash”标签,则添加该标签到查询参数中
+            // 如果不存在"clash"标签,则添加该标签到查询参数中
             if !clashTag {
                 params.Add("flag", "clash")
                 // 更新URL的查询参数部分

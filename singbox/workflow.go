@@ -14,16 +14,16 @@ import (
 	"go.uber.org/zap"
 )
 
-func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []string, specificTemplate []string, workDir string, server bool, logger *zap.Logger) ([]string, error) {
+func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []string, specificTemplate []string, workDir string, server bool, logger *zap.Logger) []error {
 	settingStr, err := utils.GetValue(buntClient, models.SINGBOXSETTINGKEY, logger)
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取配置信息失败: [%s]", err.Error()))
-		return nil, fmt.Errorf("获取配置信息失败")
+		return []error{fmt.Errorf("获取配置信息失败")}
 	}
 	var setting models.SingboxSetting
 	if err := json.Unmarshal([]byte(settingStr), &setting); err != nil {
 		logger.Error(fmt.Sprintf("解析配置信息失败: [%s]", err.Error()))
-		return nil, fmt.Errorf("解析配置信息失败")
+		return []error{fmt.Errorf("解析配置信息失败")}
 	}
 	var providers []models.Provider
 	var rulesets []models.RuleSet
@@ -38,7 +38,7 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 		}
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取机场信息失败: [%s]", err.Error()))
-			return nil, fmt.Errorf("获取机场信息失败")
+			return []error{fmt.Errorf("获取机场信息失败")}
 		}
 		for _, provider := range providerList {
 			providers = append(providers, models.Provider{
@@ -52,7 +52,7 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 		rulesetsList, err := entClient.RuleSet.Query().All(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取路由规则集信息失败: [%s]", err.Error()))
-			return nil, fmt.Errorf("获取路由规则集信息失败")
+			return []error{fmt.Errorf("获取路由规则集信息失败")}
 		}
 		for _, ruleset := range rulesetsList {
 			rulesets = append(rulesets, models.RuleSet{
@@ -76,7 +76,7 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 		
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取路由规则集信息失败: [%s]", err.Error()))
-			return nil, fmt.Errorf("获取路由规则集信息失败")
+			return []error{fmt.Errorf("获取路由规则集信息失败")}
 		}
 		for _, template := range templateList {
 			templateMap[template.Name] = template.Content
@@ -86,10 +86,5 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 		rulesets = setting.Rulesets
 		templateMap = setting.Templates
 	}
-	merge(providers, rulesets, templateMap, workDir, server, logger)
-	// templateMap := setting.Templates
-
-	
-
-	return nil, nil
+	return merge(providers, rulesets, templateMap, workDir, server, logger)
 }

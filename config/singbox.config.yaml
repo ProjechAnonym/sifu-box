@@ -7,10 +7,10 @@ providers:
     path: "C:/Users/19822/Downloads/20250119.yaml"
     detour: select
     remote: false
-  - name: "github2"
-    path: "C:/Users/19822/Downloads/20250119.yaml1"
-    detour: select
-    remote: false
+  # - name: "github2"
+  #   path: "C:/Users/19822/Downloads/20250119.yaml1"
+  #   detour: select
+  #   remote: false
 rulesets:
   - tag: chatgpt # 规则集的名称
     type: local # 远程规则集还是本地规则集,可选值: local, remote
