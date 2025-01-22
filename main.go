@@ -134,7 +134,8 @@ func main() {
 
 func getWorkDir() string {
 	// workDir := filepath.Dir(os.Args[0])
-	workDir := "E:/Myproject/sifu-box@1.1.0/bin"
+	// workDir := "E:/Myproject/sifu-box@1.1.0/bin"
+	workDir := "/opt/sifubox/bin"
 	return filepath.Dir(workDir)
 }
 func getEncoder() zapcore.Encoder {
