@@ -150,57 +150,15 @@ func init() {
 	// rulesetDescDownloadDetour is the schema descriptor for download_detour field.
 	rulesetDescDownloadDetour := rulesetFields[5].Descriptor()
 	// ruleset.DownloadDetourValidator is a validator for the "download_detour" field. It is called by the builders before save.
-	ruleset.DownloadDetourValidator = func() func(string) error {
-		validators := rulesetDescDownloadDetour.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(download_detour string) error {
-			for _, fn := range fns {
-				if err := fn(download_detour); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	ruleset.DownloadDetourValidator = rulesetDescDownloadDetour.Validators[0].(func(string) error)
 	// rulesetDescUpdateInterval is the schema descriptor for update_interval field.
 	rulesetDescUpdateInterval := rulesetFields[6].Descriptor()
 	// ruleset.UpdateIntervalValidator is a validator for the "update_interval" field. It is called by the builders before save.
-	ruleset.UpdateIntervalValidator = func() func(string) error {
-		validators := rulesetDescUpdateInterval.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(update_interval string) error {
-			for _, fn := range fns {
-				if err := fn(update_interval); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	ruleset.UpdateIntervalValidator = rulesetDescUpdateInterval.Validators[0].(func(string) error)
 	// rulesetDescNameServer is the schema descriptor for name_server field.
 	rulesetDescNameServer := rulesetFields[7].Descriptor()
 	// ruleset.NameServerValidator is a validator for the "name_server" field. It is called by the builders before save.
-	ruleset.NameServerValidator = func() func(string) error {
-		validators := rulesetDescNameServer.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(name_server string) error {
-			for _, fn := range fns {
-				if err := fn(name_server); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	ruleset.NameServerValidator = rulesetDescNameServer.Validators[0].(func(string) error)
 	templateFields := schema.Template{}.Fields()
 	_ = templateFields
 	// templateDescName is the schema descriptor for name field.

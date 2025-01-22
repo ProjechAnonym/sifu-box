@@ -473,6 +473,16 @@ func DownloadDetourHasSuffix(v string) predicate.RuleSet {
 	return predicate.RuleSet(sql.FieldHasSuffix(FieldDownloadDetour, v))
 }
 
+// DownloadDetourIsNil applies the IsNil predicate on the "download_detour" field.
+func DownloadDetourIsNil() predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldIsNull(FieldDownloadDetour))
+}
+
+// DownloadDetourNotNil applies the NotNil predicate on the "download_detour" field.
+func DownloadDetourNotNil() predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldNotNull(FieldDownloadDetour))
+}
+
 // DownloadDetourEqualFold applies the EqualFold predicate on the "download_detour" field.
 func DownloadDetourEqualFold(v string) predicate.RuleSet {
 	return predicate.RuleSet(sql.FieldEqualFold(FieldDownloadDetour, v))
@@ -538,6 +548,16 @@ func UpdateIntervalHasSuffix(v string) predicate.RuleSet {
 	return predicate.RuleSet(sql.FieldHasSuffix(FieldUpdateInterval, v))
 }
 
+// UpdateIntervalIsNil applies the IsNil predicate on the "update_interval" field.
+func UpdateIntervalIsNil() predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldIsNull(FieldUpdateInterval))
+}
+
+// UpdateIntervalNotNil applies the NotNil predicate on the "update_interval" field.
+func UpdateIntervalNotNil() predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldNotNull(FieldUpdateInterval))
+}
+
 // UpdateIntervalEqualFold applies the EqualFold predicate on the "update_interval" field.
 func UpdateIntervalEqualFold(v string) predicate.RuleSet {
 	return predicate.RuleSet(sql.FieldEqualFold(FieldUpdateInterval, v))
@@ -601,6 +621,16 @@ func NameServerHasPrefix(v string) predicate.RuleSet {
 // NameServerHasSuffix applies the HasSuffix predicate on the "name_server" field.
 func NameServerHasSuffix(v string) predicate.RuleSet {
 	return predicate.RuleSet(sql.FieldHasSuffix(FieldNameServer, v))
+}
+
+// NameServerIsNil applies the IsNil predicate on the "name_server" field.
+func NameServerIsNil() predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldIsNull(FieldNameServer))
+}
+
+// NameServerNotNil applies the NotNil predicate on the "name_server" field.
+func NameServerNotNil() predicate.RuleSet {
+	return predicate.RuleSet(sql.FieldNotNull(FieldNameServer))
 }
 
 // NameServerEqualFold applies the EqualFold predicate on the "name_server" field.

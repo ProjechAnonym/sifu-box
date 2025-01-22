@@ -18,9 +18,9 @@ func (RuleSet) Fields() []ent.Field {
 		field.String("path").NotEmpty().MaxLen(100).Unique(),
 		field.String("format").NotEmpty().MaxLen(10),
 		field.String("label").NotEmpty().MaxLen(30),
-		field.String("download_detour").NotEmpty().MaxLen(30),
-		field.String("update_interval").NotEmpty().MaxLen(10),
-		field.String("name_server").NotEmpty().MaxLen(30),
+		field.String("download_detour").Optional().MaxLen(30),
+		field.String("update_interval").Optional().MaxLen(10),
+		field.String("name_server").Optional().MaxLen(30),
 		field.Bool("china"),
 	}
 }

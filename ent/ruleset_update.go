@@ -111,6 +111,12 @@ func (rsu *RuleSetUpdate) SetNillableDownloadDetour(s *string) *RuleSetUpdate {
 	return rsu
 }
 
+// ClearDownloadDetour clears the value of the "download_detour" field.
+func (rsu *RuleSetUpdate) ClearDownloadDetour() *RuleSetUpdate {
+	rsu.mutation.ClearDownloadDetour()
+	return rsu
+}
+
 // SetUpdateInterval sets the "update_interval" field.
 func (rsu *RuleSetUpdate) SetUpdateInterval(s string) *RuleSetUpdate {
 	rsu.mutation.SetUpdateInterval(s)
@@ -125,6 +131,12 @@ func (rsu *RuleSetUpdate) SetNillableUpdateInterval(s *string) *RuleSetUpdate {
 	return rsu
 }
 
+// ClearUpdateInterval clears the value of the "update_interval" field.
+func (rsu *RuleSetUpdate) ClearUpdateInterval() *RuleSetUpdate {
+	rsu.mutation.ClearUpdateInterval()
+	return rsu
+}
+
 // SetNameServer sets the "name_server" field.
 func (rsu *RuleSetUpdate) SetNameServer(s string) *RuleSetUpdate {
 	rsu.mutation.SetNameServer(s)
@@ -136,6 +148,12 @@ func (rsu *RuleSetUpdate) SetNillableNameServer(s *string) *RuleSetUpdate {
 	if s != nil {
 		rsu.SetNameServer(*s)
 	}
+	return rsu
+}
+
+// ClearNameServer clears the value of the "name_server" field.
+func (rsu *RuleSetUpdate) ClearNameServer() *RuleSetUpdate {
+	rsu.mutation.ClearNameServer()
 	return rsu
 }
 
@@ -260,11 +278,20 @@ func (rsu *RuleSetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := rsu.mutation.DownloadDetour(); ok {
 		_spec.SetField(ruleset.FieldDownloadDetour, field.TypeString, value)
 	}
+	if rsu.mutation.DownloadDetourCleared() {
+		_spec.ClearField(ruleset.FieldDownloadDetour, field.TypeString)
+	}
 	if value, ok := rsu.mutation.UpdateInterval(); ok {
 		_spec.SetField(ruleset.FieldUpdateInterval, field.TypeString, value)
 	}
+	if rsu.mutation.UpdateIntervalCleared() {
+		_spec.ClearField(ruleset.FieldUpdateInterval, field.TypeString)
+	}
 	if value, ok := rsu.mutation.NameServer(); ok {
 		_spec.SetField(ruleset.FieldNameServer, field.TypeString, value)
+	}
+	if rsu.mutation.NameServerCleared() {
+		_spec.ClearField(ruleset.FieldNameServer, field.TypeString)
 	}
 	if value, ok := rsu.mutation.China(); ok {
 		_spec.SetField(ruleset.FieldChina, field.TypeBool, value)
@@ -373,6 +400,12 @@ func (rsuo *RuleSetUpdateOne) SetNillableDownloadDetour(s *string) *RuleSetUpdat
 	return rsuo
 }
 
+// ClearDownloadDetour clears the value of the "download_detour" field.
+func (rsuo *RuleSetUpdateOne) ClearDownloadDetour() *RuleSetUpdateOne {
+	rsuo.mutation.ClearDownloadDetour()
+	return rsuo
+}
+
 // SetUpdateInterval sets the "update_interval" field.
 func (rsuo *RuleSetUpdateOne) SetUpdateInterval(s string) *RuleSetUpdateOne {
 	rsuo.mutation.SetUpdateInterval(s)
@@ -387,6 +420,12 @@ func (rsuo *RuleSetUpdateOne) SetNillableUpdateInterval(s *string) *RuleSetUpdat
 	return rsuo
 }
 
+// ClearUpdateInterval clears the value of the "update_interval" field.
+func (rsuo *RuleSetUpdateOne) ClearUpdateInterval() *RuleSetUpdateOne {
+	rsuo.mutation.ClearUpdateInterval()
+	return rsuo
+}
+
 // SetNameServer sets the "name_server" field.
 func (rsuo *RuleSetUpdateOne) SetNameServer(s string) *RuleSetUpdateOne {
 	rsuo.mutation.SetNameServer(s)
@@ -398,6 +437,12 @@ func (rsuo *RuleSetUpdateOne) SetNillableNameServer(s *string) *RuleSetUpdateOne
 	if s != nil {
 		rsuo.SetNameServer(*s)
 	}
+	return rsuo
+}
+
+// ClearNameServer clears the value of the "name_server" field.
+func (rsuo *RuleSetUpdateOne) ClearNameServer() *RuleSetUpdateOne {
+	rsuo.mutation.ClearNameServer()
 	return rsuo
 }
 
@@ -552,11 +597,20 @@ func (rsuo *RuleSetUpdateOne) sqlSave(ctx context.Context) (_node *RuleSet, err 
 	if value, ok := rsuo.mutation.DownloadDetour(); ok {
 		_spec.SetField(ruleset.FieldDownloadDetour, field.TypeString, value)
 	}
+	if rsuo.mutation.DownloadDetourCleared() {
+		_spec.ClearField(ruleset.FieldDownloadDetour, field.TypeString)
+	}
 	if value, ok := rsuo.mutation.UpdateInterval(); ok {
 		_spec.SetField(ruleset.FieldUpdateInterval, field.TypeString, value)
 	}
+	if rsuo.mutation.UpdateIntervalCleared() {
+		_spec.ClearField(ruleset.FieldUpdateInterval, field.TypeString)
+	}
 	if value, ok := rsuo.mutation.NameServer(); ok {
 		_spec.SetField(ruleset.FieldNameServer, field.TypeString, value)
+	}
+	if rsuo.mutation.NameServerCleared() {
+		_spec.ClearField(ruleset.FieldNameServer, field.TypeString)
 	}
 	if value, ok := rsuo.mutation.China(); ok {
 		_spec.SetField(ruleset.FieldChina, field.TypeBool, value)

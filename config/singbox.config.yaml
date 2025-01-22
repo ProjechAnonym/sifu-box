@@ -12,28 +12,29 @@ providers:
   #   detour: select
   #   remote: false
 rulesets:
-  - tag: chatgpt # 规则集的名称
-    type: local # 远程规则集还是本地规则集,可选值: local, remote
-    path: /opt/singbox/chatgpt.json # 规则集的路径,仅type为local时有效
-    format: binary # 规则集文件的格式,可选值: binary, source,
-    china: false # 是否中国地区规则集,如果为true,则在singbox配置中会直连出站
-    name_server: external # 与singbox的dns搭配使用,命中该规则集的dns请求会从指定的dns服务器出站
-    label: china # 规则集的组标签,与tag不同,这个是搭配使用的,比如china-ip和china-site会在route中共同组成一个规则出站
-    download_detour: select # 下载时使用的出站策略,默认为select
-    update_interval: 1d # 更新时间间隔,默认为1天
-  - tag: chatgpt1 # 规则集的名称
-    type: local # 远程规则集还是本地规则集,可选值: local, remote
-    path: /opt/singbox/chatgpt1.json # 规则集的路径,仅type为local时有效
-    format: binary # 规则集文件的格式,可选值: binary, source,
-    china: false # 是否中国地区规则集,如果为true,则在singbox配置中会直连出站
-    name_server: external # 与singbox的dns搭配使用,命中该规则集的dns请求会从指定的dns服务器出站
-    label: china # 规则集的组标签,与tag不同,这个是搭配使用的,比如china-ip和china-site会在route中共同组成一个规则出站
-    download_detour: select # 下载时使用的出站策略,默认为select
-    update_interval: 1d # 更新时间间隔,默认为1天
+  - type: remote
+    path: https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geosite/cn.srs
+    format: binary
+    tag: china-site
+    download_detour: select
+    update_interval: 1d
+    label: china
+    china: true
+    name_server: internal
+  - type: remote
+    path: https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geoip/cn.srs
+    format: binary
+    tag: china-ip
+    download_detour: select
+    update_interval: 1d
+    label: china
+    china: true
 templates:
   default:
     log:
-      disabled: true
+      disabled: false
+      timestamp: true
+      output: singbox.log
     experimental:
       cache_file:
         enabled: true
@@ -91,15 +92,14 @@ templates:
       final: select
       auto_detect_interface: true
     outbounds:
-      - name: direct
+      - tag: direct
         type: direct
-      - name: block
-        type: block
-      - name: 香港
+    custom_outbounds:
+      - tag: 香港
         type: shadowsocks
-        cipher: chacha20-ietf-poly1305
+        method: chacha20-ietf-poly1305
         server: 127.0.0.1
-        port: 443
+        server_port: 443
         password: 123456dsaf
   ios:
     log:

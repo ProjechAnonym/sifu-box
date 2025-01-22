@@ -21,7 +21,7 @@ func filterRulesetList(rulesetsList []models.RuleSet) []string {
     // 遍历规则集列表
     for _, ruleset := range rulesetsList {
         // 如果当前规则集的标签已经在映射中存在, 则跳过, 避免重复添加
-        if targetsMap[ruleset.Label] {
+        if targetsMap[ruleset.Label] || ruleset.China {
             continue
         }
         // 将新的标签添加到映射中, 标记为已存在

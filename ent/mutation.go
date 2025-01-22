@@ -871,9 +871,22 @@ func (m *RuleSetMutation) OldDownloadDetour(ctx context.Context) (v string, err 
 	return oldValue.DownloadDetour, nil
 }
 
+// ClearDownloadDetour clears the value of the "download_detour" field.
+func (m *RuleSetMutation) ClearDownloadDetour() {
+	m.download_detour = nil
+	m.clearedFields[ruleset.FieldDownloadDetour] = struct{}{}
+}
+
+// DownloadDetourCleared returns if the "download_detour" field was cleared in this mutation.
+func (m *RuleSetMutation) DownloadDetourCleared() bool {
+	_, ok := m.clearedFields[ruleset.FieldDownloadDetour]
+	return ok
+}
+
 // ResetDownloadDetour resets all changes to the "download_detour" field.
 func (m *RuleSetMutation) ResetDownloadDetour() {
 	m.download_detour = nil
+	delete(m.clearedFields, ruleset.FieldDownloadDetour)
 }
 
 // SetUpdateInterval sets the "update_interval" field.
@@ -907,9 +920,22 @@ func (m *RuleSetMutation) OldUpdateInterval(ctx context.Context) (v string, err 
 	return oldValue.UpdateInterval, nil
 }
 
+// ClearUpdateInterval clears the value of the "update_interval" field.
+func (m *RuleSetMutation) ClearUpdateInterval() {
+	m.update_interval = nil
+	m.clearedFields[ruleset.FieldUpdateInterval] = struct{}{}
+}
+
+// UpdateIntervalCleared returns if the "update_interval" field was cleared in this mutation.
+func (m *RuleSetMutation) UpdateIntervalCleared() bool {
+	_, ok := m.clearedFields[ruleset.FieldUpdateInterval]
+	return ok
+}
+
 // ResetUpdateInterval resets all changes to the "update_interval" field.
 func (m *RuleSetMutation) ResetUpdateInterval() {
 	m.update_interval = nil
+	delete(m.clearedFields, ruleset.FieldUpdateInterval)
 }
 
 // SetNameServer sets the "name_server" field.
@@ -943,9 +969,22 @@ func (m *RuleSetMutation) OldNameServer(ctx context.Context) (v string, err erro
 	return oldValue.NameServer, nil
 }
 
+// ClearNameServer clears the value of the "name_server" field.
+func (m *RuleSetMutation) ClearNameServer() {
+	m.name_server = nil
+	m.clearedFields[ruleset.FieldNameServer] = struct{}{}
+}
+
+// NameServerCleared returns if the "name_server" field was cleared in this mutation.
+func (m *RuleSetMutation) NameServerCleared() bool {
+	_, ok := m.clearedFields[ruleset.FieldNameServer]
+	return ok
+}
+
 // ResetNameServer resets all changes to the "name_server" field.
 func (m *RuleSetMutation) ResetNameServer() {
 	m.name_server = nil
+	delete(m.clearedFields, ruleset.FieldNameServer)
 }
 
 // SetChina sets the "china" field.
@@ -1200,7 +1239,17 @@ func (m *RuleSetMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *RuleSetMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(ruleset.FieldDownloadDetour) {
+		fields = append(fields, ruleset.FieldDownloadDetour)
+	}
+	if m.FieldCleared(ruleset.FieldUpdateInterval) {
+		fields = append(fields, ruleset.FieldUpdateInterval)
+	}
+	if m.FieldCleared(ruleset.FieldNameServer) {
+		fields = append(fields, ruleset.FieldNameServer)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1213,6 +1262,17 @@ func (m *RuleSetMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *RuleSetMutation) ClearField(name string) error {
+	switch name {
+	case ruleset.FieldDownloadDetour:
+		m.ClearDownloadDetour()
+		return nil
+	case ruleset.FieldUpdateInterval:
+		m.ClearUpdateInterval()
+		return nil
+	case ruleset.FieldNameServer:
+		m.ClearNameServer()
+		return nil
+	}
 	return fmt.Errorf("unknown RuleSet nullable field %s", name)
 }
 

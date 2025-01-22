@@ -13,7 +13,7 @@ type ShadowSocks struct {
 	Server     string `json:"server" yaml:"server"`
 	ServerPort int    `json:"server_port" yaml:"port"`
 	UDP        bool   `json:"-" yaml:"udp,omitempty"`
-	Network    string `json:"network" yaml:"network"`
+	Network    string `json:"network,omitempty" yaml:"network,omitempty"`
 	Method     string `json:"method" yaml:"cipher"`
 	Password   string `json:"password" yaml:"password"`
 	Plugin     string `json:"plugin,omitempty" yaml:"plugin,omitempty"`

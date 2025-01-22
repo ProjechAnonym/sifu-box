@@ -55,15 +55,39 @@ func (rsc *RuleSetCreate) SetDownloadDetour(s string) *RuleSetCreate {
 	return rsc
 }
 
+// SetNillableDownloadDetour sets the "download_detour" field if the given value is not nil.
+func (rsc *RuleSetCreate) SetNillableDownloadDetour(s *string) *RuleSetCreate {
+	if s != nil {
+		rsc.SetDownloadDetour(*s)
+	}
+	return rsc
+}
+
 // SetUpdateInterval sets the "update_interval" field.
 func (rsc *RuleSetCreate) SetUpdateInterval(s string) *RuleSetCreate {
 	rsc.mutation.SetUpdateInterval(s)
 	return rsc
 }
 
+// SetNillableUpdateInterval sets the "update_interval" field if the given value is not nil.
+func (rsc *RuleSetCreate) SetNillableUpdateInterval(s *string) *RuleSetCreate {
+	if s != nil {
+		rsc.SetUpdateInterval(*s)
+	}
+	return rsc
+}
+
 // SetNameServer sets the "name_server" field.
 func (rsc *RuleSetCreate) SetNameServer(s string) *RuleSetCreate {
 	rsc.mutation.SetNameServer(s)
+	return rsc
+}
+
+// SetNillableNameServer sets the "name_server" field if the given value is not nil.
+func (rsc *RuleSetCreate) SetNillableNameServer(s *string) *RuleSetCreate {
+	if s != nil {
+		rsc.SetNameServer(*s)
+	}
 	return rsc
 }
 
@@ -147,24 +171,15 @@ func (rsc *RuleSetCreate) check() error {
 			return &ValidationError{Name: "label", err: fmt.Errorf(`ent: validator failed for field "RuleSet.label": %w`, err)}
 		}
 	}
-	if _, ok := rsc.mutation.DownloadDetour(); !ok {
-		return &ValidationError{Name: "download_detour", err: errors.New(`ent: missing required field "RuleSet.download_detour"`)}
-	}
 	if v, ok := rsc.mutation.DownloadDetour(); ok {
 		if err := ruleset.DownloadDetourValidator(v); err != nil {
 			return &ValidationError{Name: "download_detour", err: fmt.Errorf(`ent: validator failed for field "RuleSet.download_detour": %w`, err)}
 		}
 	}
-	if _, ok := rsc.mutation.UpdateInterval(); !ok {
-		return &ValidationError{Name: "update_interval", err: errors.New(`ent: missing required field "RuleSet.update_interval"`)}
-	}
 	if v, ok := rsc.mutation.UpdateInterval(); ok {
 		if err := ruleset.UpdateIntervalValidator(v); err != nil {
 			return &ValidationError{Name: "update_interval", err: fmt.Errorf(`ent: validator failed for field "RuleSet.update_interval": %w`, err)}
 		}
-	}
-	if _, ok := rsc.mutation.NameServer(); !ok {
-		return &ValidationError{Name: "name_server", err: errors.New(`ent: missing required field "RuleSet.name_server"`)}
 	}
 	if v, ok := rsc.mutation.NameServer(); ok {
 		if err := ruleset.NameServerValidator(v); err != nil {

@@ -91,27 +91,66 @@ func merge(providerList []models.Provider, rulesetsList []models.RuleSet, templa
                 errChan <- err
                 return
             }
-            // 处理并添加自动测试延迟出站配置和选择指定出站配置
-            tags := make([]string, len(outbounds))
-            for i, outbound := range outbounds {
-                tags[i] = outbound.GetTag()
-            }
-            outbounds, tags, err = addURLTestOutbound(outbounds, tags, logger)
-            if err != nil {
-                logger.Error(fmt.Sprintf("'%s'生成auto出站失败: [%s]", provider.Name, err.Error()))
-                errChan <- fmt.Errorf("'%s'出错: %s", provider.Name, err.Error())
-                return
-            }
-            outbounds, err = addSelectorOutbound(provider.Name, outbounds, rulesetsList, tags, logger)
-            if err != nil {
-                logger.Error(fmt.Sprintf("'%s'生成默认selector出站失败: [%s]", provider.Name, err.Error()))
-            }
+            outboundsLength := len(outbounds)
             // 遍历每个模板, 生成并写入配置文件
             for key, template := range templates {
                 template.Dns.SetDNSRules(rulesetsList)
                 template.Route.SetRuleSet(rulesetsList, logger)
                 template.Route.SetRules(provider, rulesetsList, logger)
-                template.SetOutbounds(outbounds) 
+
+                // 生成auto和默认selector的outbounds标签列表
+                // 初始化标签列表
+                var tags []string
+                if template.CustomOutbounds != nil {
+                    // 如果有自定义出站, 则标签列表长度为自定义出站列表长度加上机场出站列表长度
+                    tags = make([]string, len(template.CustomOutbounds) + len(outbounds))
+                    for i, customOutbound := range template.CustomOutbounds {
+                        // 判断自定义出站是否为map类型
+                        customOutboundMap, ok := customOutbound.(map[string]interface{}); 
+                        if !ok {
+                            logger.Error(fmt.Sprintf("模板'%s'的自定义出站格式错误", key))
+                            errChan <- fmt.Errorf("'%s'出错: 模板'%s'的自定义出站格式错误", provider.Name, key)
+                            continue
+                        }
+                        // 判断自定义出站tag是否为string类型
+                        tag, valid := customOutboundMap["tag"].(string)
+
+                        // 如果tag为string类型, 则将其添加到标签列表中
+                        if !valid {
+                            logger.Error(fmt.Sprintf("模板'%s'的自定义出站tag格式错误", key))
+                            errChan <- fmt.Errorf("'%s'出错: 模板'%s'的自定义出站tag格式错误", provider.Name, key)
+                            continue
+                        }
+                        tags[i] = tag
+                    }
+
+                    // 遍历机场出站列表, 将tag添加到标签列表中
+                    for i, outbound := range outbounds {
+                        tags[i + len(template.CustomOutbounds)] = outbound.GetTag()
+                    }
+                }else{
+                    // 如果没有自定义出站, 则标签列表长度为机场出站列表长度
+                    tags = make([]string, len(outbounds))
+                    for i, outbound := range outbounds {
+                        tags[i] = outbound.GetTag()
+                    }
+                }
+
+                // 生成auto和默认selector的outbounds
+                outbounds, tags, err = addURLTestOutbound(outbounds, tags, logger)
+                if err != nil {
+                    logger.Error(fmt.Sprintf("'%s'生成auto出站失败: [%s]", provider.Name, err.Error()))
+                    errChan <- fmt.Errorf("'%s'出错: %s", provider.Name, err.Error())
+                    return
+                }
+                outbounds, err = addSelectorOutbound(provider.Name, outbounds, rulesetsList, tags, logger)
+                if err != nil {
+                    logger.Error(fmt.Sprintf("'%s'生成默认selector出站失败: [%s]", provider.Name, err.Error()))
+                }
+                template.SetOutbounds(outbounds)
+
+                // 截取出站列表的前outboundsLength个元素, 避免对outbounds进行修改
+                outbounds = outbounds[:outboundsLength] 
                 singboxConfigByte, err := json.Marshal(template)
                 if err != nil {
                     logger.Error(fmt.Sprintf("反序列化'%s'基于模板'%s'的配置文件失败: [%s]", provider.Name, key, err.Error()))
