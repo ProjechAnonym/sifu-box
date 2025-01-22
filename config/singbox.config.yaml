@@ -64,7 +64,7 @@ templates:
           address: tls://8.8.8.8
           detour: select
         - tag: internal
-          address: 223.5.5.5
+          address: 172.31.217.178:5353
           detour: direct
         - tag: dns_block
           address: rcode://refused
@@ -76,6 +76,10 @@ templates:
     route:
       # 默认的出站规则,就是一些很基本不调就上不了网的
       rules:
+        - user:
+            - bind
+          action: route
+          outbound: direct
         - action: hijack-dns
           port:
             - 53
