@@ -1,7 +1,3 @@
-singbox:
-  work_dir: /opt/singbox/config
-  config_path: /opt/singbox/config/config.yaml
-  binary_path: /opt/singbox/singbox
 providers:
   - name: "夜煞云"
     path: "https://45.137.180.216/api/v1/client/nyth?token=aa751df806caf70136e33c9310531fe6"
@@ -160,5 +156,3 @@ templates:
         type: direct
       - tag: block
         type: block
-server:
-  enabled: true

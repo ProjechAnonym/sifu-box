@@ -1,0 +1,7 @@
+singbox:
+  work_dir: /opt/singbox/config
+  config_path: /opt/singbox/config/config.yaml
+  binary_path: /opt/singbox/singbox
+
+server:
+  enabled: true

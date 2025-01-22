@@ -1,11 +1,25 @@
 package models
 
+type Server struct {
+	Enabled bool `json:"enabled" yaml:"enabled"`
+}
+type SingboxEnv struct {
+	WorkDir    string `json:"work_dir" yaml:"work_dir"`
+	ConfigPath string `json:"config_path" yaml:"config_path"`
+	BinaryPath string `json:"binary_path" yaml:"binary_path"`
+}
+type Setting struct {
+	Server     Server      `json:"server" yaml:"server"`
+	SingboxEnv *SingboxEnv `json:"singbox_env" yaml:"singbox_env"`
+}
+
 type Provider struct {
 	Name   string `json:"name" yaml:"name"`
 	Path   string `json:"path" yaml:"path"`
 	Remote bool   `json:"remote" yaml:"remote"`
 	Detour string `json:"detour" yaml:"detour"`
 }
+
 type RuleSet struct {
 	Tag            string `json:"tag" yaml:"tag"`
 	Type           string `json:"type" yaml:"type"`
@@ -17,18 +31,9 @@ type RuleSet struct {
 	DownloadDetour string `json:"download_detour" yaml:"download_detour"`
 	UpdateInterval string `json:"update_interval" yaml:"update_interval"`
 }
-type Server struct {
-	Enabled bool `json:"enabled" yaml:"enabled"`
-}
-type Singbox struct {
-	WorkDir    string `json:"work_dir" yaml:"work_dir"`
-	ConfigPath string `json:"config_path" yaml:"config_path"`
-	BinaryPath string `json:"binary_path" yaml:"binary_path"`
-}
-type Setting struct {
+
+type SingboxSetting struct {
 	Providers []Provider          `json:"providers,omitempty" yaml:"providers,omitempty"`
 	Rulesets  []RuleSet           `json:"rulesets,omitempty" yaml:"rulesets,omitempty"`
 	Templates map[string]Template `json:"templates,omitempty" yaml:"templates,omitempty"`
-	Server    Server              `json:"server" yaml:"server"`
-	Singbox   *Singbox            `json:"singbox" yaml:"singbox"`
 }

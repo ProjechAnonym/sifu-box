@@ -12,13 +12,13 @@ import (
 	"go.uber.org/zap"
 )
 
-func Workflow(entClient *ent.Client, buntClient *buntdb.DB, logger *zap.Logger) ([]string, error) {
-	settingStr, err := utils.GetValue(buntClient, "setting", logger)
+func Workflow(entClient *ent.Client, buntClient *buntdb.DB, server bool, logger *zap.Logger) ([]string, error) {
+	settingStr, err := utils.GetValue(buntClient, models.SINGBOXSETTINGKEY, logger)
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取配置信息失败: [%s]", err.Error()))
 		return nil, fmt.Errorf("获取配置信息失败")
 	}
-	var setting models.Setting
+	var setting models.SingboxSetting
 	if err := json.Unmarshal([]byte(settingStr), &setting); err != nil {
 		logger.Error(fmt.Sprintf("解析配置信息失败: [%s]", err.Error()))
 		return nil, fmt.Errorf("解析配置信息失败")
@@ -26,7 +26,7 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, logger *zap.Logger) 
 	var providers []models.Provider
 	var rulesets []models.RuleSet
 	templateMap := make(map[string]models.Template)
-	if setting.Server.Enabled {
+	if server {
 		providerList, err := entClient.Provider.Query().All(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取机场信息失败: [%s]", err.Error()))
