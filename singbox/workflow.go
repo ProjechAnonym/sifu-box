@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sifu-box/ent"
+	"sifu-box/ent/provider"
+	"sifu-box/ent/template"
 	"sifu-box/models"
 	"sifu-box/utils"
 
@@ -12,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func Workflow(entClient *ent.Client, buntClient *buntdb.DB, server bool, logger *zap.Logger) ([]string, error) {
+func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []string, specificTemplate []string, workDir string, server bool, logger *zap.Logger) ([]string, error) {
 	settingStr, err := utils.GetValue(buntClient, models.SINGBOXSETTINGKEY, logger)
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取配置信息失败: [%s]", err.Error()))
@@ -27,7 +29,13 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, server bool, logger 
 	var rulesets []models.RuleSet
 	templateMap := make(map[string]models.Template)
 	if server {
-		providerList, err := entClient.Provider.Query().All(context.Background())
+		var providerList []*ent.Provider
+		var templateList []*ent.Template
+		if specificProvider != nil {
+			providerList, err = entClient.Provider.Query().Where(provider.NameIn(specificProvider...)).All(context.Background())
+		}else{
+			providerList, err = entClient.Provider.Query().All(context.Background())
+		}
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取机场信息失败: [%s]", err.Error()))
 			return nil, fmt.Errorf("获取机场信息失败")
@@ -40,7 +48,7 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, server bool, logger 
 				Detour: provider.Detour,
 			})
 		}
-
+		
 		rulesetsList, err := entClient.RuleSet.Query().All(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取路由规则集信息失败: [%s]", err.Error()))
@@ -60,12 +68,17 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, server bool, logger 
 			})
 		}
 
-		templates, err := entClient.Template.Query().All(context.Background())
+		if specificTemplate != nil {
+			templateList, err = entClient.Template.Query().Where(template.NameIn(specificTemplate...)).All(context.Background())
+		}else{
+			templateList, err = entClient.Template.Query().All(context.Background())
+		}
+		
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取路由规则集信息失败: [%s]", err.Error()))
 			return nil, fmt.Errorf("获取路由规则集信息失败")
 		}
-		for _, template := range templates {
+		for _, template := range templateList {
 			templateMap[template.Name] = template.Content
 		}
 	}else{
@@ -73,7 +86,7 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, server bool, logger 
 		rulesets = setting.Rulesets
 		templateMap = setting.Templates
 	}
-	merge(providers, rulesets, templateMap, logger)
+	merge(providers, rulesets, templateMap, workDir, server, logger)
 	// templateMap := setting.Templates
 
 	

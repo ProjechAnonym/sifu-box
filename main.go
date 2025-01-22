@@ -127,7 +127,7 @@ func main() {
 		buntClient.Close()
 		entClient.Close()
 	}()
-	singbox.Workflow(entClient, buntClient, setting.Server.Enabled, workflowLogger)
+	singbox.Workflow(entClient, buntClient, nil, nil, workDir, setting.Server.Enabled, workflowLogger)
 
 }
 
