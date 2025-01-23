@@ -14,8 +14,11 @@ import (
 	"sifu-box/models"
 	"sifu-box/singbox"
 	"sifu-box/utils"
+	"time"
 
 	"entgo.io/ent/dialect"
+	"github.com/gin-gonic/gin"
+	"github.com/go-co-op/gocron"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/natefinch/lumberjack"
 	"github.com/tidwall/buntdb"
@@ -24,36 +27,36 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var workflowLogger *zap.Logger
+var taskLogger *zap.Logger
 var buntClient *buntdb.DB
 var entClient *ent.Client
-var workDir string
-var setting *models.Setting
 func init() {
-	var err error
-	workDir = getWorkDir()
+	workDir, err := getWorkDir()
+	if err != nil {
+		panic(err)
+	}
 	initLogger := getLogger(workDir, "init")
 	defer initLogger.Sync()
-	workflowLogger = getLogger(workDir, "workflow")
+	taskLogger = getLogger(workDir, "task")
 	buntClient, err = buntdb.Open(":memory:")
 	if err != nil {
-		workflowLogger.Error(fmt.Sprintf("连接Buntdb数据库失败: [%s]",err.Error()))
+		taskLogger.Error(fmt.Sprintf("连接Buntdb数据库失败: [%s]",err.Error()))
 		panic(err)
 	}
 	initLogger.Info("内存数据库BuntDB初始化完成")
 	entClient, err = ent.Open(dialect.SQLite, fmt.Sprintf("file:%s/sifu-box.db?cache=shared&_fk=1", workDir))
 	if err != nil {
-		workflowLogger.Error(fmt.Sprintf("连接Ent数据库失败: [%s]",err.Error()))
+		taskLogger.Error(fmt.Sprintf("连接Ent数据库失败: [%s]",err.Error()))
 		panic(err)
 	}
 	initLogger.Info("连接Ent数据库完成")
 	if err = entClient.Schema.Create(context.Background()); err != nil {
-		workflowLogger.Error(fmt.Sprintf("创建表资源失败: [%s]",err.Error()))
+		taskLogger.Error(fmt.Sprintf("创建表资源失败: [%s]",err.Error()))
 		panic(err)
 	}
 	initLogger.Info("自动迁移Ent数据库完成")
 
-	setting, err = loadSetting(workDir, buntClient, initLogger)
+	setting, err := loadSetting(workDir, buntClient, initLogger)
 	if err != nil {
 		panic(err)
 	}
@@ -68,6 +71,7 @@ func init() {
 	}
 
 	if setting.Server.Enabled {
+
 		for _, supplier := range singboxSetting.Providers {
 			exist, err := entClient.Provider.Query().Where(provider.NameEQ(supplier.Name)).Exist(context.Background())
 			if err != nil {
@@ -123,22 +127,53 @@ func init() {
 
 func main() {
 	defer func() {
-		workflowLogger.Sync()
+		taskLogger.Sync()
 		buntClient.Close()
 		entClient.Close()
 	}()
-	singbox.Workflow(entClient, buntClient, nil, nil, workDir, setting.Server.Enabled, workflowLogger)
-	singbox.TransferConfig(workDir, *setting.SingboxEnv, workflowLogger)
-	// singbox.Workflow(entClient, buntClient, nil, nil, workDir, setting.Server.Enabled, workflowLogger)
+	workDir, err := getWorkDir()
+	if err != nil {
+		panic(err)
+	}
+	setting, err := loadSetting(workDir, buntClient, taskLogger)
+	if err != nil {
+		panic(err)
+	}
+	if setting.Server.Enabled {
+		scheduler := gocron.NewScheduler(time.Local)
+		_, err = scheduler.Cron(setting.Server.Interval).Do(func(){
+			singbox.Workflow(entClient, buntClient, nil, nil, workDir, setting.Server.Enabled, taskLogger)
+			singbox.TransferConfig(workDir, *setting.SingboxEnv, taskLogger)
+		})
+		if err != nil {
+			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
+			panic(err)
+		}
+		scheduler.StartAsync()
+		gin.SetMode(gin.ReleaseMode)
+		server := gin.Default()
+		if setting.Server.SSL != nil {
+			fmt.Println(setting.Server.SSL)
+			server.Run(setting.Server.Listen)
+		}else{
+			server.Run(setting.Server.Listen)
+		}
+	}else{
+		singbox.Workflow(entClient, buntClient, nil, nil, workDir, setting.Server.Enabled, taskLogger)
+	}
+	
+	
 	
 	
 }
 
-func getWorkDir() string {
-	// workDir := filepath.Dir(os.Args[0])
+func getWorkDir() (string, error) {
+	// workDir, err := os.Executable()
+	
 	// workDir := "E:/Myproject/sifu-box@1.1.0/bin"
-	workDir := "/opt/sifubox/bin"
-	return filepath.Dir(workDir)
+	var err error
+	workDir := "/opt/sifubox/bin/bin"
+	return filepath.Dir(filepath.Dir(workDir)), err
 }
 func getEncoder() zapcore.Encoder {
 	encoderConfig := zap.NewProductionEncoderConfig()

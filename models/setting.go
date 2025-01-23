@@ -1,7 +1,13 @@
 package models
 
 type Server struct {
-	Enabled bool `json:"enabled" yaml:"enabled"`
+	Enabled  bool `json:"enabled" yaml:"enabled"`
+	Interval string `json:"interval,omitempty" yaml:"interval,omitempty"`
+	Listen   string `json:"listen,omitempty" yaml:"listen,omitempty"`
+	SSL      *struct { 
+		Public  string `json:"public" yaml:"public"`
+		Private string `json:"private" yaml:"private"`
+	} `json:"ssl,omitempty" yaml:"ssl,omitempty"`
 }
 type Command struct {
 	Name  string        `json:"name" yaml:"name"`
@@ -17,7 +23,8 @@ type SingboxEnv struct {
 }
 type Setting struct {
 	Server     Server      `json:"server" yaml:"server"`
-	SingboxEnv *SingboxEnv `json:"singbox_env" yaml:"singbox_env"`
+	SingboxEnv *SingboxEnv `json:"singbox_env,omitempty" yaml:"singbox_env,omitempty"`
+
 }
 
 type Provider struct {
