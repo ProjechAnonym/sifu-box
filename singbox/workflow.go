@@ -88,3 +88,9 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 	}
 	return merge(providers, rulesets, templateMap, workDir, server, logger)
 }
+
+func TransferConfig(entClient *ent.Client, buntClient *buntdb.DB, workDir string, singboxSetting models.SingboxEnv, logger *zap.Logger) []error {
+	status, err := checkService(logger, singboxSetting.Command[models.CHECKCOMMAND])
+	fmt.Println(status, err)
+	return []error{}
+}

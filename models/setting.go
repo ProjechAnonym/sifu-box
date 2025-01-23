@@ -3,10 +3,15 @@ package models
 type Server struct {
 	Enabled bool `json:"enabled" yaml:"enabled"`
 }
+type Command struct {
+	Name  string        `json:"name" yaml:"name"`
+	Args  []interface{} `json:"args,omitempty" yaml:"args,omitempty"`
+}
 type SingboxEnv struct {
 	WorkDir    string `json:"work_dir" yaml:"work_dir"`
 	ConfigPath string `json:"config_path" yaml:"config_path"`
 	BinaryPath string `json:"binary_path" yaml:"binary_path"`
+	Command    map[string]*Command `json:"command" yaml:"command"`
 }
 type Setting struct {
 	Server     Server      `json:"server" yaml:"server"`
