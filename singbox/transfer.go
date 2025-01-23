@@ -16,7 +16,7 @@ func backupConfig(singboxConfigPath, workDir string, logger *zap.Logger) error {
 		logger.Error(fmt.Sprintf("读取配置文件失败: [%s]", err.Error()))
 		return fmt.Errorf("读取配置文件失败")
 	}
-	if err := utils.WriteFile(filepath.Join(workDir, models.STATICDIR, models.BACKUPDIR, fmt.Sprintf("config.json.bak")), originalConfig, os.O_CREATE | os.O_TRUNC | os.O_WRONLY, 0644); err != nil {
+	if err := utils.WriteFile(filepath.Join(workDir, models.TEMPDIR, models.BACKUPDIR, models.SINGBOXBACKUPCONFIGFILE), originalConfig, os.O_CREATE | os.O_TRUNC | os.O_WRONLY, 0644); err != nil {
 		logger.Error(fmt.Sprintf("备份配置文件失败: [%s]", err.Error()))
 		return fmt.Errorf("备份配置文件失败")
 	}
@@ -24,7 +24,7 @@ func backupConfig(singboxConfigPath, workDir string, logger *zap.Logger) error {
 }
 
 func recoverConfig(singboxConfigPath, workDir string, logger *zap.Logger) error {
-	backupConfig, err := utils.ReadFile(filepath.Join(workDir, models.STATICDIR, models.BACKUPDIR, fmt.Sprintf("config.json.bak")))
+	backupConfig, err := utils.ReadFile(filepath.Join(workDir, models.TEMPDIR, models.BACKUPDIR, models.SINGBOXBACKUPCONFIGFILE))
 	if err != nil {
 		logger.Error(fmt.Sprintf("读取备份配置文件失败: [%s]", err.Error()))
 		return fmt.Errorf("读取备份配置文件失败")
@@ -36,7 +36,7 @@ func recoverConfig(singboxConfigPath, workDir string, logger *zap.Logger) error 
 	return nil
 }
 
-func transferConfig(singboxConfigPath, newConfigPath, workDir string, logger *zap.Logger) error {
+func transferConfig(singboxConfigPath, newConfigPath string, logger *zap.Logger) error {
 	newConfig, err := utils.ReadFile(newConfigPath)
 	if err != nil {
 		logger.Error(fmt.Sprintf("读取新配置文件失败: [%s]", err.Error()))

@@ -127,8 +127,8 @@ func main() {
 		buntClient.Close()
 		entClient.Close()
 	}()
-	
-	singbox.TransferConfig(entClient, buntClient, workDir, *setting.SingboxEnv, workflowLogger)
+	singbox.Workflow(entClient, buntClient, nil, nil, workDir, setting.Server.Enabled, workflowLogger)
+	singbox.TransferConfig(workDir, *setting.SingboxEnv, workflowLogger)
 	// singbox.Workflow(entClient, buntClient, nil, nil, workDir, setting.Server.Enabled, workflowLogger)
 	
 	

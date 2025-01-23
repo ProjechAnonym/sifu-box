@@ -2,7 +2,7 @@ singbox_env:
   template: default
   provider: 夜煞云
   work_dir: /opt/singbox/config
-  config_path: /opt/singbox/config/config.yaml
+  config_path: /opt/singbox/config.json
   binary_path: /opt/singbox/singbox
   command:
     boot_command: 
