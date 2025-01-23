@@ -89,8 +89,33 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 	return merge(providers, rulesets, templateMap, workDir, server, logger)
 }
 
-func TransferConfig(entClient *ent.Client, buntClient *buntdb.DB, workDir string, singboxSetting models.SingboxEnv, logger *zap.Logger) []error {
-	status, err := checkService(logger, singboxSetting.Command[models.CHECKCOMMAND])
-	fmt.Println(status, err)
-	return []error{}
+func TransferConfig(entClient *ent.Client, buntClient *buntdb.DB, workDir string, singboxSetting models.SingboxEnv, logger *zap.Logger) error {
+	// if err := backupConfig(singboxSetting.ConfigPath, workDir, logger); err != nil {
+	// 	return err
+	// }
+	// providerHashName, err := utils.EncryptionMd5(singboxSetting.Provider)
+	// if err != nil {
+	// 	logger.Error(fmt.Sprintf("计算机场名称哈希值失败: [%s]", err.Error()))
+	// 	return fmt.Errorf("计算机场名称哈希值失败")
+	// }
+	
+	// if err := transferConfig(singboxSetting.ConfigPath, filepath.Join(workDir, models.TEMPDIR, singboxSetting.Template, providerHashName), workDir, logger); err != nil {
+	// 	return err
+	// }
+	// if err := reloadService(logger, singboxSetting.Command[models.RELOADCOMMAND]); err != nil {
+	// 	return err
+	// }
+	status, err := checkService(true, logger, singboxSetting.Command[models.CHECKCOMMAND])
+	if status && err == nil {
+		return nil
+	}else if err != nil{
+		logger.Error(fmt.Sprintf("重载'%s'基于'%s'模板的配置文件失败: [%s]", singboxSetting.Provider, singboxSetting.Template, err.Error()))
+	}else{
+		logger.Error(fmt.Sprintf("重载'%s'基于'%s'模板的配置文件失败: [%s]", singboxSetting.Provider, singboxSetting.Template, fmt.Errorf("未知错误")))
+	}
+	// if err := recoverConfig(singboxSetting.ConfigPath, workDir, logger); err != nil {
+	// 	return err
+	// }
+
+	return nil
 }
