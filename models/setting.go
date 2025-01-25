@@ -1,9 +1,7 @@
 package models
 
 type Server struct {
-	Enabled  bool `json:"enabled" yaml:"enabled"`
 	Interval string `json:"interval,omitempty" yaml:"interval,omitempty"`
-	Listen   string `json:"listen,omitempty" yaml:"listen,omitempty"`
 	SSL      *struct { 
 		Public  string `json:"public" yaml:"public"`
 		Private string `json:"private" yaml:"private"`

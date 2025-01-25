@@ -32,9 +32,7 @@ singbox_env:
         - sing-box
 
 server:
-  enabled: true
   interval: "* * * * *"
-  listen: 0.0.0.0:8080
   # ssl:
   #   public: /opt/singbox/config/cert.pem
   #   private: /opt/singbox/config/key.pem

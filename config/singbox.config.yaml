@@ -64,7 +64,7 @@ templates:
           address: tls://8.8.8.8
           detour: select
         - tag: internal
-          address: 172.31.217.178:5353
+          address: 172.23.30.94:5353
           detour: direct
         - tag: dns_block
           address: rcode://refused
