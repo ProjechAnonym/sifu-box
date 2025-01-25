@@ -28,7 +28,7 @@ func InitEntdb(workDir string, logger *zap.Logger) (*ent.Client){
 	return entClient
 }
 
-func SaveNewProvidersOrRulesets(providers []models.Provider, rulesets []models.RuleSet, templates map[string]models.Template, entClient *ent.Client, logger *zap.Logger) {
+func SaveNewProxySetting(providers []models.Provider, rulesets []models.RuleSet, templates map[string]models.Template, entClient *ent.Client, logger *zap.Logger) {
 	for _, supplier := range providers {
 		exist, err := entClient.Provider.Query().Where(provider.NameEQ(supplier.Name)).Exist(context.Background())
 		if err != nil {

@@ -1,10 +1,10 @@
-singbox_env:
+singbox:
   template: default
   provider: 夜煞云
   work_dir: /opt/singbox/config
   config_path: /opt/singbox/config.json
   binary_path: /opt/singbox/singbox
-  command:
+  commands:
     boot_command: 
       name: systemctl
       args:

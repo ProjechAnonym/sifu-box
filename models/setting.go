@@ -11,17 +11,17 @@ type Command struct {
 	Name  string        `json:"name" yaml:"name"`
 	Args  []interface{} `json:"args,omitempty" yaml:"args,omitempty"`
 }
-type SingboxEnv struct {
+type Singbox struct {
 	Template   string `json:"template" yaml:"template"`
 	Provider   string `json:"provider" yaml:"provider"`
 	WorkDir    string `json:"work_dir" yaml:"work_dir"`
 	ConfigPath string `json:"config_path" yaml:"config_path"`
 	BinaryPath string `json:"binary_path" yaml:"binary_path"`
-	Command    map[string]*Command `json:"command" yaml:"command"`
+	Commands    map[string]*Command `json:"commands" yaml:"commands"`
 }
 type Setting struct {
-	Server     Server      `json:"server" yaml:"server"`
-	SingboxEnv *SingboxEnv `json:"singbox_env,omitempty" yaml:"singbox_env,omitempty"`
+	Server  *Server  `json:"server,omitempty" yaml:"server,omitempty"`
+	Singbox *Singbox `json:"singbox,omitempty" yaml:"singbox,omitempty"`
 
 }
 
@@ -44,7 +44,7 @@ type RuleSet struct {
 	UpdateInterval string `json:"update_interval" yaml:"update_interval"`
 }
 
-type SingboxSetting struct {
+type Configuration struct {
 	Providers []Provider          `json:"providers,omitempty" yaml:"providers,omitempty"`
 	Rulesets  []RuleSet           `json:"rulesets,omitempty" yaml:"rulesets,omitempty"`
 	Templates map[string]Template `json:"templates,omitempty" yaml:"templates,omitempty"`

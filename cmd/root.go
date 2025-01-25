@@ -21,6 +21,8 @@ var rootCmd = &cobra.Command{
 			cmd.Help()
 			os.Exit(0)
 		}
+		
+		// fmt.Println(cmd.Name())
 	},
 }
 

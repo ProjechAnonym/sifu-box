@@ -91,6 +91,7 @@ func merge(providerList []models.Provider, rulesetsList []models.RuleSet, templa
                 errChan <- err
                 return
             }
+            logger.Debug(fmt.Sprintf("获取'%s'的代理节点列表成功", provider.Name))
             outboundsLength := len(outbounds)
             // 遍历每个模板, 生成并写入配置文件
             for key, template := range templates {
@@ -161,6 +162,7 @@ func merge(providerList []models.Provider, rulesetsList []models.RuleSet, templa
                     logger.Error(fmt.Sprintf("'%s'基于模板'%s'生成配置文件失败: [%s]", provider.Name, key, err.Error()))
                     errChan <- fmt.Errorf("'%s'出错: '%s'生成配置文件失败", provider.Name, key)
                 }
+                logger.Debug(fmt.Sprintf("'%s'的代理节点结合'%s'模板成功", provider.Name, key))
             }
             
         }()

@@ -2,7 +2,6 @@ package singbox
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -14,16 +13,17 @@ import (
 
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 )
 
 func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []string, specificTemplate []string, workDir string, server bool, logger *zap.Logger) []error {
-	settingStr, err := utils.GetValue(buntClient, models.SINGBOXSETTINGKEY, logger)
+	configurationStr, err := utils.GetValue(buntClient, models.SINGBOXSETTINGKEY, logger)
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取配置信息失败: [%s]", err.Error()))
 		return []error{fmt.Errorf("获取配置信息失败")}
 	}
-	var setting models.SingboxSetting
-	if err := json.Unmarshal([]byte(settingStr), &setting); err != nil {
+	var configuration models.Configuration
+	if err := yaml.Unmarshal([]byte(configurationStr), &configuration); err != nil {
 		logger.Error(fmt.Sprintf("解析配置信息失败: [%s]", err.Error()))
 		return []error{fmt.Errorf("解析配置信息失败")}
 	}
@@ -84,9 +84,9 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 			templateMap[template.Name] = template.Content
 		}
 	}else{
-		providers = setting.Providers
-		rulesets = setting.Rulesets
-		templateMap = setting.Templates
+		providers = configuration.Providers
+		rulesets = configuration.Rulesets
+		templateMap = configuration.Templates
 	}
 	return merge(providers, rulesets, templateMap, workDir, server, logger)
 }
@@ -100,7 +100,7 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 //   logger *zap.Logger: 日志记录器，用于记录日志信息。
 // 返回值:
 //   error: 如果过程中发生任何错误，返回该错误。
-func TransferConfig(workDir string, singboxSetting models.SingboxEnv, logger *zap.Logger) error {
+func TransferConfig(workDir string, singboxSetting models.Singbox, logger *zap.Logger) error {
     // 备份当前配置文件，以防新配置应用过程中发生错误
     if err := backupConfig(singboxSetting.ConfigPath, workDir, logger); err != nil {
         return err
@@ -119,20 +119,21 @@ func TransferConfig(workDir string, singboxSetting models.SingboxEnv, logger *za
     }
     
     // 检查服务状态，如果服务不在运行或检查失败，则尝试启动服务，否则重载服务
-    status, err := checkService(false, logger, singboxSetting.Command[models.CHECKCOMMAND])
+    status, err := checkService(false, logger, singboxSetting.Commands[models.CHECKCOMMAND])
     if err != nil || !status {
-        if err := bootService(logger, singboxSetting.Command[models.BOOTCOMMAND]); err != nil {
+        if err := bootService(logger, singboxSetting.Commands[models.BOOTCOMMAND]); err != nil {
             return err
         }
     }else{
-        if err := reloadService(logger, singboxSetting.Command[models.RELOADCOMMAND]); err != nil {
+        if err := reloadService(logger, singboxSetting.Commands[models.RELOADCOMMAND]); err != nil {
             return err
         }        
     }
     
     // 再次检查服务状态，确认服务是否成功应用了新配置
-    status, err = checkService(true, logger, singboxSetting.Command[models.CHECKCOMMAND])
+    status, err = checkService(true, logger, singboxSetting.Commands[models.CHECKCOMMAND])
     if status && err == nil {
+		logger.Debug(fmt.Sprintf("重载'%s'基于'%s'模板的配置文件成功", singboxSetting.Provider, singboxSetting.Template))
         return nil
     }else if err != nil{
         logger.Error(fmt.Sprintf("重载'%s'基于'%s'模板的配置文件失败: [%s]", singboxSetting.Provider, singboxSetting.Template, err.Error()))
@@ -145,6 +146,6 @@ func TransferConfig(workDir string, singboxSetting models.SingboxEnv, logger *za
     if err := recoverConfig(singboxSetting.ConfigPath, workDir, logger); err != nil {
         return fmt.Errorf("恢复原始配置文件失败")
     }
-    
+   
     return nil
 }

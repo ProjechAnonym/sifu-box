@@ -34,7 +34,7 @@ func GetLogger(workDir, task string) *zap.Logger{
 	errorWriter := getWriter("error", task, workDir)
 	infoCore := zapcore.NewCore(encoder, infoWriter, zapcore.InfoLevel)
 	errorCore := zapcore.NewCore(encoder, errorWriter, zapcore.ErrorLevel)
-	consoloCore := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.InfoLevel)
+	consoloCore := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel)
 	core := zapcore.NewTee(infoCore, errorCore, consoloCore)
 	logger := zap.New(core,zap.AddCaller())
 	return logger
