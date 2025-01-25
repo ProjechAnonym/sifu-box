@@ -48,7 +48,7 @@ func init() {
 		if err := initial.SetDefaultTemplate(cmd.WorkDir, buntClient, initLogger); err != nil {
 			panic(err)
 		}
-		initial.SaveNewProxySetting(configuration.Providers, configuration.Rulesets, configuration.Templates, entClient, initLogger)
+		initial.SaveNewProxySetting(*configuration, entClient, initLogger)
 	}
 
 }

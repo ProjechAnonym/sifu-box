@@ -17,10 +17,8 @@ var rootCmd = &cobra.Command{
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			cmd.Help()
-			os.Exit(0)
-		}
+		cmd.Help()
+		os.Exit(1)
 		
 		// fmt.Println(cmd.Name())
 	},

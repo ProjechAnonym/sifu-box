@@ -11,7 +11,7 @@ import (
 
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 func SetDefaultTemplate(workDir string, buntClient *buntdb.DB, logger *zap.Logger) error {

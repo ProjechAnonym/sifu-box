@@ -28,8 +28,8 @@ func InitEntdb(workDir string, logger *zap.Logger) (*ent.Client){
 	return entClient
 }
 
-func SaveNewProxySetting(providers []models.Provider, rulesets []models.RuleSet, templates map[string]models.Template, entClient *ent.Client, logger *zap.Logger) {
-	for _, supplier := range providers {
+func SaveNewProxySetting(configuration models.Configuration, entClient *ent.Client, logger *zap.Logger) {
+	for _, supplier := range configuration.Providers {
 		exist, err := entClient.Provider.Query().Where(provider.NameEQ(supplier.Name)).Exist(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取数据库数据失败: [%s]",err.Error()))
@@ -42,7 +42,7 @@ func SaveNewProxySetting(providers []models.Provider, rulesets []models.RuleSet,
 	}
 	logger.Info("数据库写入机场信息完成")
 
-	for _, collectionInfo := range rulesets {
+	for _, collectionInfo := range configuration.Rulesets {
 		exist, err := entClient.RuleSet.Query().Where(ruleset.TagEQ(collectionInfo.Tag)).Exist(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取数据库数据失败: [%s]",err.Error()))
@@ -64,7 +64,7 @@ func SaveNewProxySetting(providers []models.Provider, rulesets []models.RuleSet,
 	}
 	logger.Info("数据库写入规则集信息完成")
 
-	for key, templateContent := range templates {
+	for key, templateContent := range configuration.Templates {
 		exist, err := entClient.Template.Query().Where(template.NameEQ(key)).Exist(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取数据库数据失败: [%s]",err.Error()))
