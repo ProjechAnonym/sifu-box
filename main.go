@@ -5,10 +5,12 @@ import (
 	"sifu-box/cmd"
 	"sifu-box/ent"
 	"sifu-box/initial"
+	"sifu-box/middleware"
 	"sifu-box/models"
 	"sifu-box/singbox"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-co-op/gocron"
 	_ "github.com/mattn/go-sqlite3"
@@ -20,7 +22,6 @@ var taskLogger *zap.Logger
 var buntClient *buntdb.DB
 var entClient *ent.Client
 var setting *models.Setting
-var configuration *models.Configuration
 func init() {
 	var err error
 	cmd.Execute()
@@ -31,7 +32,7 @@ func init() {
 	buntClient = initial.InitBuntdb(initLogger)
 	initLogger.Info("内存数据库BuntDB初始化完成")
 
-	configuration, err = initial.InitConfigurationSetting(cmd.Config, buntClient, initLogger)
+	setting, err = initial.InitSetting(cmd.Config, cmd.Server, buntClient, initLogger)
 	if err != nil {
 		panic(err)
 	}
@@ -40,31 +41,36 @@ func init() {
 	if cmd.Server {
 		entClient = initial.InitEntdb(cmd.WorkDir, initLogger)
 
-		setting, err = initial.InitSetting(cmd.Config, buntClient, initLogger)
-		if err != nil {
-			panic(err)
-		}
+
 		initLogger.Info("加载配置文件完成")
 		if err := initial.SetDefaultTemplate(cmd.WorkDir, buntClient, initLogger); err != nil {
 			panic(err)
 		}
-		initial.SaveNewProxySetting(*configuration, entClient, initLogger)
+		if setting.Configuration == nil {
+			initLogger.Debug("配置字段为空, 将直接使用数据库中配置")
+			return
+		}
+		initial.SaveNewProxySetting(*setting.Configuration, entClient, initLogger)
 	}
 
 }
 
 func main() {
+	var webLogger *zap.Logger
+	var err error
+	if cmd.Server { webLogger = initial.GetLogger(cmd.WorkDir, "web") }
 	defer func() {
 		taskLogger.Sync()
 		buntClient.Close()
+		if cmd.Server { webLogger.Sync() }
 		if entClient != nil {entClient.Close()}
 	}()
-	var err error
+
 	if cmd.Server {
 		scheduler := gocron.NewScheduler(time.Local)
-		_, err = scheduler.Cron(setting.Server.Interval).Do(func(){
+		_, err = scheduler.Cron(setting.Application.Server.Interval).Do(func(){
 			singbox.Workflow(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, taskLogger)
-			singbox.TransferConfig(cmd.WorkDir, *setting.Singbox, taskLogger)
+			singbox.TransferConfig(cmd.WorkDir, *setting.Application.Singbox, taskLogger)
 		})
 		if err != nil {
 			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
@@ -73,8 +79,9 @@ func main() {
 		scheduler.StartAsync()
 		gin.SetMode(gin.ReleaseMode)
 		server := gin.Default()
-		if setting.Server.SSL != nil {
-			fmt.Println(setting.Server.SSL)
+		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
+		if setting.Application.Server.SSL != nil {
+			fmt.Println(setting.Application.Server.SSL)
 			server.Run(cmd.Listen)
 		}else{
 			server.Run(cmd.Listen)

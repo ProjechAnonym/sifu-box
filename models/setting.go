@@ -19,10 +19,13 @@ type Singbox struct {
 	BinaryPath string `json:"binary_path" yaml:"binary_path"`
 	Commands    map[string]*Command `json:"commands" yaml:"commands"`
 }
-type Setting struct {
+type Application struct {
 	Server  *Server  `json:"server,omitempty" yaml:"server,omitempty"`
 	Singbox *Singbox `json:"singbox,omitempty" yaml:"singbox,omitempty"`
-
+}
+type Setting struct {
+	Application *Application `json:"application,omitempty" yaml:"application,omitempty"`
+	Configuration *Configuration `json:"configuration,omitempty" yaml:"configuration,omitempty"`
 }
 
 type Provider struct {

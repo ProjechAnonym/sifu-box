@@ -17,16 +17,7 @@ import (
 )
 
 func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []string, specificTemplate []string, workDir string, server bool, logger *zap.Logger) []error {
-	configurationStr, err := utils.GetValue(buntClient, models.SINGBOXSETTINGKEY, logger)
-	if err != nil {
-		logger.Error(fmt.Sprintf("获取配置信息失败: [%s]", err.Error()))
-		return []error{fmt.Errorf("获取配置信息失败")}
-	}
-	var configuration models.Configuration
-	if err := yaml.Unmarshal([]byte(configurationStr), &configuration); err != nil {
-		logger.Error(fmt.Sprintf("解析配置信息失败: [%s]", err.Error()))
-		return []error{fmt.Errorf("解析配置信息失败")}
-	}
+	var err error
 	var providers []models.Provider
 	var rulesets []models.RuleSet
 	templateMap := make(map[string]models.Template)
@@ -84,6 +75,16 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 			templateMap[template.Name] = template.Content
 		}
 	}else{
+		configurationStr, err := utils.GetValue(buntClient, models.SINGBOXSETTINGKEY, logger)
+		if err != nil {
+			logger.Error(fmt.Sprintf("获取配置信息失败: [%s]", err.Error()))
+			return []error{fmt.Errorf("获取配置信息失败")}
+		}
+		var configuration models.Configuration
+		if err := yaml.Unmarshal([]byte(configurationStr), &configuration); err != nil {
+			logger.Error(fmt.Sprintf("解析配置信息失败: [%s]", err.Error()))
+			return []error{fmt.Errorf("解析配置信息失败")}
+		}
 		providers = configuration.Providers
 		rulesets = configuration.Rulesets
 		templateMap = configuration.Templates
