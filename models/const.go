@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 const SIFUBOXSETTINGKEY = "setting:sifubox"
 const DEFAULTTEMPLATEKEY = "template:default"
 const SINGBOXSETTINGKEY = "setting:singbox"
@@ -16,3 +18,5 @@ const RELOADCOMMAND = "reload_command"
 const STOPCOMMAND = "stop_command"
 const RESTARTCOMMAND = "restart_command"
 const CHECKCOMMAND = "check_command"
+
+const EXPIRETIME = time.Hour * 24 

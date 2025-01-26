@@ -2,6 +2,7 @@ package models
 
 type Server struct {
 	Interval string `json:"interval,omitempty" yaml:"interval,omitempty"`
+	User     *User   `json:"user,omitempty" yaml:"user,omitempty"`
 	SSL      *struct { 
 		Public  string `json:"public" yaml:"public"`
 		Private string `json:"private" yaml:"private"`
@@ -43,8 +44,8 @@ type RuleSet struct {
 	China          bool   `json:"china" yaml:"china"`
 	NameServer     string `json:"name_server,omitempty" yaml:"name_server,omitempty"`
 	Label          string `json:"label" yaml:"label"`
-	DownloadDetour string `json:"download_detour" yaml:"download_detour"`
-	UpdateInterval string `json:"update_interval" yaml:"update_interval"`
+	DownloadDetour string `json:"download_detour,omitempty" yaml:"download_detour,omitempty"`
+	UpdateInterval string `json:"update_interval,omitempty" yaml:"update_interval,omitempty"`
 }
 
 type Configuration struct {

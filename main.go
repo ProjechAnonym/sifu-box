@@ -7,6 +7,7 @@ import (
 	"sifu-box/initial"
 	"sifu-box/middleware"
 	"sifu-box/models"
+	"sifu-box/route"
 	"sifu-box/singbox"
 	"time"
 
@@ -40,12 +41,21 @@ func init() {
 
 	if cmd.Server {
 		entClient = initial.InitEntdb(cmd.WorkDir, initLogger)
-
-
 		initLogger.Info("加载配置文件完成")
 		if err := initial.SetDefaultTemplate(cmd.WorkDir, buntClient, initLogger); err != nil {
 			panic(err)
 		}
+		initLogger.Info("定时任务初始化完成")
+		scheduler := gocron.NewScheduler(time.Local)
+		_, err = scheduler.Cron(setting.Application.Server.Interval).Do(func(){
+			singbox.Workflow(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, taskLogger)
+			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, taskLogger)
+		})
+		if err != nil {
+			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
+			panic(err)
+		}
+		scheduler.StartAsync()
 		if setting.Configuration == nil {
 			initLogger.Debug("配置字段为空, 将直接使用数据库中配置")
 			return
@@ -57,7 +67,6 @@ func init() {
 
 func main() {
 	var webLogger *zap.Logger
-	var err error
 	if cmd.Server { webLogger = initial.GetLogger(cmd.WorkDir, "web") }
 	defer func() {
 		taskLogger.Sync()
@@ -67,19 +76,12 @@ func main() {
 	}()
 
 	if cmd.Server {
-		scheduler := gocron.NewScheduler(time.Local)
-		_, err = scheduler.Cron(setting.Application.Server.Interval).Do(func(){
-			singbox.Workflow(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, taskLogger)
-			singbox.TransferConfig(cmd.WorkDir, *setting.Application.Singbox, taskLogger)
-		})
-		if err != nil {
-			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
-			panic(err)
-		}
-		scheduler.StartAsync()
 		gin.SetMode(gin.ReleaseMode)
 		server := gin.Default()
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
+		api := server.Group("/api")
+		route.SettingLogin(api, setting.Application.Server.User, webLogger)
+		route.SettingConfiguration(api, entClient, *setting.Application.Server.User, webLogger)
 		if setting.Application.Server.SSL != nil {
 			fmt.Println(setting.Application.Server.SSL)
 			server.Run(cmd.Listen)

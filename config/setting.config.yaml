@@ -33,7 +33,13 @@ application:
           - sing-box
 
   server:
-    interval: "* * * * *"
+    interval: "5 * * * *"
+    user:
+      username: sifulin
+      password: wsr19990902
+      email: 1982209396@qq.com
+      code: 123456
+      private_key: sifulin
     # ssl:
     #   public: /opt/singbox/config/cert.pem
     #   private: /opt/singbox/config/key.pem

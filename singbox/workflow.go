@@ -101,7 +101,7 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 //   logger *zap.Logger: 日志记录器，用于记录日志信息。
 // 返回值:
 //   error: 如果过程中发生任何错误，返回该错误。
-func TransferConfig(workDir string, singboxSetting models.Singbox, logger *zap.Logger) error {
+func ApplyNewConfig(workDir string, singboxSetting models.Singbox, logger *zap.Logger) error {
     // 备份当前配置文件，以防新配置应用过程中发生错误
     if err := backupConfig(singboxSetting.ConfigPath, workDir, logger); err != nil {
         return err
