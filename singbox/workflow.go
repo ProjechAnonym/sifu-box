@@ -102,12 +102,12 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 // 返回值:
 //   error: 如果过程中发生任何错误，返回该错误。
 func ApplyNewConfig(workDir string, singboxSetting models.Singbox, buntClient *buntdb.DB, logger *zap.Logger) error {
-    providerName, err := utils.GetValue(buntClient, models.CONCURRENTPROVIDER, logger)
+    providerName, err := utils.GetValue(buntClient, models.CURRENTPROVIDER, logger)
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取当前配置机场失败: [%s]", err.Error()))
 		return fmt.Errorf("获取当前配置机场失败")
 	}
-	templateName, err := utils.GetValue(buntClient, models.CONCURRENTTEMPLATE, logger)
+	templateName, err := utils.GetValue(buntClient, models.CURRENTTEMPLATE, logger)
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取当前配置模板失败: [%s]", err.Error()))
 		return fmt.Errorf("获取当前配置模板失败")

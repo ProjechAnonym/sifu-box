@@ -33,8 +33,8 @@ func init() {
 
 	buntClient = initial.InitBuntdb(initLogger)
 	initLogger.Info("内存数据库BuntDB初始化完成")
-	utils.SetValue(buntClient, models.CONCURRENTPROVIDER, "夜煞云", initLogger)
-	utils.SetValue(buntClient, models.CONCURRENTTEMPLATE, "default", initLogger)
+	utils.SetValue(buntClient, models.CURRENTPROVIDER, "夜煞云", initLogger)
+	utils.SetValue(buntClient, models.CURRENTTEMPLATE, "default", initLogger)
 	setting, err = initial.InitSetting(cmd.Config, cmd.Server, buntClient, initLogger)
 	if err != nil {
 		panic(err)
