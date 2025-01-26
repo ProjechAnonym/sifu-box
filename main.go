@@ -9,6 +9,7 @@ import (
 	"sifu-box/models"
 	"sifu-box/route"
 	"sifu-box/singbox"
+	"sifu-box/utils"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -32,7 +33,8 @@ func init() {
 
 	buntClient = initial.InitBuntdb(initLogger)
 	initLogger.Info("内存数据库BuntDB初始化完成")
-
+	utils.SetValue(buntClient, models.CONCURRENTPROVIDER, "夜煞云", initLogger)
+	utils.SetValue(buntClient, models.CONCURRENTTEMPLATE, "default", initLogger)
 	setting, err = initial.InitSetting(cmd.Config, cmd.Server, buntClient, initLogger)
 	if err != nil {
 		panic(err)
@@ -49,7 +51,7 @@ func init() {
 		scheduler := gocron.NewScheduler(time.Local)
 		_, err = scheduler.Cron(setting.Application.Server.Interval).Do(func(){
 			singbox.Workflow(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, taskLogger)
-			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, taskLogger)
+			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, buntClient, taskLogger)
 		})
 		if err != nil {
 			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
@@ -81,7 +83,7 @@ func main() {
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
 		api := server.Group("/api")
 		route.SettingLogin(api, setting.Application.Server.User, webLogger)
-		route.SettingConfiguration(api, entClient, *setting.Application.Server.User, webLogger)
+		route.SettingConfiguration(api, entClient, *setting.Application.Server.User, buntClient, webLogger)
 		if setting.Application.Server.SSL != nil {
 			fmt.Println(setting.Application.Server.SSL)
 			server.Run(cmd.Listen)

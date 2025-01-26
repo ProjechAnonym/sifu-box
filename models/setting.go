@@ -13,8 +13,6 @@ type Command struct {
 	Args  []interface{} `json:"args,omitempty" yaml:"args,omitempty"`
 }
 type Singbox struct {
-	Template   string `json:"template" yaml:"template"`
-	Provider   string `json:"provider" yaml:"provider"`
 	WorkDir    string `json:"work_dir" yaml:"work_dir"`
 	ConfigPath string `json:"config_path" yaml:"config_path"`
 	BinaryPath string `json:"binary_path" yaml:"binary_path"`

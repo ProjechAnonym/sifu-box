@@ -101,21 +101,31 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 //   logger *zap.Logger: 日志记录器，用于记录日志信息。
 // 返回值:
 //   error: 如果过程中发生任何错误，返回该错误。
-func ApplyNewConfig(workDir string, singboxSetting models.Singbox, logger *zap.Logger) error {
-    // 备份当前配置文件，以防新配置应用过程中发生错误
+func ApplyNewConfig(workDir string, singboxSetting models.Singbox, buntClient *buntdb.DB, logger *zap.Logger) error {
+    providerName, err := utils.GetValue(buntClient, models.CONCURRENTPROVIDER, logger)
+	if err != nil {
+		logger.Error(fmt.Sprintf("获取当前配置机场失败: [%s]", err.Error()))
+		return fmt.Errorf("获取当前配置机场失败")
+	}
+	templateName, err := utils.GetValue(buntClient, models.CONCURRENTTEMPLATE, logger)
+	if err != nil {
+		logger.Error(fmt.Sprintf("获取当前配置模板失败: [%s]", err.Error()))
+		return fmt.Errorf("获取当前配置模板失败")
+	}
+	// 备份当前配置文件，以防新配置应用过程中发生错误
     if err := backupConfig(singboxSetting.ConfigPath, workDir, logger); err != nil {
         return err
     }
     
     // 计算机场名称的MD5哈希值，用于生成唯一的配置文件名
-    providerHashName, err := utils.EncryptionMd5(singboxSetting.Provider)
+    providerHashName, err := utils.EncryptionMd5(providerName)
     if err != nil {
         logger.Error(fmt.Sprintf("计算机场名称哈希值失败: [%s]", err.Error()))
         return fmt.Errorf("计算机场名称哈希值失败")
     }
     
     // 转移新的配置文件到指定路径
-    if err := transferConfig(singboxSetting.ConfigPath, filepath.Join(workDir, models.TEMPDIR, models.SINGBOXCONFIGFILEDIR, singboxSetting.Template, fmt.Sprintf("%s.json", providerHashName)), logger); err != nil {
+    if err := transferConfig(singboxSetting.ConfigPath, filepath.Join(workDir, models.TEMPDIR, models.SINGBOXCONFIGFILEDIR, templateName, fmt.Sprintf("%s.json", providerHashName)), logger); err != nil {
         return err
     }
     
@@ -134,13 +144,13 @@ func ApplyNewConfig(workDir string, singboxSetting models.Singbox, logger *zap.L
     // 再次检查服务状态，确认服务是否成功应用了新配置
     status, err = checkService(true, logger, singboxSetting.Commands[models.CHECKCOMMAND])
     if status && err == nil {
-		logger.Debug(fmt.Sprintf("重载'%s'基于'%s'模板的配置文件成功", singboxSetting.Provider, singboxSetting.Template))
+		logger.Debug(fmt.Sprintf("重载'%s'基于'%s'模板的配置文件成功", providerName, templateName))
         return nil
     }else if err != nil{
-        logger.Error(fmt.Sprintf("重载'%s'基于'%s'模板的配置文件失败: [%s]", singboxSetting.Provider, singboxSetting.Template, err.Error()))
+        logger.Error(fmt.Sprintf("重载'%s'基于'%s'模板的配置文件失败: [%s]", providerName, templateName, err.Error()))
     }else{
         err = errors.New("未知错误")
-        logger.Error(fmt.Sprintf("重载'%s'基于'%s'模板的配置文件失败: [%s]", singboxSetting.Provider, singboxSetting.Template, err.Error()))
+        logger.Error(fmt.Sprintf("重载'%s'基于'%s'模板的配置文件失败: [%s]", providerName, templateName, err.Error()))
     }
     
     // 如果服务重载失败，尝试恢复原始配置文件

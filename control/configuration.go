@@ -6,6 +6,7 @@ import (
 	"sifu-box/ent"
 	"sifu-box/models"
 
+	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
 )
 
@@ -57,4 +58,10 @@ func Fetch(entClient *ent.Client, logger *zap.Logger) (*models.Configuration, er
 		Rulesets: rulesetList,
 		Templates: templateList,
 	}, nil
+}
+
+func Delete(providers, rulesets, templates []string, buntClient *buntdb.DB, entClient *ent.Client, logger *zap.Logger){
+	// for _, provider := range providers {
+		
+	// }
 }

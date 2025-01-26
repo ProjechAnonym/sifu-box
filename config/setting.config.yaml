@@ -1,7 +1,5 @@
 application:
   singbox:
-    template: default
-    provider: 夜煞云
     work_dir: /opt/singbox/config
     config_path: /opt/singbox/config.json
     binary_path: /opt/singbox/singbox
@@ -33,7 +31,7 @@ application:
           - sing-box
 
   server:
-    interval: "5 * * * *"
+    interval: "* * * * *"
     user:
       username: sifulin
       password: wsr19990902
