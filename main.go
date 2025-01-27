@@ -25,7 +25,8 @@ var taskLogger *zap.Logger
 var buntClient *buntdb.DB
 var entClient *ent.Client
 var setting *models.Setting
-var rwLock *sync.RWMutex
+
+var scheduler *gocron.Scheduler
 func init() {
 	var err error
 	cmd.Execute()
@@ -44,24 +45,15 @@ func init() {
 
 	if cmd.Server {
 		entClient = initial.InitEntdb(cmd.WorkDir, initLogger)
-		utils.SetValue(buntClient, models.CURRENTPROVIDER, "夜煞云", initLogger)
-		utils.SetValue(buntClient, models.CURRENTTEMPLATE, "default", initLogger)
-		singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, rwLock, taskLogger)
+
 		initLogger.Info("加载配置文件完成")
 		if err := initial.SetDefaultTemplate(cmd.WorkDir, buntClient, initLogger); err != nil {
 			panic(err)
 		}
-		initLogger.Info("定时任务初始化完成")
-		scheduler := gocron.NewScheduler(time.Local)
-		_, err = scheduler.Cron(setting.Application.Server.Interval).Do(func(){
-			singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, rwLock, taskLogger)
-			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, buntClient, taskLogger)
-		})
-		if err != nil {
-			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
-			panic(err)
-		}
+		initLogger.Info("读取默认模板完成")
+		scheduler = gocron.NewScheduler(time.Local)
 		scheduler.StartAsync()
+		initLogger.Info("定时器初始化完成")
 		if setting.Configuration == nil {
 			initLogger.Debug("配置字段为空, 将直接使用数据库中配置")
 			return
@@ -73,6 +65,7 @@ func init() {
 
 func main() {
 	var webLogger *zap.Logger
+	rwLock := sync.RWMutex{}
 	if cmd.Server { webLogger = initial.GetLogger(cmd.WorkDir, "web") }
 	defer func() {
 		taskLogger.Sync()
@@ -82,12 +75,22 @@ func main() {
 	}()
 
 	if cmd.Server {
+		utils.SetValue(buntClient, models.CURRENTPROVIDER, "夜煞云", taskLogger)
+		utils.SetValue(buntClient, models.CURRENTTEMPLATE, "default", taskLogger)
+		singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
+		if _, err := scheduler.Cron(setting.Application.Server.Interval).Do(func(){
+			singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
+			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, buntClient, taskLogger)
+		}); err != nil {
+			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
+			panic(err)
+		}
 		gin.SetMode(gin.ReleaseMode)
 		server := gin.Default()
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
 		api := server.Group("/api")
 		route.SettingLogin(api, setting.Application.Server.User, webLogger)
-		route.SettingConfiguration(api, cmd.WorkDir, entClient, *setting.Application.Server.User, buntClient, rwLock, webLogger)
+		route.SettingConfiguration(api, cmd.WorkDir, entClient, *setting.Application.Server.User, buntClient, &rwLock, webLogger)
 		if setting.Application.Server.SSL != nil {
 			fmt.Println(setting.Application.Server.SSL)
 			server.Run(cmd.Listen)
@@ -95,7 +98,7 @@ func main() {
 			server.Run(cmd.Listen)
 		}
 	}else{
-		singbox.GenerateConfigFiles(nil, buntClient, nil, nil, cmd.WorkDir, cmd.Server, rwLock, taskLogger)
+		singbox.GenerateConfigFiles(nil, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
 	}
 	
 	

@@ -1,6 +1,7 @@
 package route
 
 import (
+	"fmt"
 	"net/http"
 	"sifu-box/control"
 	"sifu-box/ent"
@@ -46,5 +47,26 @@ func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.C
 			return
 		}
 		ctx.JSON(http.StatusOK, gin.H{"message": "删除成功"})
+	})
+	configuration.POST("/add", func(ctx *gin.Context) {
+		conf := struct{
+			Providers []models.Provider `json:"providers"`
+			Rulesets []models.RuleSet `json:"rulesets"`
+		}{}
+		if err := ctx.ShouldBindJSON(&conf); err != nil {
+			logger.Error(fmt.Sprintf("解析请求体失败: [%s]", err.Error()))
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "解析请求体失败"})
+			return
+		}
+		errors := control.Add(conf.Providers, conf.Rulesets, entClient, buntClient, workDir, rwLock, logger)
+		if errors != nil {
+			errorList := make([]string, len(errors))
+			for i, err := range errors {
+				errorList[i] = err.Error()
+			}
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": errorList})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "success"})
 	})
 }

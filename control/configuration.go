@@ -70,6 +70,7 @@ func Fetch(entClient *ent.Client, logger *zap.Logger) (*models.Configuration, er
 
 func Delete(providers, rulesets, templates []string, workDir string, buntClient *buntdb.DB, entClient *ent.Client, rwLock *sync.RWMutex, logger *zap.Logger) []error{
 	var errors []error
+
 	currentProvider, err := utils.GetValue(buntClient, models.CURRENTPROVIDER, logger)
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取当前配置机场失败: [%s]", err.Error()))
@@ -80,6 +81,7 @@ func Delete(providers, rulesets, templates []string, workDir string, buntClient 
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取当前配置模板失败: [%s]", err.Error()))
 	}
+
 	errors = append(errors, deleteTemplate(entClient, buntClient, templates, currentTemplate, workDir, rwLock, logger)...)
 	if rulesets != nil {
 		errors = append(errors, deleteRulesets(rulesets, workDir, rwLock, entClient, buntClient, logger)...)
@@ -87,6 +89,37 @@ func Delete(providers, rulesets, templates []string, workDir string, buntClient 
 	return errors
 }
 
+func Add(providers []models.Provider, rulesets []models.RuleSet, entClient *ent.Client, buntClient *buntdb.DB, workDir string, rwLock *sync.RWMutex, logger *zap.Logger) []error {
+	providerList := make([]*ent.ProviderCreate, len(providers))
+	newProviders := make([]string, len(providers))
+	if providers != nil {
+		for i, provider := range providers {
+			newProviders[i] = provider.Name
+			providerList[i] = entClient.Provider.Create().SetDetour(provider.Detour).SetName(provider.Name).SetPath(provider.Path).SetRemote(provider.Remote)
+		}
+		if err := entClient.Provider.CreateBulk(providerList...).Exec(context.Background()); err != nil {
+			logger.Error(fmt.Sprintf("保存数据失败: [%s]", err.Error()))
+			return []error{fmt.Errorf("保存机场数据失败")}
+		}
+	}
+
+	rulesetList := make([]*ent.RuleSetCreate, len(rulesets))
+	if rulesets != nil {
+
+		for i, ruleset := range rulesets {
+			rulesetList[i] = entClient.RuleSet.Create().SetChina(ruleset.China).SetDownloadDetour(ruleset.DownloadDetour).SetFormat(ruleset.Format).SetLabel(ruleset.Label).SetNameServer(ruleset.NameServer).SetPath(ruleset.Path).SetTag(ruleset.Tag).SetType(ruleset.Type).SetUpdateInterval(ruleset.UpdateInterval)
+		}
+		if err := entClient.RuleSet.CreateBulk(rulesetList...).Exec(context.Background()); err != nil {
+			logger.Error(fmt.Sprintf("保存数据失败: [%s]", err.Error()))
+			return []error{fmt.Errorf("保存规则集数据失败")}
+		}
+		newProviders = nil
+	}
+
+
+	errors := singbox.GenerateConfigFiles(entClient, buntClient, newProviders, nil, workDir, true, rwLock, logger)
+	return errors
+}
 func deleteRulesets(rulesets []string, workDir string, rwLock *sync.RWMutex, entClient *ent.Client, buntClient *buntdb.DB, logger *zap.Logger) []error {
 	var errors []error
 	if _, err := entClient.RuleSet.Delete().Where(ruleset.TagIn(rulesets...)).Exec(context.Background()); err != nil {
@@ -138,7 +171,6 @@ func deleteProviders(providers []string, currentProvider, workDir string, buntCl
 	}
 	return errors
 }
-
 func deleteTemplate(entClient *ent.Client, buntClient *buntdb.DB, templates []string, currentTemplate, workDir string, rwLock *sync.RWMutex, logger *zap.Logger) []error {
 	rwLock.Lock()
 	defer rwLock.Unlock()
