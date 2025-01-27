@@ -6,13 +6,14 @@ import (
 	"sifu-box/ent"
 	"sifu-box/middleware"
 	"sifu-box/models"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
 )
 
-func SettingConfiguration(api *gin.RouterGroup, entClient *ent.Client, user models.User, buntClient *buntdb.DB, logger *zap.Logger){
+func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.Client, user models.User, buntClient *buntdb.DB, rwLock *sync.RWMutex, logger *zap.Logger){
 	configuration := api.Group("/configuration")
 	configuration.Use(middleware.Jwt(user.PrivateKey, logger))
 	configuration.GET("/fetch", func(ctx *gin.Context) {
@@ -28,8 +29,22 @@ func SettingConfiguration(api *gin.RouterGroup, entClient *ent.Client, user mode
 		ctx.JSON(http.StatusOK, gin.H{"message": configuration})
 	})
 	configuration.DELETE("/items", func(ctx *gin.Context){
-		// providers := ctx.PostFormArray("providers")
-		// rulesets := ctx.PostFormArray("rulesets")
-		// templates := ctx.PostFormArray("templates")
+		if !ctx.GetBool("admin") {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "非管理员用户"})
+			return
+		}
+		providers := ctx.PostFormArray("providers")
+		rulesets := ctx.PostFormArray("rulesets")
+		templates := ctx.PostFormArray("templates")
+		errors := control.Delete(providers, rulesets, templates, workDir, buntClient, entClient, rwLock, logger)
+		if errors != nil {
+			errorList := make([]string, len(errors))
+			for i, err := range errors {
+				errorList[i] = err.Error()
+			}
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": errorList})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "删除成功"})
 	})
 }

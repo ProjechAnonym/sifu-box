@@ -109,7 +109,7 @@ configuration:
             address: tls://8.8.8.8
             detour: select
           - tag: internal
-            address: 172.23.30.94:5353
+            address: 192.168.1.2:5353
             detour: direct
           - tag: dns_block
             address: rcode://refused

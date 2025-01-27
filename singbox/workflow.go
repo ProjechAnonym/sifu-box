@@ -10,13 +10,14 @@ import (
 	"sifu-box/ent/template"
 	"sifu-box/models"
 	"sifu-box/utils"
+	"sync"
 
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
 )
 
-func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []string, specificTemplate []string, workDir string, server bool, logger *zap.Logger) []error {
+func GenerateConfigFiles(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []string, specificTemplate []string, workDir string, server bool, rwLock *sync.RWMutex, logger *zap.Logger) []error {
 	var err error
 	var providers []models.Provider
 	var rulesets []models.RuleSet
@@ -89,7 +90,7 @@ func Workflow(entClient *ent.Client, buntClient *buntdb.DB, specificProvider []s
 		rulesets = configuration.Rulesets
 		templateMap = configuration.Templates
 	}
-	return merge(providers, rulesets, templateMap, workDir, server, logger)
+	return merge(providers, rulesets, templateMap, workDir, server, rwLock, logger)
 }
 
 // TransferConfig 转移并应用配置文件

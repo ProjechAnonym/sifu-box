@@ -10,6 +10,7 @@ import (
 	"sifu-box/route"
 	"sifu-box/singbox"
 	"sifu-box/utils"
+	"sync"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -24,6 +25,7 @@ var taskLogger *zap.Logger
 var buntClient *buntdb.DB
 var entClient *ent.Client
 var setting *models.Setting
+var rwLock *sync.RWMutex
 func init() {
 	var err error
 	cmd.Execute()
@@ -33,8 +35,7 @@ func init() {
 
 	buntClient = initial.InitBuntdb(initLogger)
 	initLogger.Info("内存数据库BuntDB初始化完成")
-	utils.SetValue(buntClient, models.CURRENTPROVIDER, "夜煞云", initLogger)
-	utils.SetValue(buntClient, models.CURRENTTEMPLATE, "default", initLogger)
+
 	setting, err = initial.InitSetting(cmd.Config, cmd.Server, buntClient, initLogger)
 	if err != nil {
 		panic(err)
@@ -43,6 +44,9 @@ func init() {
 
 	if cmd.Server {
 		entClient = initial.InitEntdb(cmd.WorkDir, initLogger)
+		utils.SetValue(buntClient, models.CURRENTPROVIDER, "夜煞云", initLogger)
+		utils.SetValue(buntClient, models.CURRENTTEMPLATE, "default", initLogger)
+		singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, rwLock, taskLogger)
 		initLogger.Info("加载配置文件完成")
 		if err := initial.SetDefaultTemplate(cmd.WorkDir, buntClient, initLogger); err != nil {
 			panic(err)
@@ -50,7 +54,7 @@ func init() {
 		initLogger.Info("定时任务初始化完成")
 		scheduler := gocron.NewScheduler(time.Local)
 		_, err = scheduler.Cron(setting.Application.Server.Interval).Do(func(){
-			singbox.Workflow(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, taskLogger)
+			singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, rwLock, taskLogger)
 			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, buntClient, taskLogger)
 		})
 		if err != nil {
@@ -83,7 +87,7 @@ func main() {
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
 		api := server.Group("/api")
 		route.SettingLogin(api, setting.Application.Server.User, webLogger)
-		route.SettingConfiguration(api, entClient, *setting.Application.Server.User, buntClient, webLogger)
+		route.SettingConfiguration(api, cmd.WorkDir, entClient, *setting.Application.Server.User, buntClient, rwLock, webLogger)
 		if setting.Application.Server.SSL != nil {
 			fmt.Println(setting.Application.Server.SSL)
 			server.Run(cmd.Listen)
@@ -91,7 +95,7 @@ func main() {
 			server.Run(cmd.Listen)
 		}
 	}else{
-		singbox.Workflow(nil, buntClient, nil, nil, cmd.WorkDir, cmd.Server, taskLogger)
+		singbox.GenerateConfigFiles(nil, buntClient, nil, nil, cmd.WorkDir, cmd.Server, rwLock, taskLogger)
 	}
 	
 	

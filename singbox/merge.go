@@ -20,10 +20,11 @@ import (
 // - templates: 一个映射, 键为字符串, 值为Template类型, 包含模板信息
 // - workDir: 字符串类型, 表示工作目录
 // - server: 布尔类型, 指示是否为服务器模式
+// - rwLock: *sync.RWMutex类型, 用于读写锁
 // - logger: *zap.Logger类型, 用于日志记录
 // 返回值:
 // - []error: 一个错误切片, 包含处理过程中可能发生的错误
-func merge(providerList []models.Provider, rulesetsList []models.RuleSet, templates map[string]models.Template, workDir string, server bool, logger *zap.Logger) []error{
+func merge(providerList []models.Provider, rulesetsList []models.RuleSet, templates map[string]models.Template, workDir string, server bool, rwLock *sync.RWMutex, logger *zap.Logger) []error{
     // 格式化机场URL, 在URL中添加flag参数, 并设置flag参数为clash
     providers, errors := formatProviderURL(providerList, logger)
 	// 返回所出现的错误
@@ -32,10 +33,14 @@ func merge(providerList []models.Provider, rulesetsList []models.RuleSet, templa
     }
     // 初始化HTTP客户端
     requestClient := http.DefaultClient
+
     // 初始化错误、计数通道以及多线程计数变量
     var jobs sync.WaitGroup
     var errChan = make(chan error, 5)
     var countChan = make(chan int, 5)
+    // 设置写锁, 不允许其他goroutine对配置文件进行修改
+    rwLock.Lock()
+    defer rwLock.Unlock()
     // 启动监控 goroutine, 负责收集错误和计数
     jobs.Add(1)
     go func(){
