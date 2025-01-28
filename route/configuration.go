@@ -3,10 +3,12 @@ package route
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"sifu-box/control"
 	"sifu-box/ent"
 	"sifu-box/middleware"
 	"sifu-box/models"
+	"sifu-box/utils"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -59,6 +61,57 @@ func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.C
 			return
 		}
 		errors := control.Add(conf.Providers, conf.Rulesets, entClient, buntClient, workDir, rwLock, logger)
+		if errors != nil {
+			errorList := make([]string, len(errors))
+			for i, err := range errors {
+				errorList[i] = err.Error()
+			}
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": errorList})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	})
+	configuration.POST("/files",func(ctx *gin.Context) {
+		form, err := ctx.MultipartForm()
+		if err != nil {
+			logger.Error(fmt.Sprintf("获取表单错误: [%s]", err.Error()))
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "获取表单错误"})
+			return
+		}
+		files, ok := form.File["files"]
+		if !ok {
+			logger.Error("没有上传文件")
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "没有上传文件"})
+		}
+		var errors []error
+		providers := make([]models.Provider, len(files))
+		for i, file := range files {
+			ext := filepath.Ext(file.Filename)
+			fileHashName, err := utils.EncryptionMd5(file.Filename[:len(file.Filename) - len(ext)])
+			if err != nil {
+				logger.Error(fmt.Sprintf("计算'%s'哈希值失败: [%s]", file.Filename, err.Error()))
+				errors = append(errors, fmt.Errorf("计算'%s'哈希值失败", file.Filename))
+				continue
+			}
+			providers[i] = models.Provider{
+				Name: file.Filename[:len(file.Filename) - len(ext)],
+				Path: filepath.Join(workDir, models.STATICDIR, models.CLASHCONFIGFILE, fmt.Sprintf("%s.yaml",fileHashName)),
+				Remote: false,
+			}
+			if err := ctx.SaveUploadedFile(file, filepath.Join(workDir, models.STATICDIR, models.CLASHCONFIGFILE, fmt.Sprintf("%s.yaml",fileHashName))); err != nil {
+				logger.Error(fmt.Sprintf("保存文件失败: [%s]",err.Error()))
+				errors = append(errors, fmt.Errorf("保存'%s'文件失败", file.Filename))
+			}
+		}
+		if errors != nil {
+			errorList := make([]string, len(errors))
+			for i, err := range errors {
+				errorList[i] = err.Error()
+			}
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": errorList})
+			return
+		}
+		errors = append(errors, control.Add(providers, nil, entClient, buntClient, workDir, rwLock, logger)...)
 		if errors != nil {
 			errorList := make([]string, len(errors))
 			for i, err := range errors {

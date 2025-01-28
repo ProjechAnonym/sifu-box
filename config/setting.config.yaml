@@ -52,10 +52,6 @@ configuration:
       path: "C:/Users/19822/Downloads/20250119.yaml"
       detour: select
       remote: false
-    # - name: "github2"
-    #   path: "C:/Users/19822/Downloads/20250119.yaml1"
-    #   detour: select
-    #   remote: false
   rulesets:
     - type: remote
       path: https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geosite/cn.srs

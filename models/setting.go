@@ -31,7 +31,7 @@ type Provider struct {
 	Name   string `json:"name" yaml:"name"`
 	Path   string `json:"path" yaml:"path"`
 	Remote bool   `json:"remote" yaml:"remote"`
-	Detour string `json:"detour" yaml:"detour"`
+	Detour string `json:"detour,omitempty" yaml:"detour,omitempty"`
 }
 
 type RuleSet struct {

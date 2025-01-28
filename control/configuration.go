@@ -133,12 +133,25 @@ func deleteProviders(providers []string, currentProvider, workDir string, buntCl
 	rwLock.Lock()
 	defer rwLock.Unlock()
 	var errors []error
-	for _, provider := range providers {
-		if provider == currentProvider {
+	for _, providerName := range providers {
+		if providerName == currentProvider {
 			if err := utils.DeleteValue(buntClient, models.CURRENTPROVIDER, logger); err != nil {
 				logger.Error(fmt.Sprintf("删除当前机场配置失败: [%s]", err.Error()))
 				errors = append(errors, fmt.Errorf("删除当前机场配置失败"))
 				return errors
+			}
+		}
+		providerMsg, err := entClient.Provider.Query().Select(provider.FieldRemote, provider.FieldName, provider.FieldPath).Where(provider.NameEQ(providerName)).First(context.Background())
+		if err != nil {
+			logger.Error(fmt.Sprintf("获取数据库'%s'数据失败: [%s]", providerName, err.Error()))
+			errors = append(errors, fmt.Errorf("获取数据库'%s'数据失败", providerName))
+			continue
+		}
+		if !providerMsg.Remote {
+			if err := os.Remove(providerMsg.Path); err != nil {
+				logger.Error(fmt.Sprintf("删除'%s'机场Yaml文件失败: [%s]", providerMsg.Name, err.Error()))
+				errors = append(errors, fmt.Errorf("删除'%s'机场Yaml文件失败", providerMsg.Name))
+				continue
 			}
 		}
 		dirs, err := os.ReadDir(filepath.Join(workDir, models.TEMPDIR, models.SINGBOXCONFIGFILEDIR))
@@ -147,10 +160,10 @@ func deleteProviders(providers []string, currentProvider, workDir string, buntCl
 			errors = append(errors, fmt.Errorf("遍历配置文件夹失败"))
 			return errors
 		}
-		providerHashName, err := utils.EncryptionMd5(provider)
+		providerHashName, err := utils.EncryptionMd5(providerName)
 		if err != nil {
-			logger.Error(fmt.Sprintf("计算'%s'哈希值失败: [%s]", provider, err.Error()))
-			errors = append(errors, fmt.Errorf("计算'%s'哈希值失败", provider))
+			logger.Error(fmt.Sprintf("计算'%s'哈希值失败: [%s]", providerName, err.Error()))
+			errors = append(errors, fmt.Errorf("计算'%s'哈希值失败", providerName))
 			continue
 		}
 		for _, dir := range dirs {
@@ -160,8 +173,8 @@ func deleteProviders(providers []string, currentProvider, workDir string, buntCl
 			}
 			
 			if err := os.RemoveAll(filepath.Join(workDir, models.TEMPDIR, models.SINGBOXCONFIGFILEDIR, dir.Name(), fmt.Sprintf("%s.json", providerHashName))); err != nil {
-				logger.Error(fmt.Sprintf("删除机场'%s'失败: [%s]", provider, err.Error()))
-				errors = append(errors, fmt.Errorf("删除机场'%s'失败", provider))
+				logger.Error(fmt.Sprintf("删除机场'%s'失败: [%s]", providerName, err.Error()))
+				errors = append(errors, fmt.Errorf("删除机场'%s'失败", providerName))
 			}
 		}
 	}
