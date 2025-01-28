@@ -89,6 +89,41 @@ func Delete(providers, rulesets, templates []string, workDir string, buntClient 
 	return errors
 }
 
+func Set(name, workDir string, singboxSetting models.Singbox, templateContent models.Template, buntClient *buntdb.DB, entClient *ent.Client, rwLock *sync.RWMutex, logger *zap.Logger) []error{
+	exist, err := entClient.Template.Query().Where(template.NameEQ(name)).Exist(context.Background())
+	if err != nil {
+		logger.Error(fmt.Sprintf("获取数据库数据失败: [%s]",err.Error()))
+		return []error{fmt.Errorf("数据库查询'%s'数据失败", name)}
+	}
+	if exist {
+		if _, err := entClient.Template.Update().Where(template.NameEQ(name)).SetContent(templateContent).Save(context.Background()); err != nil {
+			logger.Error(fmt.Sprintf("更新数据库数据失败: [%s]",err.Error()))
+			return []error{fmt.Errorf("数据库更新'%s'数据失败", name)}
+		}
+	}else{
+		if _, err := entClient.Template.Create().SetName(name).SetContent(templateContent).Save(context.Background()); err != nil {
+			logger.Error(fmt.Sprintf("保存数据库数据失败: [%s]",err.Error()))
+			return []error{fmt.Errorf("数据库保存'%s'数据失败", name)}
+		}
+	}
+	
+	if errors := singbox.GenerateConfigFiles(entClient, buntClient, nil, []string{name}, workDir, true, rwLock, logger); errors != nil {
+		return errors
+	}
+	currentTemplate, err := utils.GetValue(buntClient, models.CURRENTTEMPLATE, logger)
+	if err != nil {
+		logger.Error(fmt.Sprintf("获取当前配置模板失败: [%s]", err.Error()))
+		return []error{fmt.Errorf("获取当前配置模板失败")}
+	}
+	fmt.Println(currentTemplate)
+	if currentTemplate == name {
+		
+		if err := singbox.ApplyNewConfig(workDir, singboxSetting, buntClient, rwLock, logger); err != nil{
+			return []error{err}
+		}
+	}
+	return nil
+}
 func Add(providers []models.Provider, rulesets []models.RuleSet, entClient *ent.Client, buntClient *buntdb.DB, workDir string, rwLock *sync.RWMutex, logger *zap.Logger) []error {
 	providerList := make([]*ent.ProviderCreate, len(providers))
 	newProviders := make([]string, len(providers))

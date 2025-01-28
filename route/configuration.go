@@ -14,9 +14,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 )
 
-func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.Client, user models.User, buntClient *buntdb.DB, rwLock *sync.RWMutex, logger *zap.Logger){
+func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.Client, user models.User, buntClient *buntdb.DB, rwLock *sync.RWMutex, singboxSetting models.Singbox, logger *zap.Logger){
 	configuration := api.Group("/configuration")
 	configuration.Use(middleware.Jwt(user.PrivateKey, logger))
 	configuration.GET("/fetch", func(ctx *gin.Context) {
@@ -121,5 +122,41 @@ func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.C
 			return
 		}
 		ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	})
+	configuration.POST("/template", func(ctx *gin.Context) {
+		name := ctx.Query("name")
+		if name == "" {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "模板名称必须提供"})
+			return
+		}
+		template := models.Template{}
+		if err := ctx.ShouldBindJSON(&template); err != nil {
+			logger.Error(fmt.Sprintf("解析请求体失败: [%s]", err.Error()))
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "解析请求体失败"})
+			return
+		}
+		errors := control.Set(name, workDir, singboxSetting, template, buntClient, entClient, rwLock, logger)
+		if errors != nil {
+			errorList := make([]string, len(errors))
+			for i, err := range errors {
+				errorList[i] = err.Error()
+			}
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": errorList})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+	})
+	configuration.GET("/recover", func(ctx *gin.Context){
+		content, err := utils.GetValue(buntClient, models.DEFAULTTEMPLATEKEY, logger)
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "获取默认模板失败"})
+			return
+		}
+		var template models.Template
+		if err := yaml.Unmarshal([]byte(content), &template); err != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "解析默认模板失败"})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message":template})
 	})
 }

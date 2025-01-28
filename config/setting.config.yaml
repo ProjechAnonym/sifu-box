@@ -31,7 +31,7 @@ application:
           - sing-box
 
   server:
-    interval: "* * * * *"
+    interval: "5 * * * *"
     user:
       username: sifulin
       password: wsr19990902
@@ -48,10 +48,6 @@ configuration:
       path: "https://45.137.180.216/api/v1/client/nyth?token=aa751df806caf70136e33c9310531fe6"
       detour: select
       remote: true
-    - name: "github1"
-      path: "C:/Users/19822/Downloads/20250119.yaml"
-      detour: select
-      remote: false
   rulesets:
     - type: remote
       path: https://github.com/MetaCubeX/meta-rules-dat/raw/sing/geo/geosite/cn.srs

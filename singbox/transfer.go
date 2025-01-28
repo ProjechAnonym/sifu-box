@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"sifu-box/models"
 	"sifu-box/utils"
+	"sync"
 
 	"go.uber.org/zap"
 )
@@ -36,7 +37,9 @@ func recoverConfig(singboxConfigPath, workDir string, logger *zap.Logger) error 
 	return nil
 }
 
-func transferConfig(singboxConfigPath, newConfigPath string, logger *zap.Logger) error {
+func transferConfig(singboxConfigPath, newConfigPath string, rwLock *sync.RWMutex, logger *zap.Logger) error {
+	rwLock.RLock()
+	defer rwLock.RUnlock()
 	newConfig, err := utils.ReadFile(newConfigPath)
 	if err != nil {
 		logger.Error(fmt.Sprintf("读取新配置文件失败: [%s]", err.Error()))

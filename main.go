@@ -80,7 +80,7 @@ func main() {
 		singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
 		if _, err := scheduler.Cron(setting.Application.Server.Interval).Do(func(){
 			singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
-			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, buntClient, taskLogger)
+			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, buntClient, &rwLock, taskLogger)
 		}); err != nil {
 			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
 			panic(err)
@@ -90,7 +90,7 @@ func main() {
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
 		api := server.Group("/api")
 		route.SettingLogin(api, setting.Application.Server.User, webLogger)
-		route.SettingConfiguration(api, cmd.WorkDir, entClient, *setting.Application.Server.User, buntClient, &rwLock, webLogger)
+		route.SettingConfiguration(api, cmd.WorkDir, entClient, *setting.Application.Server.User, buntClient, &rwLock, *setting.Application.Singbox, webLogger)
 		if setting.Application.Server.SSL != nil {
 			fmt.Println(setting.Application.Server.SSL)
 			server.Run(cmd.Listen)

@@ -102,7 +102,7 @@ func GenerateConfigFiles(entClient *ent.Client, buntClient *buntdb.DB, specificP
 //   logger *zap.Logger: 日志记录器，用于记录日志信息。
 // 返回值:
 //   error: 如果过程中发生任何错误，返回该错误。
-func ApplyNewConfig(workDir string, singboxSetting models.Singbox, buntClient *buntdb.DB, logger *zap.Logger) error {
+func ApplyNewConfig(workDir string, singboxSetting models.Singbox, buntClient *buntdb.DB, rwLock *sync.RWMutex, logger *zap.Logger) error {
     providerName, err := utils.GetValue(buntClient, models.CURRENTPROVIDER, logger)
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取当前配置机场失败: [%s]", err.Error()))
@@ -126,7 +126,7 @@ func ApplyNewConfig(workDir string, singboxSetting models.Singbox, buntClient *b
     }
     
     // 转移新的配置文件到指定路径
-    if err := transferConfig(singboxSetting.ConfigPath, filepath.Join(workDir, models.TEMPDIR, models.SINGBOXCONFIGFILEDIR, templateName, fmt.Sprintf("%s.json", providerHashName)), logger); err != nil {
+    if err := transferConfig(singboxSetting.ConfigPath, filepath.Join(workDir, models.TEMPDIR, models.SINGBOXCONFIGFILEDIR, templateName, fmt.Sprintf("%s.json", providerHashName)), rwLock, logger); err != nil {
         return err
     }
     
