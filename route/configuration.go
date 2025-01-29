@@ -34,7 +34,7 @@ func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.C
 	})
 	configuration.DELETE("/items", func(ctx *gin.Context){
 		if !ctx.GetBool("admin") {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "非管理员用户"})
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": []string{"非管理员用户"}})
 			return
 		}
 		providers := ctx.PostFormArray("providers")
@@ -58,7 +58,7 @@ func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.C
 		}{}
 		if err := ctx.ShouldBindJSON(&conf); err != nil {
 			logger.Error(fmt.Sprintf("解析请求体失败: [%s]", err.Error()))
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "解析请求体失败"})
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": []string{"解析请求体失败"}})
 			return
 		}
 		errors := control.Add(conf.Providers, conf.Rulesets, entClient, buntClient, workDir, rwLock, logger)
@@ -76,13 +76,13 @@ func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.C
 		form, err := ctx.MultipartForm()
 		if err != nil {
 			logger.Error(fmt.Sprintf("获取表单错误: [%s]", err.Error()))
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "获取表单错误"})
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": []string{"获取表单错误"}})
 			return
 		}
 		files, ok := form.File["files"]
 		if !ok {
 			logger.Error("没有上传文件")
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "没有上传文件"})
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": []string{"没有上传文件"}})
 		}
 		var errors []error
 		providers := make([]models.Provider, len(files))
@@ -126,13 +126,13 @@ func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.C
 	configuration.POST("/template", func(ctx *gin.Context) {
 		name := ctx.Query("name")
 		if name == "" {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "模板名称必须提供"})
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": []string{"模板名称必须提供"}})
 			return
 		}
 		template := models.Template{}
 		if err := ctx.ShouldBindJSON(&template); err != nil {
 			logger.Error(fmt.Sprintf("解析请求体失败: [%s]", err.Error()))
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "解析请求体失败"})
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": []string{"解析请求体失败"}})
 			return
 		}
 		errors := control.Set(name, workDir, singboxSetting, template, buntClient, entClient, rwLock, logger)

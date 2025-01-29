@@ -89,6 +89,7 @@ func main() {
 		server := gin.Default()
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
 		api := server.Group("/api")
+		route.SettingFiles(api, setting.Application.Server.User, cmd.WorkDir, entClient, webLogger)
 		route.SettingLogin(api, setting.Application.Server.User, webLogger)
 		route.SettingConfiguration(api, cmd.WorkDir, entClient, *setting.Application.Server.User, buntClient, &rwLock, *setting.Application.Singbox, webLogger)
 		if setting.Application.Server.SSL != nil {
