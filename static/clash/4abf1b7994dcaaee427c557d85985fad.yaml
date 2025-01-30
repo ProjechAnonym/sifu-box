@@ -7,7 +7,7 @@ external-controller: 0.0.0.0:9090
 proxies:
   - {
       "type": "vmess",
-      "name": "美国(nodeshare.xyz免费节点)_3",
+      "name": "美国(nodeshare.xyz免费节点)_3-sifulin",
       "ws-opts":
         {
           "path": "/dabai.in172.67.103.33",
