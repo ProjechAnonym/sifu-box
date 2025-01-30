@@ -89,7 +89,7 @@ func Delete(providers, rulesets, templates []string, workDir string, buntClient 
 	return errors
 }
 
-func Set(name, workDir string, singboxSetting models.Singbox, templateContent models.Template, buntClient *buntdb.DB, entClient *ent.Client, rwLock *sync.RWMutex, logger *zap.Logger) []error{
+func Set(name, workDir string, singboxSetting models.Singbox, templateContent models.Template, buntClient *buntdb.DB, entClient *ent.Client, rwLock *sync.RWMutex, execLock *sync.Mutex, logger *zap.Logger) []error{
 	exist, err := entClient.Template.Query().Where(template.NameEQ(name)).Exist(context.Background())
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取数据库数据失败: [%s]",err.Error()))
@@ -118,7 +118,7 @@ func Set(name, workDir string, singboxSetting models.Singbox, templateContent mo
 	fmt.Println(currentTemplate)
 	if currentTemplate == name {
 		
-		if err := singbox.ApplyNewConfig(workDir, singboxSetting, buntClient, rwLock, logger); err != nil{
+		if err := singbox.ApplyNewConfig(workDir, singboxSetting, buntClient, rwLock,  execLock, logger); err != nil{
 			return []error{err}
 		}
 	}

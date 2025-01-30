@@ -17,7 +17,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.Client, user models.User, buntClient *buntdb.DB, rwLock *sync.RWMutex, singboxSetting models.Singbox, logger *zap.Logger){
+func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.Client, user models.User, buntClient *buntdb.DB, rwLock *sync.RWMutex,  execLock *sync.Mutex, singboxSetting models.Singbox, logger *zap.Logger){
 	configuration := api.Group("/configuration")
 	configuration.Use(middleware.Jwt(user.PrivateKey, logger))
 	configuration.GET("/fetch", func(ctx *gin.Context) {
@@ -135,7 +135,7 @@ func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.C
 			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": []string{"解析请求体失败"}})
 			return
 		}
-		errors := control.Set(name, workDir, singboxSetting, template, buntClient, entClient, rwLock, logger)
+		errors := control.Set(name, workDir, singboxSetting, template, buntClient, entClient, rwLock, execLock, logger)
 		if errors != nil {
 			errorList := make([]string, len(errors))
 			for i, err := range errors {

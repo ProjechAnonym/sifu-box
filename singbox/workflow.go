@@ -102,7 +102,7 @@ func GenerateConfigFiles(entClient *ent.Client, buntClient *buntdb.DB, specificP
 //   logger *zap.Logger: 日志记录器，用于记录日志信息。
 // 返回值:
 //   error: 如果过程中发生任何错误，返回该错误。
-func ApplyNewConfig(workDir string, singboxSetting models.Singbox, buntClient *buntdb.DB, rwLock *sync.RWMutex, logger *zap.Logger) error {
+func ApplyNewConfig(workDir string, singboxSetting models.Singbox, buntClient *buntdb.DB, rwLock *sync.RWMutex, execLock *sync.Mutex, logger *zap.Logger) error {
     providerName, err := utils.GetValue(buntClient, models.CURRENTPROVIDER, logger)
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取当前配置机场失败: [%s]", err.Error()))
@@ -131,19 +131,19 @@ func ApplyNewConfig(workDir string, singboxSetting models.Singbox, buntClient *b
     }
     
     // 检查服务状态，如果服务不在运行或检查失败，则尝试启动服务，否则重载服务
-    status, err := checkService(false, logger, singboxSetting.Commands[models.CHECKCOMMAND])
+    status, err := checkService(false, logger, singboxSetting.Commands[models.CHECKCOMMAND], execLock)
     if err != nil || !status {
-        if err := bootService(logger, singboxSetting.Commands[models.BOOTCOMMAND]); err != nil {
+        if err := bootService(logger, singboxSetting.Commands[models.BOOTCOMMAND], execLock); err != nil {
             return err
         }
     }else{
-        if err := reloadService(logger, singboxSetting.Commands[models.RELOADCOMMAND]); err != nil {
+        if err := reloadService(logger, singboxSetting.Commands[models.RELOADCOMMAND], execLock); err != nil {
             return err
         }        
     }
     
     // 再次检查服务状态，确认服务是否成功应用了新配置
-    status, err = checkService(true, logger, singboxSetting.Commands[models.CHECKCOMMAND])
+    status, err = checkService(true, logger, singboxSetting.Commands[models.CHECKCOMMAND], execLock)
     if status && err == nil {
 		logger.Debug(fmt.Sprintf("重载'%s'基于'%s'模板的配置文件成功", providerName, templateName))
         return nil

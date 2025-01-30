@@ -66,6 +66,7 @@ func init() {
 func main() {
 	var webLogger *zap.Logger
 	rwLock := sync.RWMutex{}
+	execLock := sync.Mutex{}
 	if cmd.Server { webLogger = initial.GetLogger(cmd.WorkDir, "web") }
 	defer func() {
 		taskLogger.Sync()
@@ -80,7 +81,7 @@ func main() {
 		singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
 		if _, err := scheduler.Cron(setting.Application.Server.Interval).Do(func(){
 			singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
-			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, buntClient, &rwLock, taskLogger)
+			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, buntClient, &rwLock, &execLock, taskLogger)
 		}); err != nil {
 			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
 			panic(err)
@@ -89,9 +90,10 @@ func main() {
 		server := gin.Default()
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
 		api := server.Group("/api")
+		route.SettingExec(api, entClient, buntClient, cmd.WorkDir, setting.Application.Server.User, &execLock, &rwLock, setting.Application.Singbox, webLogger)
 		route.SettingFiles(api, setting.Application.Server.User, cmd.WorkDir, entClient, webLogger)
 		route.SettingLogin(api, setting.Application.Server.User, webLogger)
-		route.SettingConfiguration(api, cmd.WorkDir, entClient, *setting.Application.Server.User, buntClient, &rwLock, *setting.Application.Singbox, webLogger)
+		route.SettingConfiguration(api, cmd.WorkDir, entClient, *setting.Application.Server.User, buntClient, &rwLock, &execLock, *setting.Application.Singbox, webLogger)
 		if setting.Application.Server.SSL != nil {
 			fmt.Println(setting.Application.Server.SSL)
 			server.Run(cmd.Listen)

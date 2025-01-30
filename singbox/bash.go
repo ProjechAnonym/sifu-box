@@ -6,16 +6,23 @@ import (
 	"regexp"
 	"sifu-box/models"
 	"strings"
+	"sync"
 
 	"github.com/codeskyblue/go-sh"
 	"go.uber.org/zap"
 )
 
-func checkService(reload bool, logger *zap.Logger, command *models.Command) (bool, error){
+func checkService(reload bool, logger *zap.Logger, command *models.Command, execLock *sync.Mutex) (bool, error){
 	if command == nil {
 		logger.Error("执行命令失败, 命令不能为空")
 		return false, fmt.Errorf("命令不能为空")
 	}
+	for {
+		if execLock.TryLock(){
+			break
+		}
+	}
+	defer execLock.Unlock()
 	res, err := sh.Command(command.Name, command.Args...).CombinedOutput()
 	outputs := strings.Trim(string(res), "\n")
 	lines := strings.Split(outputs, "\n")
@@ -40,11 +47,17 @@ func checkService(reload bool, logger *zap.Logger, command *models.Command) (boo
 	return true, nil
 }
 
-func bootService(logger *zap.Logger, command *models.Command) (error) {
+func bootService(logger *zap.Logger, command *models.Command, execLock *sync.Mutex) (error) {
 	if command == nil {
 		logger.Error("执行命令失败, 命令不能为空")
 		return fmt.Errorf("命令不能为空")
 	}
+	for {
+		if execLock.TryLock(){
+			break
+		}
+	}
+	defer execLock.Unlock()
 	result, err := sh.Command(command.Name, command.Args...).CombinedOutput()
 	if err != nil {
 		logger.Error(fmt.Sprintf("执行启动命令失败: [%s]", strings.Trim(string(result), "\n")))
@@ -53,11 +66,17 @@ func bootService(logger *zap.Logger, command *models.Command) (error) {
 	return nil
 }
 
-func reloadService(logger *zap.Logger, command *models.Command) (error) {
+func reloadService(logger *zap.Logger, command *models.Command, execLock *sync.Mutex) (error) {
 	if command == nil {
 		logger.Error("执行命令失败, 命令不能为空")
 		return fmt.Errorf("命令不能为空")
 	}
+	for {
+		if execLock.TryLock(){
+			break
+		}
+	}
+	defer execLock.Unlock()
 	result, err := sh.Command(command.Name, command.Args...).CombinedOutput()
 	if err != nil {
 		logger.Error(fmt.Sprintf("执行重载命令失败: [%s]", strings.Trim(string(result), "\n")))
@@ -66,28 +85,3 @@ func reloadService(logger *zap.Logger, command *models.Command) (error) {
 	return nil
 }
 
-func restartService(logger *zap.Logger, command *models.Command) (error) {
-	if command == nil {
-		logger.Error("执行命令失败, 命令不能为空")
-		return fmt.Errorf("命令不能为空")
-	}
-	result, err := sh.Command(command.Name, command.Args...).CombinedOutput()
-	if err != nil {
-		logger.Error(fmt.Sprintf("执行重启命令失败: [%s]", strings.Trim(string(result), "\n")))
-		return fmt.Errorf("执行重启命令失败")
-	}
-	return nil
-}
-
-func stopService(logger *zap.Logger, command *models.Command) (error) {
-	if command == nil {
-		logger.Error("执行命令失败, 命令不能为空")
-		return fmt.Errorf("命令不能为空")
-	}
-	result, err := sh.Command(command.Name, command.Args...).CombinedOutput()
-	if err != nil {
-		logger.Error(fmt.Sprintf("执行关闭命令失败: [%s]", strings.Trim(string(result), "\n")))
-		return fmt.Errorf("执行关闭命令失败")
-	}
-	return nil
-}
