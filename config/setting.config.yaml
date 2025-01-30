@@ -31,7 +31,7 @@ application:
           - sing-box
 
   server:
-    interval: "5 * * * *"
+    interval: "2 * * * *"
     user:
       username: sifulin
       password: wsr19990902

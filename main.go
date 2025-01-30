@@ -11,12 +11,11 @@ import (
 	"sifu-box/singbox"
 	"sifu-box/utils"
 	"sync"
-	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/go-co-op/gocron"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/robfig/cron/v3"
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
 )
@@ -26,7 +25,6 @@ var buntClient *buntdb.DB
 var entClient *ent.Client
 var setting *models.Setting
 
-var scheduler *gocron.Scheduler
 func init() {
 	var err error
 	cmd.Execute()
@@ -51,9 +49,7 @@ func init() {
 			panic(err)
 		}
 		initLogger.Info("读取默认模板完成")
-		scheduler = gocron.NewScheduler(time.Local)
-		scheduler.StartAsync()
-		initLogger.Info("定时器初始化完成")
+
 		if setting.Configuration == nil {
 			initLogger.Debug("配置字段为空, 将直接使用数据库中配置")
 			return
@@ -76,13 +72,16 @@ func main() {
 	}()
 
 	if cmd.Server {
+		scheduler := cron.New()
+		scheduler.Start()
 		utils.SetValue(buntClient, models.CURRENTPROVIDER, "夜煞云", taskLogger)
 		utils.SetValue(buntClient, models.CURRENTTEMPLATE, "default", taskLogger)
 		singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
-		if _, err := scheduler.Cron(setting.Application.Server.Interval).Do(func(){
+		jobID, err := scheduler.AddFunc(setting.Application.Server.Interval, func(){
 			singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
 			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, buntClient, &rwLock, &execLock, taskLogger)
-		}); err != nil {
+		})
+		if err != nil {
 			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
 			panic(err)
 		}
@@ -90,6 +89,7 @@ func main() {
 		server := gin.Default()
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
 		api := server.Group("/api")
+		route.SettingHost(api, setting.Application.Server.User, entClient, buntClient, *setting.Application.Singbox, cmd.WorkDir, &rwLock, &execLock, scheduler, &jobID, webLogger)
 		route.SettingExec(api, entClient, buntClient, cmd.WorkDir, setting.Application.Server.User, &execLock, &rwLock, setting.Application.Singbox, webLogger)
 		route.SettingFiles(api, setting.Application.Server.User, cmd.WorkDir, entClient, webLogger)
 		route.SettingLogin(api, setting.Application.Server.User, webLogger)
