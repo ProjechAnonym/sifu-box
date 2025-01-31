@@ -12,6 +12,8 @@ type Command struct {
 	Args  []interface{} `json:"args,omitempty" yaml:"args,omitempty"`
 }
 type Singbox struct {
+	Listen     string `json:"listen" yaml:"listen"`
+	Secret	   string `json:"secret" yaml:"secret"`
 	WorkDir    string `json:"work_dir" yaml:"work_dir"`
 	ConfigPath string `json:"config_path" yaml:"config_path"`
 	BinaryPath string `json:"binary_path" yaml:"binary_path"`

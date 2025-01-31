@@ -17,7 +17,10 @@ import (
 func SettingHost(api *gin.RouterGroup, user *models.User, entClient *ent.Client, buntClient *buntdb.DB, singboxSetting models.Singbox, workDir string, rwLock *sync.RWMutex, execLock *sync.Mutex, scheduler *cron.Cron, jobID *cron.EntryID, logger *zap.Logger){
 	host := api.Group("/application")
 	host.Use(middleware.Jwt(user.PrivateKey, logger))
-	host.POST("/:mode", func(ctx *gin.Context) {
+	host.GET("/fetch", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{"message": map[string]string{"listen": singboxSetting.Listen, "secret": singboxSetting.Secret}})
+	})
+	host.POST("/set/:mode", func(ctx *gin.Context) {
 		if !ctx.GetBool("admin"){
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "非管理员用户"})
 			return
