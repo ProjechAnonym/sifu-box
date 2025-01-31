@@ -1,7 +1,6 @@
 package models
 
 type Server struct {
-	Interval string `json:"interval,omitempty" yaml:"interval,omitempty"`
 	User     *User   `json:"user,omitempty" yaml:"user,omitempty"`
 	SSL      *struct { 
 		Public  string `json:"public" yaml:"public"`

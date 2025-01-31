@@ -7,6 +7,7 @@ const DEFAULTTEMPLATEKEY = "template:default"
 const SINGBOXSETTINGKEY = "setting:singbox"
 const CURRENTPROVIDER = "singbox:provider"
 const CURRENTTEMPLATE = "singbox:template"
+const INTERVAL = "singbox:interval"
 const DEFAULTTEMPLATEPATH = "default.template.yaml"
 const STATICDIR = "static"
 const TEMPLATEDIR = "template"
@@ -23,3 +24,4 @@ const RESTARTCOMMAND = "restart_command"
 const CHECKCOMMAND = "check_command"
 
 const EXPIRETIME = time.Hour * 24 
+

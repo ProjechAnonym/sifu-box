@@ -9,7 +9,6 @@ import (
 	"sifu-box/models"
 	"sifu-box/route"
 	"sifu-box/singbox"
-	"sifu-box/utils"
 	"sync"
 
 	"github.com/gin-contrib/cors"
@@ -74,10 +73,8 @@ func main() {
 	if cmd.Server {
 		scheduler := cron.New()
 		scheduler.Start()
-		utils.SetValue(buntClient, models.CURRENTPROVIDER, "夜煞云", taskLogger)
-		utils.SetValue(buntClient, models.CURRENTTEMPLATE, "default", taskLogger)
-		singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
-		jobID, err := scheduler.AddFunc(setting.Application.Server.Interval, func(){
+		initial.SetDefautlApplication(entClient, buntClient, taskLogger)
+		jobID, err := scheduler.AddFunc("30 4 * * 1", func(){
 			singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
 			singbox.ApplyNewConfig(cmd.WorkDir, *setting.Application.Singbox, buntClient, &rwLock, &execLock, taskLogger)
 		})
@@ -85,17 +82,22 @@ func main() {
 			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
 			panic(err)
 		}
+		scheduler.Run()
 		gin.SetMode(gin.ReleaseMode)
 		server := gin.Default()
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
 		api := server.Group("/api")
+		route.SettingMigrate(api, setting.Application, entClient, buntClient, webLogger)
 		route.SettingHost(api, setting.Application.Server.User, entClient, buntClient, *setting.Application.Singbox, cmd.WorkDir, &rwLock, &execLock, scheduler, &jobID, webLogger)
 		route.SettingExec(api, entClient, buntClient, cmd.WorkDir, setting.Application.Server.User, &execLock, &rwLock, setting.Application.Singbox, webLogger)
 		route.SettingFiles(api, setting.Application.Server.User, cmd.WorkDir, entClient, webLogger)
 		route.SettingLogin(api, setting.Application.Server.User, webLogger)
 		route.SettingConfiguration(api, cmd.WorkDir, entClient, *setting.Application.Server.User, buntClient, &rwLock, &execLock, *setting.Application.Singbox, webLogger)
 		if setting.Application.Server.SSL != nil {
-			fmt.Println(setting.Application.Server.SSL)
+			if setting.Application.Server.SSL == nil {
+				webLogger.Error("SSL配置为空, 不应启用TLS监听")
+				panic(fmt.Errorf("SSL配置为空, 不应启用TLS监听"))
+			}
 			server.Run(cmd.Listen)
 		}else{
 			server.Run(cmd.Listen)

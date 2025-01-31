@@ -49,6 +49,7 @@ func SetInterval(workDir, interval string, scheduler *cron.Cron, jobID *cron.Ent
 			logger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
 			return err
 		}
+		utils.SetValue(buntClient, models.INTERVAL, interval, logger)
 		logger.Info("重新设置定时任务成功")
 	}
 	return nil

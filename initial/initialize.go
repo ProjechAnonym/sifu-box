@@ -1,10 +1,12 @@
 package initial
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"sifu-box/ent"
 	"sifu-box/models"
 	"sifu-box/utils"
 
@@ -81,4 +83,31 @@ func InitSetting(confDir string, server bool, buntClient *buntdb.DB, logger *zap
 		}
 	}
 	return &setting, nil
+}
+
+func SetDefautlApplication(entClient *ent.Client, buntClient *buntdb.DB, logger *zap.Logger) error {
+	providers, err := entClient.Provider.Query().All(context.Background())
+	if err != nil {
+		logger.Error(fmt.Sprintf("获取机场数据失败: [%s]",err.Error()))
+		return fmt.Errorf("获取机场数据失败")
+	}
+	if len(providers) != 0 {
+		if err := utils.SetValue(buntClient, models.CURRENTPROVIDER, providers[0].Name, logger); err != nil {
+			logger.Error(fmt.Sprintf("设置默认机场失败: [%s]",err.Error()))
+			return fmt.Errorf("设置默认机场失败")
+		}
+	}
+	
+	templates, err := entClient.Template.Query().All(context.Background())
+	if err != nil {
+		logger.Error(fmt.Sprintf("获取模板信息失败: [%s]", err.Error()))
+		return fmt.Errorf("获取模板信息失败")
+	}
+	if len(templates) != 0 {
+		if err := utils.SetValue(buntClient, models.CURRENTTEMPLATE, templates[0].Name, logger); err != nil {
+			logger.Error(fmt.Sprintf("设置默认机场失败: [%s]",err.Error()))
+			return fmt.Errorf("设置默认机场失败")
+		}
+	}
+	return nil
 }
