@@ -20,7 +20,10 @@ func SettingLogin(api *gin.RouterGroup, user *models.User, logger *zap.Logger){
 					ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(),})
 					return
 				}
-				ctx.JSON(http.StatusOK, gin.H{"message": token,})
+				ctx.JSON(http.StatusOK, gin.H{"message": struct{
+					JWT string `json:"jwt"`
+					Admin bool `json:"admin"`
+				}{JWT: token, Admin: false}})
 				return
 			}
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "密钥错误",})
@@ -34,7 +37,11 @@ func SettingLogin(api *gin.RouterGroup, user *models.User, logger *zap.Logger){
 					ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error(),})
 					return
 				}
-				ctx.JSON(http.StatusOK, gin.H{"message": token})
+				ctx.JSON(http.StatusOK, gin.H{"message": 
+					struct{
+						JWT string `json:"jwt"`
+						Admin bool `json:"admin"`
+					}{JWT: token, Admin: true}})
 				return
 			} 
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "用户名或密码错误"})
