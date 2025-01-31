@@ -52,11 +52,14 @@ func SettingLogin(api *gin.RouterGroup, user *models.User, logger *zap.Logger){
 	})
 	api.GET("/verify", func(ctx *gin.Context) {
 		authorization := ctx.GetHeader("Authorization")
-		token, err := control.Verify(authorization, user.PrivateKey, logger)
+		token, admin, err := control.Verify(authorization, user.PrivateKey, logger)
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"message": token})
+		ctx.JSON(http.StatusOK, gin.H{"message": struct{
+			JWT string `json:"jwt"`
+			Admin bool `json:"admin"`
+		}{JWT: token, Admin: admin}})
 	})
 }
