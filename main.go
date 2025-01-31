@@ -87,7 +87,7 @@ func main() {
 		server := gin.Default()
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
 		api := server.Group("/api")
-		route.SettingMigrate(api, setting.Application, entClient, buntClient, webLogger)
+		route.SettingMigrate(api, setting.Application.Server.User.PrivateKey, cmd.WorkDir, *setting.Application.Singbox, &rwLock, &execLock, entClient, buntClient, scheduler, &jobID, webLogger)
 		route.SettingHost(api, setting.Application.Server.User, entClient, buntClient, *setting.Application.Singbox, cmd.WorkDir, &rwLock, &execLock, scheduler, &jobID, webLogger)
 		route.SettingExec(api, entClient, buntClient, cmd.WorkDir, setting.Application.Server.User, &execLock, &rwLock, setting.Application.Singbox, webLogger)
 		route.SettingFiles(api, setting.Application.Server.User, cmd.WorkDir, entClient, webLogger)
