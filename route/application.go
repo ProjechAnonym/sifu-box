@@ -6,6 +6,7 @@ import (
 	"sifu-box/ent"
 	"sifu-box/middleware"
 	"sifu-box/models"
+	"sifu-box/utils"
 	"sync"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,17 @@ func SettingHost(api *gin.RouterGroup, user *models.User, entClient *ent.Client,
 	host := api.Group("/application")
 	host.Use(middleware.Jwt(user.PrivateKey, logger))
 	host.GET("/fetch", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, gin.H{"message": map[string]string{"listen": singboxSetting.Listen, "secret": singboxSetting.Secret}})
+		currentProvider, err := utils.GetValue(buntClient, models.CURRENTPROVIDER, logger)
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "获取当前机场失败"})
+			return
+		}
+		currentTemplate, err := utils.GetValue(buntClient, models.CURRENTTEMPLATE, logger)
+		if err != nil {
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "获取当前模板失败"})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": map[string]string{"listen": singboxSetting.Listen, "secret": singboxSetting.Secret}, "current_provider": currentProvider, "current_template": currentTemplate})
 	})
 	host.POST("/set/:mode", func(ctx *gin.Context) {
 		if !ctx.GetBool("admin"){
