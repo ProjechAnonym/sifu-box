@@ -29,7 +29,7 @@ func SettingHost(api *gin.RouterGroup, user *models.User, entClient *ent.Client,
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "获取当前模板失败"})
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"message": map[string]string{"listen": singboxSetting.Listen, "secret": singboxSetting.Secret}, "current_provider": currentProvider, "current_template": currentTemplate})
+		ctx.JSON(http.StatusOK, gin.H{"message": map[string]string{"listen": singboxSetting.Listen, "secret": singboxSetting.Secret,"current_provider": currentProvider, "current_template": currentTemplate}})
 	})
 	host.POST("/set/:mode", func(ctx *gin.Context) {
 		if !ctx.GetBool("admin"){
