@@ -66,7 +66,7 @@ func GetFiles(privateKey, workDir string, entClient *ent.Client, logger *zap.Log
 				errors = append(errors, fmt.Errorf("文件'%s'对应的机场不存在", file.Name()))
 				continue
 			}
-			path, err := url.JoinPath("api", "file")
+			path, err := url.JoinPath("api", "file", name)
 			if err != nil {
 				logger.Error(fmt.Sprintf("拼接'%s'文件路径失败: [%s]", name, err.Error()))
 				errors = append(errors, fmt.Errorf("拼接'%s'文件路径失败", name))

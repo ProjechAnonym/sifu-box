@@ -29,8 +29,9 @@ func SettingFiles(api *gin.RouterGroup, user *models.User, workDir string, entCl
 		}
 		ctx.JSON(http.StatusOK, gin.H{"message": links})
 	})
-	api.GET("file", func(ctx *gin.Context) {
-		name := ctx.Query("path")
+	api.GET("file/:name", func(ctx *gin.Context) {
+		name := ctx.Param("name")
+		path := ctx.Query("path")
 		token := ctx.Query("token")
 		template := ctx.Query("template")
 		verifyToken, err := utils.EncryptionMd5(user.PrivateKey)
@@ -45,7 +46,7 @@ func SettingFiles(api *gin.RouterGroup, user *models.User, workDir string, entCl
 		ctx.Header("Content-Type", "application/octet-stream")
 
 		// 设置Content-Disposition，提示浏览器下载文件
-		ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s", name))
-		ctx.File(filepath.Join(workDir, models.TEMPDIR, models.SINGBOXCONFIGFILEDIR, template, name))
+		ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s.yaml", name))
+		ctx.File(filepath.Join(workDir, models.TEMPDIR, models.SINGBOXCONFIGFILEDIR, template, path))
 	})
 }
