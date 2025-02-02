@@ -115,7 +115,6 @@ func Set(name, workDir string, singboxSetting models.Singbox, templateContent mo
 		logger.Error(fmt.Sprintf("获取当前配置模板失败: [%s]", err.Error()))
 		return []error{fmt.Errorf("获取当前配置模板失败")}
 	}
-	fmt.Println(currentTemplate)
 	if currentTemplate == name {
 		
 		if err := singbox.ApplyNewConfig(workDir, singboxSetting, buntClient, rwLock,  execLock, logger); err != nil{

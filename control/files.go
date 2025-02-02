@@ -81,5 +81,5 @@ func GetFiles(privateKey, workDir string, entClient *ent.Client, logger *zap.Log
 		}
 		fileGroup[dir.Name()] = fileLinks
 	}
-	return fileGroup, nil
+	return fileGroup, errors
 }

@@ -16,6 +16,7 @@ import (
 func SettingFiles(api *gin.RouterGroup, user *models.User, workDir string, entClient *ent.Client, logger *zap.Logger)  {
 	api.GET("/files/fetch", middleware.Jwt(user.PrivateKey, logger),func(ctx *gin.Context){
 		links, errors := control.GetFiles(user.PrivateKey, workDir, entClient, logger)
+		fmt.Println(errors)
 		if errors != nil {
 			errorList := make([]string, len(errors))
 			for i, err := range errors {
