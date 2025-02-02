@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func GetFiles(privateKey, workDir string, entClient *ent.Client, logger *zap.Logger) ([]map[string]string, []error){
+func GetFiles(privateKey, workDir string, entClient *ent.Client, logger *zap.Logger) (map[string][]map[string]string, []error){
 	var errors []error
 	fileMap := make(map[string]string)
 	token, err := utils.EncryptionMd5(privateKey)
@@ -44,7 +44,7 @@ func GetFiles(privateKey, workDir string, entClient *ent.Client, logger *zap.Log
 		errors = append(errors, fmt.Errorf("遍历配置文件夹失败"))
 		return nil, errors
 	}
-	var fileLinks []map[string]string
+	fileGroup := make(map[string][]map[string]string)
 	for _, dir := range dirs {
 		if !dir.IsDir() {
 			logger.Error(fmt.Sprintf("配置文件夹下的模板'%s'不是文件夹", dir.Name()))
@@ -58,6 +58,7 @@ func GetFiles(privateKey, workDir string, entClient *ent.Client, logger *zap.Log
 			errors = append(errors, fmt.Errorf("遍历'%s'模板文件夹失败", dir.Name()))
 			continue
 		}
+		var fileLinks []map[string]string
 		for _, file := range files {
 			name, ok := fileMap[file.Name()]
 			if !ok {
@@ -78,6 +79,7 @@ func GetFiles(privateKey, workDir string, entClient *ent.Client, logger *zap.Log
 			path += "?" + params.Encode()
 			fileLinks = append(fileLinks, map[string]string{"label": name, "path": path})
 		}
+		fileGroup[dir.Name()] = fileLinks
 	}
-	return fileLinks, nil
+	return fileGroup, nil
 }

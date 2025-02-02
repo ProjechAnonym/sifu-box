@@ -22,7 +22,7 @@ func SettingFiles(api *gin.RouterGroup, user *models.User, workDir string, entCl
 				errorList[i] = err.Error()
 			}
 			message := struct{
-				Links []map[string]string `json:"links"`
+				Links map[string][]map[string]string `json:"links"`
 				Errors []string `json:"errors"`}{Links: links, Errors: errorList}
 			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": message})
 			return
