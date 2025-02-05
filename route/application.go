@@ -1,9 +1,12 @@
 package route
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 	"sifu-box/control"
 	"sifu-box/ent"
+	"sifu-box/ent/template"
 	"sifu-box/middleware"
 	"sifu-box/models"
 	"sifu-box/utils"
@@ -19,9 +22,43 @@ func SettingHost(api *gin.RouterGroup, user *models.User, entClient *ent.Client,
 	host := api.Group("/application")
 	host.Use(middleware.Jwt(user.PrivateKey, logger))
 	host.GET("/fetch", func(ctx *gin.Context) {
-		currentProvider, _ := utils.GetValue(buntClient, models.CURRENTPROVIDER, logger)
-		currentTemplate, _ := utils.GetValue(buntClient, models.CURRENTTEMPLATE, logger)
-		ctx.JSON(http.StatusOK, gin.H{"message": map[string]string{"listen": singboxSetting.Listen, "secret": singboxSetting.Secret,"current_provider": currentProvider, "current_template": currentTemplate}})
+		information := struct{
+			Listen string `json:"listen"`
+			Secret string `json:"secret"`
+			CurrentProvider string `json:"current_provider"`
+			CurrentTemplate string `json:"current_template"`
+			Log bool `json:"log"`
+			Error string `json:"error"`
+		}{
+			Listen: singboxSetting.Listen,
+			Secret: singboxSetting.Secret,
+		}
+		
+		currentProvider, err := utils.GetValue(buntClient, models.CURRENTPROVIDER, logger)
+		if err != nil {
+			logger.Error(fmt.Sprintf("获取当前配置机场失败: [%s]", err.Error()))
+			information.Error = "获取当前配置机场失败"
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": information})
+			return
+		}
+		information.CurrentProvider = currentProvider
+		currentTemplate, err := utils.GetValue(buntClient, models.CURRENTTEMPLATE, logger)
+		if err != nil {
+			logger.Error(fmt.Sprintf("获取当前配置模板失败: [%s]", err.Error()))
+			information.Error = "获取当前配置模板失败"
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": information})
+			return
+		}
+		information.CurrentTemplate = currentTemplate
+		template, err := entClient.Template.Query().Select(template.FieldContent).Where(template.NameEQ(currentTemplate)).First(context.Background())
+		if err != nil {
+			logger.Error(fmt.Sprintf("获取模板失败: [%s]", err.Error()))
+			information.Error = "获取模板失败"
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": information})
+			return
+		}
+		information.Log = !template.Content.Log.Disabled
+		ctx.JSON(http.StatusOK, gin.H{"message": information})
 	})
 	host.POST("/set/:mode", func(ctx *gin.Context) {
 		if !ctx.GetBool("admin"){
