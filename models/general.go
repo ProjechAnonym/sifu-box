@@ -11,7 +11,7 @@ type Dial struct {
 	TcpFastOpen         bool     `json:"tcp_fast_open,omitempty" yaml:"tcp_fast_open,omitempty"`
 	TcpMultiPath        bool     `json:"tcp_multi_path,omitempty" yaml:"tcp_multi_path,omitempty"`
 	UdpFragment         bool     `json:"udp_fragment,omitempty" yaml:"udp_fragment,omitempty"`
-	DomainStrategy      string   `json:"domain_strategy,omitempty" yaml:"domain_strategy,omitempty"`
+	DomainResolver      string   `json:"domain_resolver,omitempty" yaml:"domain_resolver,omitempty"`
 	NetworkStrategy     string   `json:"network_strategy,omitempty" yaml:"network_strategy,omitempty"`
 	NetworkType         []string `json:"network_type,omitempty" yaml:"network_type,omitempty"`
 	FallbackNetworkType []string `json:"fallback_network_type,omitempty" yaml:"fallback_network_type,omitempty"`

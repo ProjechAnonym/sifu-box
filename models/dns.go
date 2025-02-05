@@ -56,18 +56,20 @@ type DNSRule struct {
 }
 
 type FakeIP struct {
-	Enabled    bool   `json:"enabled" yaml:"enabled"`
 	Inet4Range string `json:"inet4_range,omitempty" yaml:"inet4_range,omitempty"`
 	Inet6Range string `json:"inet6_range,omitempty" yaml:"inet6_range,omitempty"`
 }
 type NameServer struct {
 	Tag             string `json:"tag" yaml:"tag"`
-	Address         string `json:"address" yaml:"address"`
+	Type 			string `json:"type" yaml:"type"`
+	Server          string `json:"server" yaml:"server"`
+	ServerPort 		int    `json:"server_port" yaml:"server_port"`
 	AddressResolver string `json:"address_resolver,omitempty" yaml:"address_resolver,omitempty"`
 	AddressStrategy string `json:"address_strategy,omitempty" yaml:"address_strategy,omitempty"`
 	Strategy        string `json:"strategy,omitempty" yaml:"strategy,omitempty"`
 	Detour          string `json:"detour,omitempty" yaml:"detour,omitempty"`
 	ClientSubnet    string `json:"client_subnet,omitempty" yaml:"client_subnet,omitempty"`
+	FakeIP          `json:",inline" yaml:",inline"`
 }
 type DNS struct {
 	Final            string       `json:"final,omitempty" yaml:"final,omitempty"`

@@ -79,13 +79,18 @@ type RouteRuleSet struct {
 	Path           string `json:"path,omitempty" yaml:"path,omitempty"`
 }
 type Route struct {
-	RuleSet             []RouteRuleSet `json:"rule_set,omitempty" yaml:"rule_set,omitempty"`
-	Rules               []RouteRule    `json:"rules" yaml:"rules"`
-	Final               string         `json:"final,omitempty" yaml:"final,omitempty"`
-	AutoDetectInterface bool           `json:"auto_detect_interface" yaml:"auto_detect_interface"`
-	OverrideAndroidVpn  bool           `json:"override_android_vpn,omitempty" yaml:"override_android_vpn,omitempty"`
-	DefaultInterface    string         `json:"default_interface,omitempty" yaml:"default_interface,omitempty"`
-	DefaultMark         uint           `json:"default_mark,omitempty" yaml:"default_mark,omitempty"`
+	RuleSet                []RouteRuleSet `json:"rule_set,omitempty" yaml:"rule_set,omitempty"`
+	Rules                  []RouteRule    `json:"rules" yaml:"rules"`
+	Final                  string         `json:"final,omitempty" yaml:"final,omitempty"`
+	AutoDetectInterface    bool           `json:"auto_detect_interface" yaml:"auto_detect_interface"`
+	OverrideAndroidVpn     bool           `json:"override_android_vpn,omitempty" yaml:"override_android_vpn,omitempty"`
+	DefaultInterface       string         `json:"default_interface,omitempty" yaml:"default_interface,omitempty"`
+	DefaultMark            uint           `json:"default_mark,omitempty" yaml:"default_mark,omitempty"`
+    DefaultDomainResolver  string         `json:"default_domain_resolver,omitempty" yaml:"default_domain_resolver,omitempty"`
+    DefaultNetworkStrategy string         `json:"default_network_strategy,omitempty" yaml:"default_network_strategy,omitempty"`
+	DefaultNetworkType     []string       `json:"default_network_type,omitempty" yaml:"default_network_type,omitempty"`
+    DefaultFallbackNetworkType []string   `json:"default_fallback_network_type,omitempty" yaml:"default_fallback_network_type,omitempty"`
+	DefaultFallbackDelay   string         `json:"default_fallback_delay,omitempty" yaml:"default_fallback_delay,omitempty"`
 }
 
 func (r *Route) SetRuleSet(rulesetList []RuleSet, logger *zap.Logger) {
