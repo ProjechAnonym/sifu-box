@@ -26,18 +26,16 @@ dns:
   reverse_mapping: true
   servers:
     - tag: external
-      address: tls://8.8.8.8
+      type: tls
+      server: "8.8.8.8"
+      server_port: 853
       detour: select
     - tag: internal
-      address: 223.5.5.5
+      type: udp
+      server_port: 53
+      server: 223.5.5.5
       detour: direct
-    - tag: dns_block
-      address: rcode://refused
-  rules:
-    - outbound:
-        - any
-      action: route
-      server: internal
+  rules: []
 route:
   # 默认的出站规则,就是一些很基本不调就上不了网的
   rules:
@@ -59,5 +57,3 @@ route:
 outbounds:
   - tag: direct
     type: direct
-  - tag: block
-    type: block
