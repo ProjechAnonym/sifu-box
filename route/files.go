@@ -46,7 +46,7 @@ func SettingFiles(api *gin.RouterGroup, user *models.User, workDir string, entCl
 		ctx.Header("Content-Type", "application/octet-stream")
 
 		// 设置Content-Disposition，提示浏览器下载文件
-		ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s.yaml", name))
+		ctx.Header("Content-Disposition", fmt.Sprintf("attachment; filename=%s.json", name))
 		ctx.File(filepath.Join(workDir, models.TEMPDIR, models.SINGBOXCONFIGFILEDIR, template, path))
 	})
 }
