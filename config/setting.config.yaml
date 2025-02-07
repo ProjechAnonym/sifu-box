@@ -1,6 +1,6 @@
 application:
   singbox:
-    listen: http://192.168.1.2
+    listen: http://192.168.1.2:9090
     secret: 123456
     work_dir: /opt/singbox/config
     config_path: /opt/singbox/config.json

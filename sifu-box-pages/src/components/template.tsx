@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   Modal,
   ModalContent,
@@ -9,6 +9,7 @@ import {
 } from "@heroui/modal";
 import { CheckboxGroup, Checkbox } from "@heroui/checkbox";
 import { Card, CardBody, CardFooter, CardHeader } from "@heroui/card";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
 import { Button } from "@heroui/button";
 import { Input, Textarea } from "@heroui/input";
 import { ScrollShadow } from "@heroui/scroll-shadow";
@@ -20,23 +21,35 @@ export default function Template(props: {
   template?: { [key: string]: Object } | null;
   setUpdate: (update: boolean) => void;
   defaultTemplate: Object | null;
+  onHeight: (height: number) => void;
   theme: string;
+  currentTemplate: string;
+  setUpdateCurrentSetting: (update: boolean) => void;
 }) {
-  const { template, token, setUpdate, defaultTemplate, theme } = props;
+  const {
+    template,
+    token,
+    setUpdate,
+    defaultTemplate,
+    theme,
+    onHeight,
+    currentTemplate,
+    setUpdateCurrentSetting,
+  } = props;
+  const templateContainer = useRef<HTMLDivElement>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [edit, setEdit] = useState(false);
   const [templateName, setTemplateName] = useState("");
   const [editTemplate, setEditTemplate] = useState<Object | null>(null);
   const [selected, setSelected] = useState<Array<string>>([]);
   const [search, setSearch] = useState<string>("");
-  const [errors, setErrors] = useState<Array<string>>([]);
   const [displayTemplate, setDisplayTemplate] = useState<{
     [key: string]: Object;
   } | null>(null);
   useEffect(() => {
-    errors && errors.map((error) => toast.error(error));
-    setErrors([]);
-  }, [errors]);
+    templateContainer.current &&
+      onHeight(templateContainer.current.clientHeight);
+  }, [templateContainer.current && templateContainer.current.clientHeight]);
   useMemo(() => {
     template &&
       search &&
@@ -54,7 +67,7 @@ export default function Template(props: {
     template && !search && setDisplayTemplate(template);
   }, [search, template]);
   return (
-    <div>
+    <div ref={templateContainer} className="h-96">
       <EditTemplate
         isOpen={isOpen}
         onClose={onClose}
@@ -104,8 +117,10 @@ export default function Template(props: {
                   return "请检查网络连接";
                 }
                 if (e.response.data.message) {
-                  setErrors(e.response.data.message);
-                  return "更新配置文件失败";
+                  (e.response.data.message as Array<string>).map((err) =>
+                    toast.error(err)
+                  );
+                  return "";
                 }
                 return e.response.data;
               },
@@ -123,32 +138,59 @@ export default function Template(props: {
           {displayTemplate &&
             Object.entries(displayTemplate!).map(([key, value]) => (
               <div key={key} className="w-72">
-                <Card>
+                <Card shadow="sm">
                   <CardHeader className="justify-between">
-                    <span
-                      className="text-xl font-black hover:cursor-pointer hover:bg-gray-500 transition-all p-1 rounded-md"
-                      onClick={() =>
-                        toast.promise(SetTemplate(token, key), {
-                          loading: "设置模板中...",
-                          success: (res) =>
-                            res.status
-                              ? `设置${key}模板成功`
-                              : `设置${key}模板失败`,
-                          error: (e) =>
-                            e.code === "ERR_NETWORK"
-                              ? "请检查网络连接"
-                              : e.response.data.message
-                                ? e.response.data.message
-                                : e.response.data,
-                        })
-                      }
+                    <Popover
+                      shadow="sm"
+                      classNames={{
+                        content: `${theme} bg-content1 text-foreground`,
+                      }}
                     >
-                      {key}
-                    </span>
+                      <PopoverTrigger>
+                        <Button size="sm" variant="shadow">
+                          <span
+                            className={`text-xl font-black ${currentTemplate === key && "text-blue-500"}`}
+                          >
+                            {key}
+                          </span>
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <p className="text-md font-black w-36 p-1">
+                          是否将"{key}"模板设置为活动模板
+                        </p>
+                        <p className="w-full justify-end flex p-1">
+                          <Button
+                            size="sm"
+                            color="primary"
+                            variant="shadow"
+                            onPress={() =>
+                              toast.promise(SetTemplate(token, key), {
+                                loading: "设置模板中...",
+                                success: (res) => {
+                                  setUpdateCurrentSetting(true);
+                                  return res.status
+                                    ? `设置${key}模板成功`
+                                    : `设置${key}模板失败`;
+                                },
+                                error: (e) =>
+                                  e.code === "ERR_NETWORK"
+                                    ? "请检查网络连接"
+                                    : e.response.data.message
+                                      ? e.response.data.message
+                                      : e.response.data,
+                              })
+                            }
+                          >
+                            <span className="text-xl font-black">确认</span>
+                          </Button>
+                        </p>
+                      </PopoverContent>
+                    </Popover>
                     <Checkbox value={key} />
                   </CardHeader>
                   <CardBody>
-                    <ScrollShadow className="w-full h-52">
+                    <ScrollShadow className="w-full h-40">
                       {JSON.stringify(value, null, 4)}
                     </ScrollShadow>
                   </CardBody>
@@ -170,9 +212,11 @@ export default function Template(props: {
                             if (e.code === "ERR_NETWORK") {
                               return "请检查网络连接";
                             }
-                            if (e.response.data.message) {
-                              setErrors(e.response.data.message);
-                              return "更新配置文件失败";
+                            if (Array.isArray(e.response.data.message)) {
+                              (e.response.data.message as Array<string>).map(
+                                (err) => toast.error(err)
+                              );
+                              return "";
                             }
                             return e.response.data;
                           },
@@ -217,18 +261,22 @@ function EditTemplate(props: {
   const { isOpen, onClose, edit, token, template, name, theme, setUpdate } =
     props;
   const [content, setContent] = useState("");
-  const [errors, setErrors] = useState<Array<string>>([]);
   const [templateName, setTemplateName] = useState("");
   useEffect(() => {
-    errors && errors.map((error) => toast.error(error));
     edit && setTemplateName(name);
-  }, [errors, edit]);
+  }, [edit]);
   useMemo(() => {
     template && setContent(JSON.stringify(template, null, 4));
   }, [template]);
   return (
-    <Modal isOpen={isOpen} backdrop="blur" onClose={onClose} size="3xl">
-      <ModalContent className={`${theme} bg-background text-foreground`}>
+    <Modal
+      isOpen={isOpen}
+      backdrop="blur"
+      onClose={onClose}
+      size="3xl"
+      classNames={{ base: `${theme} bg-content1 text-foreground` }}
+    >
+      <ModalContent>
         {(onClose) => (
           <>
             <ModalHeader>
@@ -300,9 +348,12 @@ function EditTemplate(props: {
                               return "请检查网络连接";
                             }
                             setUpdate(true);
-                            if (err.response.data.message) {
-                              setErrors(err.response.data.message);
-                              return "更新配置文件失败";
+                            if (Array.isArray(err.response.data.message)) {
+                              // setErrors(err.response.data.message);
+                              (err.response.data.message as Array<string>).map(
+                                (err) => toast.error(err)
+                              );
+                              return "";
                             }
                             return err.response.data;
                           },

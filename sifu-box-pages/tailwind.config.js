@@ -15,12 +15,12 @@ module.exports = {
     extend: {
       keyframes: {
         showIn: {
-          "0%": { transform: "translateX(-50%)", opacity: 0 },
-          "100%": { transform: "translateX(0)", opacity: 1 },
+          "0%": { transform: "translateY(-50%)", opacity: 0 },
+          "100%": { transform: "translateY(0)", opacity: 1 },
         },
         showOut: {
-          "0%": { transform: "translateX(0)", opacity: 1 },
-          "100%": { transform: "translateX(50%)", opacity: 0 },
+          "0%": { transform: "translateY(0)", opacity: 1 },
+          "100%": { transform: "translateY(50%)", opacity: 0 },
         },
       },
       animation: {

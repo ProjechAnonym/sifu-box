@@ -18,7 +18,7 @@ export const Login: AsyncThunk<
   }
   try {
     const res = await axios.post(
-      `http://192.168.1.2:8080/api/login/${admin ? "admin" : "visitor"}`,
+      `/api/login/${admin ? "admin" : "visitor"}`,
       data
     );
     return res.status === 200
@@ -51,7 +51,7 @@ export const AutoLogin: AsyncThunk<
       return { status: false, token: "", admin: false };
     }
     try {
-      const res = await axios.get("http://192.168.1.2:8080/api/verify", {
+      const res = await axios.get("/api/verify", {
         headers: { Authorization: jwtToken },
       });
       return res.status === 200

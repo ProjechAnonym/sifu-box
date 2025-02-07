@@ -1,7 +1,7 @@
 import axios from "axios";
 export async function Check(token: string) {
   try {
-    const res = await axios.get("http://192.168.1.2:8080/api/exec/status", {
+    const res = await axios.get("/api/exec/status", {
       headers: {
         Authorization: token,
       },
@@ -14,7 +14,7 @@ export async function Check(token: string) {
 }
 export async function Reload(token: string) {
   try {
-    const res = await axios.get("http://192.168.1.2:8080/api/exec/reload", {
+    const res = await axios.get("/api/exec/reload", {
       headers: {
         Authorization: token,
       },
@@ -28,7 +28,7 @@ export async function Reload(token: string) {
 
 export async function Restart(token: string) {
   try {
-    const res = await axios.get("http://192.168.1.2:8080/api/exec/restart", {
+    const res = await axios.get("/api/exec/restart", {
       headers: {
         Authorization: token,
       },
@@ -42,7 +42,7 @@ export async function Restart(token: string) {
 
 export async function Boot(token: string) {
   try {
-    const res = await axios.get("http://192.168.1.2:8080/api/exec/boot", {
+    const res = await axios.get("/api/exec/boot", {
       headers: {
         Authorization: token,
       },
@@ -56,7 +56,7 @@ export async function Boot(token: string) {
 
 export async function Stop(token: string) {
   try {
-    const res = await axios.get("http://192.168.1.2:8080/api/exec/stop", {
+    const res = await axios.get("/api/exec/stop", {
       headers: {
         Authorization: token,
       },
@@ -69,7 +69,7 @@ export async function Stop(token: string) {
 }
 export async function Refresh(token: string) {
   try {
-    const res = await axios.get("http://192.168.1.2:8080/api/exec/refresh", {
+    const res = await axios.get("/api/exec/refresh", {
       headers: {
         Authorization: token,
       },
