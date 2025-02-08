@@ -317,6 +317,7 @@ configuration: # 配置项, 如果是服务模式可不填写此项, 当然该�
         # 默认出站节点不能改,很多配置下载需要代理,我设置的都是select
         final: select
         auto_detect_interface: true
+        default_domain_resolver: internal
       outbounds:
         - tag: direct
           type: direct
@@ -341,4 +342,10 @@ configuration: # 配置项, 如果是服务模式可不填写此项, 当然该�
 
 ## 结尾
 
-API 文档我没细写, 就是直接导出来的, 开发过程中可能会有更改, 如果想编写新的 ui 建议自行测试返回结果
+[API 文档](https://github.com/ProjechAnonym/sifu-box/blob/test/API%E6%96%87%E6%A1%A3.md)我没细写, 就是直接导出来的, 开发过程中可能会有更改, 如果想编写新的 ui 建议自行测试返回结果
+
+再来点规则集的下载链接
+
+1. [MetaCubeX](https://github.com/MetaCubeX/meta-rules-dat/tree/sing)
+2. [官方规则集](https://github.com/SagerNet/sing-geoip/tree/rule-set)
+3. [保证量大管饱规则集](https://github.com/senshinya/singbox_ruleset/tree/main/rule)

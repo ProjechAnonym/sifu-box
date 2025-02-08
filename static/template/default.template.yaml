@@ -54,6 +54,7 @@ route:
   # 默认出站节点不能改,很多配置下载需要代理,我设置的都是select
   final: select
   auto_detect_interface: true
+  default_domain_resolver: internal
 outbounds:
   - tag: direct
     type: direct
