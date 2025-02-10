@@ -52,9 +52,10 @@ systemctl start sifu-box
 useradd -r -s /usr/sbin/nologin sifubox
 chown -R sifubox /opt/sifubox
 chgrp -R sifubox /opt/sifubox
+chmod u+x /opt/sifubox/bin/sifu-box
 # 因为sifu-box需要对sing-box的配置文件进行自动修改, 所以需要给sing-box的配置文件添加读写权限
 setfacl -m u:sifubox:rw /opt/singbox/config.json
-cat > /etc/systemd/system/sifu-box.service <<EOF
+cat > /usr/lib/systemd/system/sifu-box.service <<EOF
 [Unit]
 Description=A config file transform Service
 After=network.target
@@ -63,7 +64,7 @@ After=network.target
 Type=simple
 User=sifubox
 Group=sifubox
-ExecStart=/opt/sifubox/bin/sifu-box run -c /opt/sifubox/config -w /opt/test -l :8080 -s
+ExecStart=/opt/sifubox/bin/sifu-box run -c /opt/sifubox/config -w /opt/sifubox/lib -l :8080 -s
 Restart=on-failure
 
 [Install]
@@ -73,6 +74,8 @@ EOF
 cat >> /etc/sudoers.d/sifubox-nopasswd << EOF
 sifubox ALL=(ALL) NOPASSWD: /bin/systemctl * sifu-box
 EOF
+cat >> /etc/sudoers.d/sifubox << EOF
+sifubox ALL=(ALL) NOPASSWD: /bin/systemctl * sing-box
 ```
 
 关于 sing-box 和 mosdns 的配置有时效问题,请移步博客[sing-box 和 mosdns 配置](https://vercel-blog.sifulin.top/zh-cn/2024/07/11/two-sexy-bitches-singbox-and-mosdns/)
