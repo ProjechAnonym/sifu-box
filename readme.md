@@ -24,8 +24,6 @@ tar -zxvf sifubox-*.tar.gz -C /opt/sifubox --strip-components=1
 # 删除压缩包
 rm -rf sifubox*.tar.gz
 
-
-
 ```
 
 - 以 root 用户运行的 systemctl 文件
