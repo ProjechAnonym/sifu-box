@@ -18,4 +18,7 @@ func SettingPages(server *gin.Engine, workDir string) {
 	server.GET("/setting",func(ctx *gin.Context) {
 		ctx.File(filepath.Join(workDir, "static", "dist", "index.html"))
 	})
+	server.GET("/login",func(ctx *gin.Context) {
+		ctx.File(filepath.Join(workDir, "static", "dist", "index.html"))
+	})
 }
