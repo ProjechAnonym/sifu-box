@@ -121,9 +121,9 @@ application:
   singbox:
     listen: http://192.168.1.2:9090 # sing-box的clashAPI 监听地址
     secret: 123456 # sing-box的clashAPI 的密钥
-    work_dir: /opt/singbox/config # sing-box的工作目录
+    work_dir: /opt/singbox/lib # sing-box的工作目录
     config_path: /opt/singbox/config.json # sing-box的配置文件路径
-    binary_path: /opt/singbox/singbox # sing-box的文件路径
+    binary_path: /opt/singbox/bin/sing-box # sing-box的文件路径
     commands: # 控制sing-box的命令, 一般用户要使用sudo
       boot_command:
         name: systemctl
@@ -164,7 +164,7 @@ application:
 configuration: # 配置项, 如果是服务模式可不填写此项, 当然该处的配置会在程序运行时读取并写入sqlite数据库中
   providers: # 配置源
     - name: "夜煞云"
-      path: "https://45.137.180.216/api/v1/client/nyth?token=aa751df806caf70136e33c9310531fe6"
+      path: "https://45.137.180.216/api/v1/client/nyth?token36e33c9310531fe6"
       detour: select # 在生成的配置文件中, 路由规则会将该机场的域名出站设为这里设置的出站口
       remote: true # 是否位于本地, true为网络链接下载
   rulesets:
