@@ -5,7 +5,7 @@ export function sizeCalc(size: number) {
       ? `${(size / 1024).toFixed(2)} KB`
       : size < 1024 * 1024 * 1024
         ? `${(size / (1024 * 1024)).toFixed(2)} MB`
-        : `${(size / (1024 * 1024 * 1024)).toFixed()}`;
+        : `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 export function timeCalc(size: number) {
   return size < 60

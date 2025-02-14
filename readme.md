@@ -17,8 +17,13 @@ singbox 转换程序
 ```bash
 apt-get update
 apt-get install -y tar sudo vim acl
+mkdir /opt/sifubox
 # 确保存在opt/sifubox文件夹,压缩包上传到root文件夹下,如果不是root用户可以改成绝对路径
-tar -xvf sifu-box-*.tar --strip-components 1 -C /opt/sifubox/
+tar -zxvf sifubox-*.tar.gz -C /opt/sifubox --strip-components=1
+
+# 删除压缩包
+rm -rf sifubox*.tar.gz
+
 
 
 ```
@@ -52,6 +57,7 @@ systemctl start sifu-box
 useradd -r -s /usr/sbin/nologin sifubox
 chown -R sifubox /opt/sifubox
 chgrp -R sifubox /opt/sifubox
+chmod -R 755 /opt/sifubox
 chmod u+x /opt/sifubox/bin/sifu-box
 # 因为sifu-box需要对sing-box的配置文件进行自动修改, 所以需要给sing-box的配置文件添加读写权限
 setfacl -m u:sifubox:rw /opt/singbox/config.json
@@ -72,10 +78,8 @@ WantedBy=multi-user.target
 EOF
 # 如果使用systemctl控制sing-box的启停, 则需要设置sudo权限, 一般的用户是没有权限执行systemctl的
 cat >> /etc/sudoers.d/sifubox-nopasswd << EOF
-sifubox ALL=(ALL) NOPASSWD: /bin/systemctl * sifu-box
-EOF
-cat >> /etc/sudoers.d/sifubox << EOF
 sifubox ALL=(ALL) NOPASSWD: /bin/systemctl * sing-box
+EOF
 ```
 
 关于 sing-box 和 mosdns 的配置有时效问题,请移步博客[sing-box 和 mosdns 配置](https://vercel-blog.sifulin.top/zh-cn/2024/07/11/two-sexy-bitches-singbox-and-mosdns/)
@@ -150,7 +154,7 @@ application:
           - sing-box
   server:
     user:
-      username: sifulin # 管理员账户
+      username: admin # 管理员账户
       password: adminadmin # 管理员密码
       email: 19826@qq.com # 管理员邮箱
       code: 123456 # 非管理员用户登录时的密钥
