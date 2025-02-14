@@ -1,6 +1,6 @@
 # sifu-box
 
-singbox 转换程序
+sing-box 转换程序
 
 ## **注意**
 
