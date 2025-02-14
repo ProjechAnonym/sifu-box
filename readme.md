@@ -19,6 +19,7 @@ apt-get update
 apt-get install -y tar sudo vim acl
 # 确保存在opt/sifubox文件夹,压缩包上传到root文件夹下,如果不是root用户可以改成绝对路径
 tar -xvf sifu-box-*.tar --strip-components 1 -C /opt/sifubox/
+<<<<<<< HEAD
 
 
 ```
@@ -27,6 +28,9 @@ tar -xvf sifu-box-*.tar --strip-components 1 -C /opt/sifubox/
 
 ```bash
 cat > /etc/systemd/system/sifu-box.service <<EOF
+=======
+cat > /usr/lib/systemd/system/sifu-box.service <<EOF
+>>>>>>> f4bc051b198c7cb81321967f892710123faa43d9
 [Unit]
 Description=A config file transform Service
 After=network.target

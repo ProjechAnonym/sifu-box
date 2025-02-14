@@ -85,6 +85,7 @@ func main() {
 		scheduler.Run()
 		gin.SetMode(gin.ReleaseMode)
 		server := gin.Default()
+<<<<<<< HEAD
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
 		route.SettingPages(server, cmd.WorkDir)
 		api := server.Group("/api")
@@ -102,6 +103,21 @@ func main() {
 			server.Run(cmd.Listen)
 		}else{
 			server.Run(cmd.Listen)
+=======
+		server.Use(middleware.Logger(),middleware.Recovery(true),cors.New(middleware.Cors()))
+		route.SettingPages(server)
+		apiGroup := server.Group("/api")
+		apiGroup.GET("verify",middleware.TokenAuth())
+		route.SettingHost(apiGroup,&lock)
+		route.SettingFiles(apiGroup)
+		route.SettingProxy(apiGroup,&lock)
+		route.SettingMigrate(apiGroup)
+		route.SettingTemplates(apiGroup)
+		route.SettingUpgrade(apiGroup,&lock)
+		route.SettingExec(apiGroup,&lock,cronTask,&cronId)
+		if err := server.Run(serverMode.(models.Server).Listen); err != nil {
+			utils.LoggerCaller("监听端口失败",err,1)
+>>>>>>> f4bc051b198c7cb81321967f892710123faa43d9
 		}
 	}else{
 		singbox.GenerateConfigFiles(nil, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
