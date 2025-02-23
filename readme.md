@@ -36,7 +36,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/opt/sifubox/bin/sifu-box run -c /opt/sifubox/config -w /opt/test -l :8080 -s
+ExecStart=/opt/sifubox/bin/sifu-box run -c /opt/sifubox/config -w /opt/sifubox/lib -l :8080 -s
 Restart=on-failure
 
 [Install]
