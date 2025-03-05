@@ -27,7 +27,7 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "tag", Type: field.TypeString, Unique: true, Size: 30},
 		{Name: "type", Type: field.TypeString, Size: 10},
-		{Name: "path", Type: field.TypeString, Unique: true, Size: 100},
+		{Name: "path", Type: field.TypeString, Unique: true, Size: 255},
 		{Name: "format", Type: field.TypeString, Size: 10},
 		{Name: "label", Type: field.TypeString, Size: 30},
 		{Name: "download_detour", Type: field.TypeString, Nullable: true, Size: 30},
