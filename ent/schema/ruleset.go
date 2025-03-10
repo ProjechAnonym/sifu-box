@@ -15,7 +15,7 @@ func (RuleSet) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("tag").NotEmpty().MaxLen(30).Unique(),
 		field.String("type").NotEmpty().MaxLen(10),
-		field.String("path").NotEmpty().MaxLen(255).Unique(),
+		field.String("path").NotEmpty().MaxLen(1000).Unique(),
 		field.String("format").NotEmpty().MaxLen(10),
 		field.String("label").NotEmpty().MaxLen(30),
 		field.String("download_detour").Optional().MaxLen(30),

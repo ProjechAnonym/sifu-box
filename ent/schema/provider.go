@@ -14,7 +14,7 @@ type Provider struct {
 func (Provider) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").NotEmpty().MaxLen(30).Unique(),
-		field.String("path").NotEmpty().MaxLen(100),
+		field.String("path").NotEmpty().MaxLen(1000),
 		field.String("detour").Optional().MaxLen(30),
 		field.Bool("remote"),
 	}

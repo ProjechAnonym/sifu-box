@@ -159,7 +159,7 @@ export default function Provider(props: {
       </header>
       <CheckboxGroup value={checked} onValueChange={setChecked}>
         <div className={`p-1 flex flex-wrap gap-2`}>
-          {filteredProviders.map((provider) => (
+          {filteredProviders && filteredProviders.map((provider) => (
             <Badge
               key={provider.name}
               content={<i className="bi bi-trash-fill" />}
