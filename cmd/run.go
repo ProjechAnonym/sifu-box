@@ -24,6 +24,7 @@ var runCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if Server && Listen == "" {
 			fmt.Fprintln(os.Stderr, "Error: Listen field is required when the mode is server")
+			cmd.Help()
 			os.Exit(1)
 		} 
 	},
