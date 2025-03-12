@@ -95,10 +95,6 @@ func main() {
 		route.SettingLogin(api, setting.Application.Server.User, webLogger)
 		route.SettingConfiguration(api, cmd.WorkDir, entClient, *setting.Application.Server.User, buntClient, &rwLock, &execLock, *setting.Application.Singbox, webLogger)
 		if setting.Application.Server.SSL != nil {
-			if setting.Application.Server.SSL == nil {
-				webLogger.Error("SSL配置为空, 不应启用TLS监听")
-				panic(fmt.Errorf("SSL配置为空, 不应启用TLS监听"))
-			}
 			server.RunTLS(cmd.Listen, setting.Application.Server.SSL.Public, setting.Application.Server.SSL.Private)
 		}else{
 			server.Run(cmd.Listen)
