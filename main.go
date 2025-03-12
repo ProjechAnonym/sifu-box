@@ -99,7 +99,7 @@ func main() {
 				webLogger.Error("SSL配置为空, 不应启用TLS监听")
 				panic(fmt.Errorf("SSL配置为空, 不应启用TLS监听"))
 			}
-			server.Run(cmd.Listen)
+			server.RunTLS(cmd.Listen, setting.Application.Server.SSL.Public, setting.Application.Server.SSL.Private)
 		}else{
 			server.Run(cmd.Listen)
 		}
