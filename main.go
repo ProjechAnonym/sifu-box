@@ -72,7 +72,6 @@ func main() {
 
 	if cmd.Server {
 		scheduler := cron.New()
-		scheduler.Start()
 		initial.SetDefautlApplication(entClient, buntClient, taskLogger)
 		jobID, err := scheduler.AddFunc("30 4 * * 1", func(){
 			singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, cmd.WorkDir, cmd.Server, &rwLock, taskLogger)
