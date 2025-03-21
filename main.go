@@ -82,7 +82,6 @@ func main() {
 			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
 			panic(err)
 		}
-		scheduler.Run()
 		gin.SetMode(gin.ReleaseMode)
 		server := gin.Default()
 		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
