@@ -17,6 +17,8 @@ const (
 	FieldPath = "path"
 	// FieldDetour holds the string denoting the detour field in the database.
 	FieldDetour = "detour"
+	// FieldNodes holds the string denoting the nodes field in the database.
+	FieldNodes = "nodes"
 	// FieldRemote holds the string denoting the remote field in the database.
 	FieldRemote = "remote"
 	// Table holds the table name of the provider in the database.
@@ -29,6 +31,7 @@ var Columns = []string{
 	FieldName,
 	FieldPath,
 	FieldDetour,
+	FieldNodes,
 	FieldRemote,
 }
 

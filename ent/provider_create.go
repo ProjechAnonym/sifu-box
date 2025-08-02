@@ -20,50 +20,56 @@ type ProviderCreate struct {
 }
 
 // SetName sets the "name" field.
-func (pc *ProviderCreate) SetName(s string) *ProviderCreate {
-	pc.mutation.SetName(s)
-	return pc
+func (_c *ProviderCreate) SetName(v string) *ProviderCreate {
+	_c.mutation.SetName(v)
+	return _c
 }
 
 // SetPath sets the "path" field.
-func (pc *ProviderCreate) SetPath(s string) *ProviderCreate {
-	pc.mutation.SetPath(s)
-	return pc
+func (_c *ProviderCreate) SetPath(v string) *ProviderCreate {
+	_c.mutation.SetPath(v)
+	return _c
 }
 
 // SetDetour sets the "detour" field.
-func (pc *ProviderCreate) SetDetour(s string) *ProviderCreate {
-	pc.mutation.SetDetour(s)
-	return pc
+func (_c *ProviderCreate) SetDetour(v string) *ProviderCreate {
+	_c.mutation.SetDetour(v)
+	return _c
 }
 
 // SetNillableDetour sets the "detour" field if the given value is not nil.
-func (pc *ProviderCreate) SetNillableDetour(s *string) *ProviderCreate {
-	if s != nil {
-		pc.SetDetour(*s)
+func (_c *ProviderCreate) SetNillableDetour(v *string) *ProviderCreate {
+	if v != nil {
+		_c.SetDetour(*v)
 	}
-	return pc
+	return _c
+}
+
+// SetNodes sets the "nodes" field.
+func (_c *ProviderCreate) SetNodes(v []map[string]interface{}) *ProviderCreate {
+	_c.mutation.SetNodes(v)
+	return _c
 }
 
 // SetRemote sets the "remote" field.
-func (pc *ProviderCreate) SetRemote(b bool) *ProviderCreate {
-	pc.mutation.SetRemote(b)
-	return pc
+func (_c *ProviderCreate) SetRemote(v bool) *ProviderCreate {
+	_c.mutation.SetRemote(v)
+	return _c
 }
 
 // Mutation returns the ProviderMutation object of the builder.
-func (pc *ProviderCreate) Mutation() *ProviderMutation {
-	return pc.mutation
+func (_c *ProviderCreate) Mutation() *ProviderMutation {
+	return _c.mutation
 }
 
 // Save creates the Provider in the database.
-func (pc *ProviderCreate) Save(ctx context.Context) (*Provider, error) {
-	return withHooks(ctx, pc.sqlSave, pc.mutation, pc.hooks)
+func (_c *ProviderCreate) Save(ctx context.Context) (*Provider, error) {
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (pc *ProviderCreate) SaveX(ctx context.Context) *Provider {
-	v, err := pc.Save(ctx)
+func (_c *ProviderCreate) SaveX(ctx context.Context) *Provider {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -71,53 +77,53 @@ func (pc *ProviderCreate) SaveX(ctx context.Context) *Provider {
 }
 
 // Exec executes the query.
-func (pc *ProviderCreate) Exec(ctx context.Context) error {
-	_, err := pc.Save(ctx)
+func (_c *ProviderCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (pc *ProviderCreate) ExecX(ctx context.Context) {
-	if err := pc.Exec(ctx); err != nil {
+func (_c *ProviderCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (pc *ProviderCreate) check() error {
-	if _, ok := pc.mutation.Name(); !ok {
+func (_c *ProviderCreate) check() error {
+	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Provider.name"`)}
 	}
-	if v, ok := pc.mutation.Name(); ok {
+	if v, ok := _c.mutation.Name(); ok {
 		if err := provider.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Provider.name": %w`, err)}
 		}
 	}
-	if _, ok := pc.mutation.Path(); !ok {
+	if _, ok := _c.mutation.Path(); !ok {
 		return &ValidationError{Name: "path", err: errors.New(`ent: missing required field "Provider.path"`)}
 	}
-	if v, ok := pc.mutation.Path(); ok {
+	if v, ok := _c.mutation.Path(); ok {
 		if err := provider.PathValidator(v); err != nil {
 			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "Provider.path": %w`, err)}
 		}
 	}
-	if v, ok := pc.mutation.Detour(); ok {
+	if v, ok := _c.mutation.Detour(); ok {
 		if err := provider.DetourValidator(v); err != nil {
 			return &ValidationError{Name: "detour", err: fmt.Errorf(`ent: validator failed for field "Provider.detour": %w`, err)}
 		}
 	}
-	if _, ok := pc.mutation.Remote(); !ok {
+	if _, ok := _c.mutation.Remote(); !ok {
 		return &ValidationError{Name: "remote", err: errors.New(`ent: missing required field "Provider.remote"`)}
 	}
 	return nil
 }
 
-func (pc *ProviderCreate) sqlSave(ctx context.Context) (*Provider, error) {
-	if err := pc.check(); err != nil {
+func (_c *ProviderCreate) sqlSave(ctx context.Context) (*Provider, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := pc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, pc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -125,29 +131,33 @@ func (pc *ProviderCreate) sqlSave(ctx context.Context) (*Provider, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
-	pc.mutation.id = &_node.ID
-	pc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (pc *ProviderCreate) createSpec() (*Provider, *sqlgraph.CreateSpec) {
+func (_c *ProviderCreate) createSpec() (*Provider, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Provider{config: pc.config}
+		_node = &Provider{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(provider.Table, sqlgraph.NewFieldSpec(provider.FieldID, field.TypeInt))
 	)
-	if value, ok := pc.mutation.Name(); ok {
+	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(provider.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := pc.mutation.Path(); ok {
+	if value, ok := _c.mutation.Path(); ok {
 		_spec.SetField(provider.FieldPath, field.TypeString, value)
 		_node.Path = value
 	}
-	if value, ok := pc.mutation.Detour(); ok {
+	if value, ok := _c.mutation.Detour(); ok {
 		_spec.SetField(provider.FieldDetour, field.TypeString, value)
 		_node.Detour = value
 	}
-	if value, ok := pc.mutation.Remote(); ok {
+	if value, ok := _c.mutation.Nodes(); ok {
+		_spec.SetField(provider.FieldNodes, field.TypeJSON, value)
+		_node.Nodes = value
+	}
+	if value, ok := _c.mutation.Remote(); ok {
 		_spec.SetField(provider.FieldRemote, field.TypeBool, value)
 		_node.Remote = value
 	}
@@ -162,16 +172,16 @@ type ProviderCreateBulk struct {
 }
 
 // Save creates the Provider entities in the database.
-func (pcb *ProviderCreateBulk) Save(ctx context.Context) ([]*Provider, error) {
-	if pcb.err != nil {
-		return nil, pcb.err
+func (_c *ProviderCreateBulk) Save(ctx context.Context) ([]*Provider, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
-	nodes := make([]*Provider, len(pcb.builders))
-	mutators := make([]Mutator, len(pcb.builders))
-	for i := range pcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Provider, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := pcb.builders[i]
+			builder := _c.builders[i]
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ProviderMutation)
 				if !ok {
@@ -184,11 +194,11 @@ func (pcb *ProviderCreateBulk) Save(ctx context.Context) ([]*Provider, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, pcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, pcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -212,7 +222,7 @@ func (pcb *ProviderCreateBulk) Save(ctx context.Context) ([]*Provider, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, pcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -220,8 +230,8 @@ func (pcb *ProviderCreateBulk) Save(ctx context.Context) ([]*Provider, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (pcb *ProviderCreateBulk) SaveX(ctx context.Context) []*Provider {
-	v, err := pcb.Save(ctx)
+func (_c *ProviderCreateBulk) SaveX(ctx context.Context) []*Provider {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -229,14 +239,14 @@ func (pcb *ProviderCreateBulk) SaveX(ctx context.Context) []*Provider {
 }
 
 // Exec executes the query.
-func (pcb *ProviderCreateBulk) Exec(ctx context.Context) error {
-	_, err := pcb.Save(ctx)
+func (_c *ProviderCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (pcb *ProviderCreateBulk) ExecX(ctx context.Context) {
-	if err := pcb.Exec(ctx); err != nil {
+func (_c *ProviderCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

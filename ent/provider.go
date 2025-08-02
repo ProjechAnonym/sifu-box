@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"sifu-box/ent/provider"
 	"strings"
@@ -22,6 +23,8 @@ type Provider struct {
 	Path string `json:"path,omitempty"`
 	// Detour holds the value of the "detour" field.
 	Detour string `json:"detour,omitempty"`
+	// Nodes holds the value of the "nodes" field.
+	Nodes []map[string]interface{} `json:"nodes,omitempty"`
 	// Remote holds the value of the "remote" field.
 	Remote       bool `json:"remote,omitempty"`
 	selectValues sql.SelectValues
@@ -32,6 +35,8 @@ func (*Provider) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case provider.FieldNodes:
+			values[i] = new([]byte)
 		case provider.FieldRemote:
 			values[i] = new(sql.NullBool)
 		case provider.FieldID:
@@ -47,7 +52,7 @@ func (*Provider) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Provider fields.
-func (pr *Provider) assignValues(columns []string, values []any) error {
+func (_m *Provider) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -58,33 +63,41 @@ func (pr *Provider) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			pr.ID = int(value.Int64)
+			_m.ID = int(value.Int64)
 		case provider.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				pr.Name = value.String
+				_m.Name = value.String
 			}
 		case provider.FieldPath:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field path", values[i])
 			} else if value.Valid {
-				pr.Path = value.String
+				_m.Path = value.String
 			}
 		case provider.FieldDetour:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field detour", values[i])
 			} else if value.Valid {
-				pr.Detour = value.String
+				_m.Detour = value.String
+			}
+		case provider.FieldNodes:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field nodes", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Nodes); err != nil {
+					return fmt.Errorf("unmarshal field nodes: %w", err)
+				}
 			}
 		case provider.FieldRemote:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field remote", values[i])
 			} else if value.Valid {
-				pr.Remote = value.Bool
+				_m.Remote = value.Bool
 			}
 		default:
-			pr.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -92,44 +105,47 @@ func (pr *Provider) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Provider.
 // This includes values selected through modifiers, order, etc.
-func (pr *Provider) Value(name string) (ent.Value, error) {
-	return pr.selectValues.Get(name)
+func (_m *Provider) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // Update returns a builder for updating this Provider.
 // Note that you need to call Provider.Unwrap() before calling this method if this Provider
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (pr *Provider) Update() *ProviderUpdateOne {
-	return NewProviderClient(pr.config).UpdateOne(pr)
+func (_m *Provider) Update() *ProviderUpdateOne {
+	return NewProviderClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Provider entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (pr *Provider) Unwrap() *Provider {
-	_tx, ok := pr.config.driver.(*txDriver)
+func (_m *Provider) Unwrap() *Provider {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Provider is not a transactional entity")
 	}
-	pr.config.driver = _tx.drv
-	return pr
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (pr *Provider) String() string {
+func (_m *Provider) String() string {
 	var builder strings.Builder
 	builder.WriteString("Provider(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", pr.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("name=")
-	builder.WriteString(pr.Name)
+	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
 	builder.WriteString("path=")
-	builder.WriteString(pr.Path)
+	builder.WriteString(_m.Path)
 	builder.WriteString(", ")
 	builder.WriteString("detour=")
-	builder.WriteString(pr.Detour)
+	builder.WriteString(_m.Detour)
+	builder.WriteString(", ")
+	builder.WriteString("nodes=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Nodes))
 	builder.WriteString(", ")
 	builder.WriteString("remote=")
-	builder.WriteString(fmt.Sprintf("%v", pr.Remote))
+	builder.WriteString(fmt.Sprintf("%v", _m.Remote))
 	builder.WriteByte(')')
 	return builder.String()
 }

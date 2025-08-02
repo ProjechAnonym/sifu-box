@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"reflect"
 	"sifu-box/ent/provider"
-	"sifu-box/ent/ruleset"
-	"sifu-box/ent/template"
 	"sync"
 
 	"entgo.io/ent"
@@ -72,15 +70,13 @@ var (
 )
 
 // checkColumn checks if the column exists in the given table.
-func checkColumn(table, column string) error {
+func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			provider.Table: provider.ValidColumn,
-			ruleset.Table:  ruleset.ValidColumn,
-			template.Table: template.ValidColumn,
 		})
 	})
-	return columnCheck(table, column)
+	return columnCheck(t, c)
 }
 
 // Asc applies the given fields in ASC order.

@@ -14,6 +14,7 @@ var (
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
 		{Name: "path", Type: field.TypeString, Size: 1000},
 		{Name: "detour", Type: field.TypeString, Nullable: true, Size: 30},
+		{Name: "nodes", Type: field.TypeJSON, Nullable: true},
 		{Name: "remote", Type: field.TypeBool},
 	}
 	// ProvidersTable holds the schema information for the "providers" table.
@@ -22,42 +23,9 @@ var (
 		Columns:    ProvidersColumns,
 		PrimaryKey: []*schema.Column{ProvidersColumns[0]},
 	}
-	// RuleSetsColumns holds the columns for the "rule_sets" table.
-	RuleSetsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "tag", Type: field.TypeString, Unique: true, Size: 30},
-		{Name: "type", Type: field.TypeString, Size: 10},
-		{Name: "path", Type: field.TypeString, Unique: true, Size: 1000},
-		{Name: "format", Type: field.TypeString, Size: 10},
-		{Name: "label", Type: field.TypeString, Size: 30},
-		{Name: "download_detour", Type: field.TypeString, Nullable: true, Size: 30},
-		{Name: "update_interval", Type: field.TypeString, Nullable: true, Size: 10},
-		{Name: "name_server", Type: field.TypeString, Nullable: true, Size: 30},
-		{Name: "china", Type: field.TypeBool},
-	}
-	// RuleSetsTable holds the schema information for the "rule_sets" table.
-	RuleSetsTable = &schema.Table{
-		Name:       "rule_sets",
-		Columns:    RuleSetsColumns,
-		PrimaryKey: []*schema.Column{RuleSetsColumns[0]},
-	}
-	// TemplatesColumns holds the columns for the "templates" table.
-	TemplatesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
-		{Name: "content", Type: field.TypeJSON},
-	}
-	// TemplatesTable holds the schema information for the "templates" table.
-	TemplatesTable = &schema.Table{
-		Name:       "templates",
-		Columns:    TemplatesColumns,
-		PrimaryKey: []*schema.Column{TemplatesColumns[0]},
-	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ProvidersTable,
-		RuleSetsTable,
-		TemplatesTable,
 	}
 )
 

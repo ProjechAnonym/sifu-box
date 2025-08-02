@@ -278,6 +278,16 @@ func DetourContainsFold(v string) predicate.Provider {
 	return predicate.Provider(sql.FieldContainsFold(FieldDetour, v))
 }
 
+// NodesIsNil applies the IsNil predicate on the "nodes" field.
+func NodesIsNil() predicate.Provider {
+	return predicate.Provider(sql.FieldIsNull(FieldNodes))
+}
+
+// NodesNotNil applies the NotNil predicate on the "nodes" field.
+func NodesNotNil() predicate.Provider {
+	return predicate.Provider(sql.FieldNotNull(FieldNodes))
+}
+
 // RemoteEQ applies the EQ predicate on the "remote" field.
 func RemoteEQ(v bool) predicate.Provider {
 	return predicate.Provider(sql.FieldEQ(FieldRemote, v))
