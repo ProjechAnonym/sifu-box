@@ -1,10 +1,13 @@
 package nodes
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v3"
@@ -28,39 +31,36 @@ func fetchFromRemote(name, url string, client *http.Client, logger *zap.Logger) 
 		}
 
 		config := map[string]any{}
-		if err := yaml.Unmarshal(content, &config); err != nil {
-			return nil, fmt.Errorf(`"%s"响应内容不是有效的YAML格式: [%s]`, name, err.Error())
+		if err := yaml.Unmarshal(content, &config); err == nil {
+			outbounds, err := generateFromYaml(config, logger)
+			if err != nil {
+				return nil, fmt.Errorf(`生成"%s"出站节点失败: [%s]`, name, err.Error())
+			}
+			return outbounds, nil
 		}
-		// 解析响应内容
-		outbounds, err := generateFromYaml(config, logger)
+		outbounds, err := generateFromBase64(content, logger)
 		if err != nil {
-			return nil, fmt.Errorf(`生成"%s"出站节点失败: [%s]`, name, err.Error())
+			return nil, err
 		}
-
-		// 返回解析后的出站信息
-		return outbounds, nil
+		return nil, nil
 	}
 
-	// 如果响应状态码不是200, 返回自定义错误信息
 	return nil, fmt.Errorf(`"%s"未知响应, 状态码: %d`, name, res.StatusCode)
 }
 
 func fetchFromLocal(name, path string, logger *zap.Logger) ([]map[string]any, error) {
-	// 尝试打开本地文件
+
 	file, err := os.Open(path)
 	if err != nil {
-		// 如果打开文件失败, 记录错误并返回自定义错误信息
-		logger.Error(fmt.Sprintf(`打开"%s"文件失败: [%s]`, name, err.Error()))
+
 		return nil, fmt.Errorf(`打开"%s"文件失败: [%s]`, name, err.Error())
 	}
-	// 确保在函数返回前关闭文件
+
 	defer file.Close()
 
-	// 读取文件的全部内容
 	content, err := io.ReadAll(file)
 	if err != nil {
-		// 如果读取文件失败, 记录错误并返回自定义错误信息
-		logger.Error(fmt.Sprintf(`读取"%s"文件失败: [%s]`, name, err.Error()))
+
 		return nil, fmt.Errorf(`读取"%s"文件失败: [%s]`, name, err.Error())
 	}
 
@@ -114,6 +114,36 @@ func generateFromYaml(content map[string]any, logger *zap.Logger) ([]map[string]
 			continue
 		}
 	}
+	// 返回解析后的出站代理配置切片
+	return outbounds, nil
+}
+func generateFromBase64(content []byte, logger *zap.Logger) ([]map[string]interface{}, error) {
+	data, err := base64.StdEncoding.DecodeString(string(content))
+	if err != nil {
+		return nil, err
+	}
+	var outbounds []map[string]any
+	for line := range strings.SplitSeq(string(data), "\n") {
+		link, err := url.Parse(line)
+		if err != nil {
+			logger.Error(fmt.Sprintf(`"%s"解析URL失败: [%s]`, line, err.Error()))
+			continue
+		}
+		switch link.Scheme {
+		case "ss":
+			outbound, err := shadowsocksFromBase64(link)
+			if err != nil {
+				logger.Error(fmt.Sprintf(`"%s"协议解析失败: [%s]`, link.Scheme, err.Error()))
+				continue
+			}
+			outbounds = append(outbounds, outbound)
+		default:
+			if line != "" {
+				logger.Error(fmt.Sprintf(`"%s"协议暂不支持`, strings.Split(line, ":")[0]))
+			}
+		}
+	}
+
 	// 返回解析后的出站代理配置切片
 	return outbounds, nil
 }
