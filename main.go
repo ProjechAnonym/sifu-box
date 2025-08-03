@@ -3,6 +3,7 @@ package main
 import (
 	"sifu-box/cmd"
 	"sifu-box/initial"
+	"sifu-box/nodes"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -20,4 +21,5 @@ func init() {
 func main() {
 	taskLogger := initial.GetLogger(dir, "task", true)
 	defer taskLogger.Sync()
+	nodes.Merge(taskLogger)
 }
