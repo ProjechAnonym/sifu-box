@@ -42,7 +42,7 @@ func fetchFromRemote(name, url string, client *http.Client, logger *zap.Logger) 
 		if err != nil {
 			return nil, err
 		}
-		return nil, nil
+		return outbounds, nil
 	}
 
 	return nil, fmt.Errorf(`"%s"未知响应, 状态码: %d`, name, res.StatusCode)
@@ -89,12 +89,12 @@ func generateFromYaml(content map[string]any, logger *zap.Logger) ([]map[string]
 
 		name, ok := proxy.(map[string]any)[NAME].(string)
 		if !ok {
-			logger.Error(fmt.Sprintf(`获取字段出错, 没有找到"%s"字段`, NAME))
+			logger.Error(fmt.Sprintf(`获取节点信息出错, 没有找到"%s"字段`, NAME))
 			continue
 		}
 		protocol, ok := proxy.(map[string]any)[TYPE].(string)
 		if !ok {
-			logger.Error(fmt.Sprintf(`获取字段出错, 没有找到"%s"字段`, TYPE))
+			logger.Error(fmt.Sprintf(`获取节点信息出错, 没有找到"%s"字段`, TYPE))
 			continue
 		}
 		if _, ok := proxy.(map[string]any); !ok {
@@ -104,11 +104,12 @@ func generateFromYaml(content map[string]any, logger *zap.Logger) ([]map[string]
 		switch protocol {
 		case "ss":
 			outbounds = append(outbounds, shadowsocksFromYaml(proxy.(map[string]any)))
+		case "vless":
+			outbounds = append(outbounds, vlessFromYaml(proxy.(map[string]any)))
 		case "vmess":
 			outbounds = append(outbounds, vmessFromYaml(proxy.(map[string]any)))
 		case "trojan":
 			outbounds = append(outbounds, trojanFromYaml(proxy.(map[string]any)))
-
 		default:
 			logger.Error(fmt.Sprintf(`"%s"协议暂不支持`, protocol))
 			continue
@@ -137,6 +138,17 @@ func generateFromBase64(content []byte, logger *zap.Logger) ([]map[string]interf
 				continue
 			}
 			outbounds = append(outbounds, outbound)
+		case "vmess":
+			outbound, err := vmessFromBase64(link)
+			if err != nil {
+				logger.Error(fmt.Sprintf(`"%s"协议解析失败: [%s]`, link.Scheme, err.Error()))
+				continue
+			}
+			outbounds = append(outbounds, outbound)
+		case "trojan":
+			outbounds = append(outbounds, trojanFromBase64(link))
+		case "vless":
+			outbounds = append(outbounds, vlessFromBase64(link))
 		default:
 			if line != "" {
 				logger.Error(fmt.Sprintf(`"%s"协议暂不支持`, strings.Split(line, ":")[0]))
