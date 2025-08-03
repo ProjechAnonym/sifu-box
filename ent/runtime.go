@@ -49,8 +49,4 @@ func init() {
 			return nil
 		}
 	}()
-	// providerDescDetour is the schema descriptor for detour field.
-	providerDescDetour := providerFields[2].Descriptor()
-	// provider.DetourValidator is a validator for the "detour" field. It is called by the builders before save.
-	provider.DetourValidator = providerDescDetour.Validators[0].(func(string) error)
 }

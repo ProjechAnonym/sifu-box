@@ -21,8 +21,6 @@ type Provider struct {
 	Name string `json:"name,omitempty"`
 	// Path holds the value of the "path" field.
 	Path string `json:"path,omitempty"`
-	// Detour holds the value of the "detour" field.
-	Detour string `json:"detour,omitempty"`
 	// Nodes holds the value of the "nodes" field.
 	Nodes []map[string]interface{} `json:"nodes,omitempty"`
 	// Remote holds the value of the "remote" field.
@@ -41,7 +39,7 @@ func (*Provider) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case provider.FieldID:
 			values[i] = new(sql.NullInt64)
-		case provider.FieldName, provider.FieldPath, provider.FieldDetour:
+		case provider.FieldName, provider.FieldPath:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -75,12 +73,6 @@ func (_m *Provider) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field path", values[i])
 			} else if value.Valid {
 				_m.Path = value.String
-			}
-		case provider.FieldDetour:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field detour", values[i])
-			} else if value.Valid {
-				_m.Detour = value.String
 			}
 		case provider.FieldNodes:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -137,9 +129,6 @@ func (_m *Provider) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("path=")
 	builder.WriteString(_m.Path)
-	builder.WriteString(", ")
-	builder.WriteString("detour=")
-	builder.WriteString(_m.Detour)
 	builder.WriteString(", ")
 	builder.WriteString("nodes=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Nodes))

@@ -31,20 +31,6 @@ func (_c *ProviderCreate) SetPath(v string) *ProviderCreate {
 	return _c
 }
 
-// SetDetour sets the "detour" field.
-func (_c *ProviderCreate) SetDetour(v string) *ProviderCreate {
-	_c.mutation.SetDetour(v)
-	return _c
-}
-
-// SetNillableDetour sets the "detour" field if the given value is not nil.
-func (_c *ProviderCreate) SetNillableDetour(v *string) *ProviderCreate {
-	if v != nil {
-		_c.SetDetour(*v)
-	}
-	return _c
-}
-
 // SetNodes sets the "nodes" field.
 func (_c *ProviderCreate) SetNodes(v []map[string]interface{}) *ProviderCreate {
 	_c.mutation.SetNodes(v)
@@ -107,11 +93,6 @@ func (_c *ProviderCreate) check() error {
 			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "Provider.path": %w`, err)}
 		}
 	}
-	if v, ok := _c.mutation.Detour(); ok {
-		if err := provider.DetourValidator(v); err != nil {
-			return &ValidationError{Name: "detour", err: fmt.Errorf(`ent: validator failed for field "Provider.detour": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.Remote(); !ok {
 		return &ValidationError{Name: "remote", err: errors.New(`ent: missing required field "Provider.remote"`)}
 	}
@@ -148,10 +129,6 @@ func (_c *ProviderCreate) createSpec() (*Provider, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Path(); ok {
 		_spec.SetField(provider.FieldPath, field.TypeString, value)
 		_node.Path = value
-	}
-	if value, ok := _c.mutation.Detour(); ok {
-		_spec.SetField(provider.FieldDetour, field.TypeString, value)
-		_node.Detour = value
 	}
 	if value, ok := _c.mutation.Nodes(); ok {
 		_spec.SetField(provider.FieldNodes, field.TypeJSON, value)

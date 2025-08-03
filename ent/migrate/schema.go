@@ -13,7 +13,6 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
 		{Name: "path", Type: field.TypeString, Size: 1000},
-		{Name: "detour", Type: field.TypeString, Nullable: true, Size: 30},
 		{Name: "nodes", Type: field.TypeJSON, Nullable: true},
 		{Name: "remote", Type: field.TypeBool},
 	}

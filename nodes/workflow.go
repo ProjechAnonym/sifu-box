@@ -1,20 +1,21 @@
 package nodes
 
 import (
-	"encoding/json"
-	"fmt"
+	"net/http"
+	"sifu-box/ent"
 
 	"go.uber.org/zap"
 )
 
-func Merge(logger *zap.Logger) {
-	// client := http.DefaultClient
-	// ou, err := fetchFromRemote("test", "https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub", client, logger)
-	ou, err := fetchFromLocal("test", "/opt/sifubox/1.yaml", logger)
-	a, _ := json.MarshalIndent(ou, "", "  ")
-	fmt.Println(string(a))
-	if err != nil {
-		logger.Error(err.Error())
-		return
+// vless、trojan、vmess节点
+// https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub
+func Merge(providers []*ent.Provider, logger *zap.Logger) {
+	for _, provider := range providers {
+		if provider.Remote {
+			client := http.DefaultClient
+			fetchFromRemote(provider.Name, provider.Path, client, logger)
+		}
+		fetchFromLocal(provider.Name, provider.Path, logger)
 	}
+
 }

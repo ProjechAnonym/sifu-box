@@ -15,8 +15,6 @@ const (
 	FieldName = "name"
 	// FieldPath holds the string denoting the path field in the database.
 	FieldPath = "path"
-	// FieldDetour holds the string denoting the detour field in the database.
-	FieldDetour = "detour"
 	// FieldNodes holds the string denoting the nodes field in the database.
 	FieldNodes = "nodes"
 	// FieldRemote holds the string denoting the remote field in the database.
@@ -30,7 +28,6 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldPath,
-	FieldDetour,
 	FieldNodes,
 	FieldRemote,
 }
@@ -50,8 +47,6 @@ var (
 	NameValidator func(string) error
 	// PathValidator is a validator for the "path" field. It is called by the builders before save.
 	PathValidator func(string) error
-	// DetourValidator is a validator for the "detour" field. It is called by the builders before save.
-	DetourValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the Provider queries.
@@ -70,11 +65,6 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByPath orders the results by the path field.
 func ByPath(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPath, opts...).ToFunc()
-}
-
-// ByDetour orders the results by the detour field.
-func ByDetour(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDetour, opts...).ToFunc()
 }
 
 // ByRemote orders the results by the remote field.

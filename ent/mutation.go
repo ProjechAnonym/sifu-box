@@ -34,7 +34,6 @@ type ProviderMutation struct {
 	id            *int
 	name          *string
 	_path         *string
-	detour        *string
 	nodes         *[]map[string]interface{}
 	appendnodes   []map[string]interface{}
 	remote        *bool
@@ -214,55 +213,6 @@ func (m *ProviderMutation) ResetPath() {
 	m._path = nil
 }
 
-// SetDetour sets the "detour" field.
-func (m *ProviderMutation) SetDetour(s string) {
-	m.detour = &s
-}
-
-// Detour returns the value of the "detour" field in the mutation.
-func (m *ProviderMutation) Detour() (r string, exists bool) {
-	v := m.detour
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDetour returns the old "detour" field's value of the Provider entity.
-// If the Provider object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProviderMutation) OldDetour(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDetour is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDetour requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDetour: %w", err)
-	}
-	return oldValue.Detour, nil
-}
-
-// ClearDetour clears the value of the "detour" field.
-func (m *ProviderMutation) ClearDetour() {
-	m.detour = nil
-	m.clearedFields[provider.FieldDetour] = struct{}{}
-}
-
-// DetourCleared returns if the "detour" field was cleared in this mutation.
-func (m *ProviderMutation) DetourCleared() bool {
-	_, ok := m.clearedFields[provider.FieldDetour]
-	return ok
-}
-
-// ResetDetour resets all changes to the "detour" field.
-func (m *ProviderMutation) ResetDetour() {
-	m.detour = nil
-	delete(m.clearedFields, provider.FieldDetour)
-}
-
 // SetNodes sets the "nodes" field.
 func (m *ProviderMutation) SetNodes(value []map[string]interface{}) {
 	m.nodes = &value
@@ -398,15 +348,12 @@ func (m *ProviderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ProviderMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 4)
 	if m.name != nil {
 		fields = append(fields, provider.FieldName)
 	}
 	if m._path != nil {
 		fields = append(fields, provider.FieldPath)
-	}
-	if m.detour != nil {
-		fields = append(fields, provider.FieldDetour)
 	}
 	if m.nodes != nil {
 		fields = append(fields, provider.FieldNodes)
@@ -426,8 +373,6 @@ func (m *ProviderMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case provider.FieldPath:
 		return m.Path()
-	case provider.FieldDetour:
-		return m.Detour()
 	case provider.FieldNodes:
 		return m.Nodes()
 	case provider.FieldRemote:
@@ -445,8 +390,6 @@ func (m *ProviderMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldName(ctx)
 	case provider.FieldPath:
 		return m.OldPath(ctx)
-	case provider.FieldDetour:
-		return m.OldDetour(ctx)
 	case provider.FieldNodes:
 		return m.OldNodes(ctx)
 	case provider.FieldRemote:
@@ -473,13 +416,6 @@ func (m *ProviderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPath(v)
-		return nil
-	case provider.FieldDetour:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDetour(v)
 		return nil
 	case provider.FieldNodes:
 		v, ok := value.([]map[string]interface{})
@@ -525,9 +461,6 @@ func (m *ProviderMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *ProviderMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(provider.FieldDetour) {
-		fields = append(fields, provider.FieldDetour)
-	}
 	if m.FieldCleared(provider.FieldNodes) {
 		fields = append(fields, provider.FieldNodes)
 	}
@@ -545,9 +478,6 @@ func (m *ProviderMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *ProviderMutation) ClearField(name string) error {
 	switch name {
-	case provider.FieldDetour:
-		m.ClearDetour()
-		return nil
 	case provider.FieldNodes:
 		m.ClearNodes()
 		return nil
@@ -564,9 +494,6 @@ func (m *ProviderMutation) ResetField(name string) error {
 		return nil
 	case provider.FieldPath:
 		m.ResetPath()
-		return nil
-	case provider.FieldDetour:
-		m.ResetDetour()
 		return nil
 	case provider.FieldNodes:
 		m.ResetNodes()

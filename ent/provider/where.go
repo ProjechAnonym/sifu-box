@@ -63,11 +63,6 @@ func Path(v string) predicate.Provider {
 	return predicate.Provider(sql.FieldEQ(FieldPath, v))
 }
 
-// Detour applies equality check predicate on the "detour" field. It's identical to DetourEQ.
-func Detour(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldEQ(FieldDetour, v))
-}
-
 // Remote applies equality check predicate on the "remote" field. It's identical to RemoteEQ.
 func Remote(v bool) predicate.Provider {
 	return predicate.Provider(sql.FieldEQ(FieldRemote, v))
@@ -201,81 +196,6 @@ func PathEqualFold(v string) predicate.Provider {
 // PathContainsFold applies the ContainsFold predicate on the "path" field.
 func PathContainsFold(v string) predicate.Provider {
 	return predicate.Provider(sql.FieldContainsFold(FieldPath, v))
-}
-
-// DetourEQ applies the EQ predicate on the "detour" field.
-func DetourEQ(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldEQ(FieldDetour, v))
-}
-
-// DetourNEQ applies the NEQ predicate on the "detour" field.
-func DetourNEQ(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldNEQ(FieldDetour, v))
-}
-
-// DetourIn applies the In predicate on the "detour" field.
-func DetourIn(vs ...string) predicate.Provider {
-	return predicate.Provider(sql.FieldIn(FieldDetour, vs...))
-}
-
-// DetourNotIn applies the NotIn predicate on the "detour" field.
-func DetourNotIn(vs ...string) predicate.Provider {
-	return predicate.Provider(sql.FieldNotIn(FieldDetour, vs...))
-}
-
-// DetourGT applies the GT predicate on the "detour" field.
-func DetourGT(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldGT(FieldDetour, v))
-}
-
-// DetourGTE applies the GTE predicate on the "detour" field.
-func DetourGTE(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldGTE(FieldDetour, v))
-}
-
-// DetourLT applies the LT predicate on the "detour" field.
-func DetourLT(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldLT(FieldDetour, v))
-}
-
-// DetourLTE applies the LTE predicate on the "detour" field.
-func DetourLTE(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldLTE(FieldDetour, v))
-}
-
-// DetourContains applies the Contains predicate on the "detour" field.
-func DetourContains(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldContains(FieldDetour, v))
-}
-
-// DetourHasPrefix applies the HasPrefix predicate on the "detour" field.
-func DetourHasPrefix(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldHasPrefix(FieldDetour, v))
-}
-
-// DetourHasSuffix applies the HasSuffix predicate on the "detour" field.
-func DetourHasSuffix(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldHasSuffix(FieldDetour, v))
-}
-
-// DetourIsNil applies the IsNil predicate on the "detour" field.
-func DetourIsNil() predicate.Provider {
-	return predicate.Provider(sql.FieldIsNull(FieldDetour))
-}
-
-// DetourNotNil applies the NotNil predicate on the "detour" field.
-func DetourNotNil() predicate.Provider {
-	return predicate.Provider(sql.FieldNotNull(FieldDetour))
-}
-
-// DetourEqualFold applies the EqualFold predicate on the "detour" field.
-func DetourEqualFold(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldEqualFold(FieldDetour, v))
-}
-
-// DetourContainsFold applies the ContainsFold predicate on the "detour" field.
-func DetourContainsFold(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldContainsFold(FieldDetour, v))
 }
 
 // NodesIsNil applies the IsNil predicate on the "nodes" field.

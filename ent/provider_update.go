@@ -56,26 +56,6 @@ func (_u *ProviderUpdate) SetNillablePath(v *string) *ProviderUpdate {
 	return _u
 }
 
-// SetDetour sets the "detour" field.
-func (_u *ProviderUpdate) SetDetour(v string) *ProviderUpdate {
-	_u.mutation.SetDetour(v)
-	return _u
-}
-
-// SetNillableDetour sets the "detour" field if the given value is not nil.
-func (_u *ProviderUpdate) SetNillableDetour(v *string) *ProviderUpdate {
-	if v != nil {
-		_u.SetDetour(*v)
-	}
-	return _u
-}
-
-// ClearDetour clears the value of the "detour" field.
-func (_u *ProviderUpdate) ClearDetour() *ProviderUpdate {
-	_u.mutation.ClearDetour()
-	return _u
-}
-
 // SetNodes sets the "nodes" field.
 func (_u *ProviderUpdate) SetNodes(v []map[string]interface{}) *ProviderUpdate {
 	_u.mutation.SetNodes(v)
@@ -152,11 +132,6 @@ func (_u *ProviderUpdate) check() error {
 			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "Provider.path": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Detour(); ok {
-		if err := provider.DetourValidator(v); err != nil {
-			return &ValidationError{Name: "detour", err: fmt.Errorf(`ent: validator failed for field "Provider.detour": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -177,12 +152,6 @@ func (_u *ProviderUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Path(); ok {
 		_spec.SetField(provider.FieldPath, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Detour(); ok {
-		_spec.SetField(provider.FieldDetour, field.TypeString, value)
-	}
-	if _u.mutation.DetourCleared() {
-		_spec.ClearField(provider.FieldDetour, field.TypeString)
 	}
 	if value, ok := _u.mutation.Nodes(); ok {
 		_spec.SetField(provider.FieldNodes, field.TypeJSON, value)
@@ -243,26 +212,6 @@ func (_u *ProviderUpdateOne) SetNillablePath(v *string) *ProviderUpdateOne {
 	if v != nil {
 		_u.SetPath(*v)
 	}
-	return _u
-}
-
-// SetDetour sets the "detour" field.
-func (_u *ProviderUpdateOne) SetDetour(v string) *ProviderUpdateOne {
-	_u.mutation.SetDetour(v)
-	return _u
-}
-
-// SetNillableDetour sets the "detour" field if the given value is not nil.
-func (_u *ProviderUpdateOne) SetNillableDetour(v *string) *ProviderUpdateOne {
-	if v != nil {
-		_u.SetDetour(*v)
-	}
-	return _u
-}
-
-// ClearDetour clears the value of the "detour" field.
-func (_u *ProviderUpdateOne) ClearDetour() *ProviderUpdateOne {
-	_u.mutation.ClearDetour()
 	return _u
 }
 
@@ -355,11 +304,6 @@ func (_u *ProviderUpdateOne) check() error {
 			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "Provider.path": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Detour(); ok {
-		if err := provider.DetourValidator(v); err != nil {
-			return &ValidationError{Name: "detour", err: fmt.Errorf(`ent: validator failed for field "Provider.detour": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -397,12 +341,6 @@ func (_u *ProviderUpdateOne) sqlSave(ctx context.Context) (_node *Provider, err 
 	}
 	if value, ok := _u.mutation.Path(); ok {
 		_spec.SetField(provider.FieldPath, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Detour(); ok {
-		_spec.SetField(provider.FieldDetour, field.TypeString, value)
-	}
-	if _u.mutation.DetourCleared() {
-		_spec.ClearField(provider.FieldDetour, field.TypeString)
 	}
 	if value, ok := _u.mutation.Nodes(); ok {
 		_spec.SetField(provider.FieldNodes, field.TypeJSON, value)
