@@ -6,11 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	config1 "sifu-box/config"
 	"sifu-box/ent/predicate"
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
 	"sifu-box/ent/template"
+	"sifu-box/singbox"
 	"sync"
 
 	"entgo.io/ent"
@@ -1275,15 +1275,15 @@ type TemplateMutation struct {
 	typ                   string
 	id                    *int
 	name                  *string
-	dns                   *config1.DNS
-	log                   *config1.Log
-	route                 *config1.Route
-	inbounds              *[]config1.Inbound
-	appendinbounds        []config1.Inbound
-	outbound_groups       *[]config1.OutboundGroup
-	appendoutbound_groups []config1.OutboundGroup
-	ntp                   *config1.Ntp
-	experiment            *config1.Experiment
+	dns                   *singbox.DNS
+	log                   *singbox.Log
+	route                 *singbox.Route
+	inbounds              *[]singbox.Inbound
+	appendinbounds        []singbox.Inbound
+	outbound_groups       *[]singbox.OutboundGroup
+	appendoutbound_groups []singbox.OutboundGroup
+	ntp                   *singbox.Ntp
+	experiment            *singbox.Experiment
 	providers             *[]string
 	appendproviders       []string
 	clearedFields         map[string]struct{}
@@ -1427,12 +1427,12 @@ func (m *TemplateMutation) ResetName() {
 }
 
 // SetDNS sets the "dns" field.
-func (m *TemplateMutation) SetDNS(c config1.DNS) {
-	m.dns = &c
+func (m *TemplateMutation) SetDNS(s singbox.DNS) {
+	m.dns = &s
 }
 
 // DNS returns the value of the "dns" field in the mutation.
-func (m *TemplateMutation) DNS() (r config1.DNS, exists bool) {
+func (m *TemplateMutation) DNS() (r singbox.DNS, exists bool) {
 	v := m.dns
 	if v == nil {
 		return
@@ -1443,7 +1443,7 @@ func (m *TemplateMutation) DNS() (r config1.DNS, exists bool) {
 // OldDNS returns the old "dns" field's value of the Template entity.
 // If the Template object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldDNS(ctx context.Context) (v config1.DNS, err error) {
+func (m *TemplateMutation) OldDNS(ctx context.Context) (v singbox.DNS, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDNS is only allowed on UpdateOne operations")
 	}
@@ -1476,12 +1476,12 @@ func (m *TemplateMutation) ResetDNS() {
 }
 
 // SetLog sets the "log" field.
-func (m *TemplateMutation) SetLog(c config1.Log) {
-	m.log = &c
+func (m *TemplateMutation) SetLog(s singbox.Log) {
+	m.log = &s
 }
 
 // Log returns the value of the "log" field in the mutation.
-func (m *TemplateMutation) Log() (r config1.Log, exists bool) {
+func (m *TemplateMutation) Log() (r singbox.Log, exists bool) {
 	v := m.log
 	if v == nil {
 		return
@@ -1492,7 +1492,7 @@ func (m *TemplateMutation) Log() (r config1.Log, exists bool) {
 // OldLog returns the old "log" field's value of the Template entity.
 // If the Template object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldLog(ctx context.Context) (v config1.Log, err error) {
+func (m *TemplateMutation) OldLog(ctx context.Context) (v singbox.Log, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldLog is only allowed on UpdateOne operations")
 	}
@@ -1525,12 +1525,12 @@ func (m *TemplateMutation) ResetLog() {
 }
 
 // SetRoute sets the "route" field.
-func (m *TemplateMutation) SetRoute(c config1.Route) {
-	m.route = &c
+func (m *TemplateMutation) SetRoute(s singbox.Route) {
+	m.route = &s
 }
 
 // Route returns the value of the "route" field in the mutation.
-func (m *TemplateMutation) Route() (r config1.Route, exists bool) {
+func (m *TemplateMutation) Route() (r singbox.Route, exists bool) {
 	v := m.route
 	if v == nil {
 		return
@@ -1541,7 +1541,7 @@ func (m *TemplateMutation) Route() (r config1.Route, exists bool) {
 // OldRoute returns the old "route" field's value of the Template entity.
 // If the Template object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldRoute(ctx context.Context) (v config1.Route, err error) {
+func (m *TemplateMutation) OldRoute(ctx context.Context) (v singbox.Route, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldRoute is only allowed on UpdateOne operations")
 	}
@@ -1574,13 +1574,13 @@ func (m *TemplateMutation) ResetRoute() {
 }
 
 // SetInbounds sets the "inbounds" field.
-func (m *TemplateMutation) SetInbounds(c []config1.Inbound) {
-	m.inbounds = &c
+func (m *TemplateMutation) SetInbounds(s []singbox.Inbound) {
+	m.inbounds = &s
 	m.appendinbounds = nil
 }
 
 // Inbounds returns the value of the "inbounds" field in the mutation.
-func (m *TemplateMutation) Inbounds() (r []config1.Inbound, exists bool) {
+func (m *TemplateMutation) Inbounds() (r []singbox.Inbound, exists bool) {
 	v := m.inbounds
 	if v == nil {
 		return
@@ -1591,7 +1591,7 @@ func (m *TemplateMutation) Inbounds() (r []config1.Inbound, exists bool) {
 // OldInbounds returns the old "inbounds" field's value of the Template entity.
 // If the Template object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldInbounds(ctx context.Context) (v []config1.Inbound, err error) {
+func (m *TemplateMutation) OldInbounds(ctx context.Context) (v []singbox.Inbound, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldInbounds is only allowed on UpdateOne operations")
 	}
@@ -1605,13 +1605,13 @@ func (m *TemplateMutation) OldInbounds(ctx context.Context) (v []config1.Inbound
 	return oldValue.Inbounds, nil
 }
 
-// AppendInbounds adds c to the "inbounds" field.
-func (m *TemplateMutation) AppendInbounds(c []config1.Inbound) {
-	m.appendinbounds = append(m.appendinbounds, c...)
+// AppendInbounds adds s to the "inbounds" field.
+func (m *TemplateMutation) AppendInbounds(s []singbox.Inbound) {
+	m.appendinbounds = append(m.appendinbounds, s...)
 }
 
 // AppendedInbounds returns the list of values that were appended to the "inbounds" field in this mutation.
-func (m *TemplateMutation) AppendedInbounds() ([]config1.Inbound, bool) {
+func (m *TemplateMutation) AppendedInbounds() ([]singbox.Inbound, bool) {
 	if len(m.appendinbounds) == 0 {
 		return nil, false
 	}
@@ -1639,13 +1639,13 @@ func (m *TemplateMutation) ResetInbounds() {
 }
 
 // SetOutboundGroups sets the "outbound_groups" field.
-func (m *TemplateMutation) SetOutboundGroups(cg []config1.OutboundGroup) {
-	m.outbound_groups = &cg
+func (m *TemplateMutation) SetOutboundGroups(sg []singbox.OutboundGroup) {
+	m.outbound_groups = &sg
 	m.appendoutbound_groups = nil
 }
 
 // OutboundGroups returns the value of the "outbound_groups" field in the mutation.
-func (m *TemplateMutation) OutboundGroups() (r []config1.OutboundGroup, exists bool) {
+func (m *TemplateMutation) OutboundGroups() (r []singbox.OutboundGroup, exists bool) {
 	v := m.outbound_groups
 	if v == nil {
 		return
@@ -1656,7 +1656,7 @@ func (m *TemplateMutation) OutboundGroups() (r []config1.OutboundGroup, exists b
 // OldOutboundGroups returns the old "outbound_groups" field's value of the Template entity.
 // If the Template object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldOutboundGroups(ctx context.Context) (v []config1.OutboundGroup, err error) {
+func (m *TemplateMutation) OldOutboundGroups(ctx context.Context) (v []singbox.OutboundGroup, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOutboundGroups is only allowed on UpdateOne operations")
 	}
@@ -1670,13 +1670,13 @@ func (m *TemplateMutation) OldOutboundGroups(ctx context.Context) (v []config1.O
 	return oldValue.OutboundGroups, nil
 }
 
-// AppendOutboundGroups adds cg to the "outbound_groups" field.
-func (m *TemplateMutation) AppendOutboundGroups(cg []config1.OutboundGroup) {
-	m.appendoutbound_groups = append(m.appendoutbound_groups, cg...)
+// AppendOutboundGroups adds sg to the "outbound_groups" field.
+func (m *TemplateMutation) AppendOutboundGroups(sg []singbox.OutboundGroup) {
+	m.appendoutbound_groups = append(m.appendoutbound_groups, sg...)
 }
 
 // AppendedOutboundGroups returns the list of values that were appended to the "outbound_groups" field in this mutation.
-func (m *TemplateMutation) AppendedOutboundGroups() ([]config1.OutboundGroup, bool) {
+func (m *TemplateMutation) AppendedOutboundGroups() ([]singbox.OutboundGroup, bool) {
 	if len(m.appendoutbound_groups) == 0 {
 		return nil, false
 	}
@@ -1704,12 +1704,12 @@ func (m *TemplateMutation) ResetOutboundGroups() {
 }
 
 // SetNtp sets the "ntp" field.
-func (m *TemplateMutation) SetNtp(c config1.Ntp) {
-	m.ntp = &c
+func (m *TemplateMutation) SetNtp(s singbox.Ntp) {
+	m.ntp = &s
 }
 
 // Ntp returns the value of the "ntp" field in the mutation.
-func (m *TemplateMutation) Ntp() (r config1.Ntp, exists bool) {
+func (m *TemplateMutation) Ntp() (r singbox.Ntp, exists bool) {
 	v := m.ntp
 	if v == nil {
 		return
@@ -1720,7 +1720,7 @@ func (m *TemplateMutation) Ntp() (r config1.Ntp, exists bool) {
 // OldNtp returns the old "ntp" field's value of the Template entity.
 // If the Template object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldNtp(ctx context.Context) (v config1.Ntp, err error) {
+func (m *TemplateMutation) OldNtp(ctx context.Context) (v singbox.Ntp, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldNtp is only allowed on UpdateOne operations")
 	}
@@ -1753,12 +1753,12 @@ func (m *TemplateMutation) ResetNtp() {
 }
 
 // SetExperiment sets the "experiment" field.
-func (m *TemplateMutation) SetExperiment(c config1.Experiment) {
-	m.experiment = &c
+func (m *TemplateMutation) SetExperiment(s singbox.Experiment) {
+	m.experiment = &s
 }
 
 // Experiment returns the value of the "experiment" field in the mutation.
-func (m *TemplateMutation) Experiment() (r config1.Experiment, exists bool) {
+func (m *TemplateMutation) Experiment() (r singbox.Experiment, exists bool) {
 	v := m.experiment
 	if v == nil {
 		return
@@ -1769,7 +1769,7 @@ func (m *TemplateMutation) Experiment() (r config1.Experiment, exists bool) {
 // OldExperiment returns the old "experiment" field's value of the Template entity.
 // If the Template object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldExperiment(ctx context.Context) (v config1.Experiment, err error) {
+func (m *TemplateMutation) OldExperiment(ctx context.Context) (v singbox.Experiment, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldExperiment is only allowed on UpdateOne operations")
 	}
@@ -1998,49 +1998,49 @@ func (m *TemplateMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case template.FieldDNS:
-		v, ok := value.(config1.DNS)
+		v, ok := value.(singbox.DNS)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDNS(v)
 		return nil
 	case template.FieldLog:
-		v, ok := value.(config1.Log)
+		v, ok := value.(singbox.Log)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLog(v)
 		return nil
 	case template.FieldRoute:
-		v, ok := value.(config1.Route)
+		v, ok := value.(singbox.Route)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRoute(v)
 		return nil
 	case template.FieldInbounds:
-		v, ok := value.([]config1.Inbound)
+		v, ok := value.([]singbox.Inbound)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetInbounds(v)
 		return nil
 	case template.FieldOutboundGroups:
-		v, ok := value.([]config1.OutboundGroup)
+		v, ok := value.([]singbox.OutboundGroup)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetOutboundGroups(v)
 		return nil
 	case template.FieldNtp:
-		v, ok := value.(config1.Ntp)
+		v, ok := value.(singbox.Ntp)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNtp(v)
 		return nil
 	case template.FieldExperiment:
-		v, ok := value.(config1.Experiment)
+		v, ok := value.(singbox.Experiment)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

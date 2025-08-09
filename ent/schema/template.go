@@ -1,7 +1,7 @@
 package schema
 
 import (
-	config1 "sifu-box/config"
+	"sifu-box/singbox"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
@@ -16,10 +16,10 @@ type Template struct {
 func (Template) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").NotEmpty().MaxLen(30).Unique(),
-		field.JSON("dns", config1.DNS{}).Optional(), field.JSON("log", config1.Log{}).Optional(),
-		field.JSON("route", config1.Route{}).Optional(), field.JSON("inbounds", []config1.Inbound{}).Optional(),
-		field.JSON("outbound_groups", []config1.OutboundGroup{}).Optional(), field.JSON("ntp", config1.Ntp{}).Optional(),
-		field.JSON("experiment", config1.Experiment{}).Optional(), field.Strings("providers").Optional(),
+		field.JSON("dns", singbox.DNS{}).Optional(), field.JSON("log", singbox.Log{}).Optional(),
+		field.JSON("route", singbox.Route{}).Optional(), field.JSON("inbounds", []singbox.Inbound{}).Optional(),
+		field.JSON("outbound_groups", []singbox.OutboundGroup{}).Optional(), field.JSON("ntp", singbox.Ntp{}).Optional(),
+		field.JSON("experiment", singbox.Experiment{}).Optional(), field.Strings("providers").Optional(),
 	}
 }
 

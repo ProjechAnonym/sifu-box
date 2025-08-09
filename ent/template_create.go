@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	config1 "sifu-box/config"
 	"sifu-box/ent/template"
+	"sifu-box/singbox"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -27,13 +27,13 @@ func (_c *TemplateCreate) SetName(v string) *TemplateCreate {
 }
 
 // SetDNS sets the "dns" field.
-func (_c *TemplateCreate) SetDNS(v config1.DNS) *TemplateCreate {
+func (_c *TemplateCreate) SetDNS(v singbox.DNS) *TemplateCreate {
 	_c.mutation.SetDNS(v)
 	return _c
 }
 
 // SetNillableDNS sets the "dns" field if the given value is not nil.
-func (_c *TemplateCreate) SetNillableDNS(v *config1.DNS) *TemplateCreate {
+func (_c *TemplateCreate) SetNillableDNS(v *singbox.DNS) *TemplateCreate {
 	if v != nil {
 		_c.SetDNS(*v)
 	}
@@ -41,13 +41,13 @@ func (_c *TemplateCreate) SetNillableDNS(v *config1.DNS) *TemplateCreate {
 }
 
 // SetLog sets the "log" field.
-func (_c *TemplateCreate) SetLog(v config1.Log) *TemplateCreate {
+func (_c *TemplateCreate) SetLog(v singbox.Log) *TemplateCreate {
 	_c.mutation.SetLog(v)
 	return _c
 }
 
 // SetNillableLog sets the "log" field if the given value is not nil.
-func (_c *TemplateCreate) SetNillableLog(v *config1.Log) *TemplateCreate {
+func (_c *TemplateCreate) SetNillableLog(v *singbox.Log) *TemplateCreate {
 	if v != nil {
 		_c.SetLog(*v)
 	}
@@ -55,13 +55,13 @@ func (_c *TemplateCreate) SetNillableLog(v *config1.Log) *TemplateCreate {
 }
 
 // SetRoute sets the "route" field.
-func (_c *TemplateCreate) SetRoute(v config1.Route) *TemplateCreate {
+func (_c *TemplateCreate) SetRoute(v singbox.Route) *TemplateCreate {
 	_c.mutation.SetRoute(v)
 	return _c
 }
 
 // SetNillableRoute sets the "route" field if the given value is not nil.
-func (_c *TemplateCreate) SetNillableRoute(v *config1.Route) *TemplateCreate {
+func (_c *TemplateCreate) SetNillableRoute(v *singbox.Route) *TemplateCreate {
 	if v != nil {
 		_c.SetRoute(*v)
 	}
@@ -69,25 +69,25 @@ func (_c *TemplateCreate) SetNillableRoute(v *config1.Route) *TemplateCreate {
 }
 
 // SetInbounds sets the "inbounds" field.
-func (_c *TemplateCreate) SetInbounds(v []config1.Inbound) *TemplateCreate {
+func (_c *TemplateCreate) SetInbounds(v []singbox.Inbound) *TemplateCreate {
 	_c.mutation.SetInbounds(v)
 	return _c
 }
 
 // SetOutboundGroups sets the "outbound_groups" field.
-func (_c *TemplateCreate) SetOutboundGroups(v []config1.OutboundGroup) *TemplateCreate {
+func (_c *TemplateCreate) SetOutboundGroups(v []singbox.OutboundGroup) *TemplateCreate {
 	_c.mutation.SetOutboundGroups(v)
 	return _c
 }
 
 // SetNtp sets the "ntp" field.
-func (_c *TemplateCreate) SetNtp(v config1.Ntp) *TemplateCreate {
+func (_c *TemplateCreate) SetNtp(v singbox.Ntp) *TemplateCreate {
 	_c.mutation.SetNtp(v)
 	return _c
 }
 
 // SetNillableNtp sets the "ntp" field if the given value is not nil.
-func (_c *TemplateCreate) SetNillableNtp(v *config1.Ntp) *TemplateCreate {
+func (_c *TemplateCreate) SetNillableNtp(v *singbox.Ntp) *TemplateCreate {
 	if v != nil {
 		_c.SetNtp(*v)
 	}
@@ -95,13 +95,13 @@ func (_c *TemplateCreate) SetNillableNtp(v *config1.Ntp) *TemplateCreate {
 }
 
 // SetExperiment sets the "experiment" field.
-func (_c *TemplateCreate) SetExperiment(v config1.Experiment) *TemplateCreate {
+func (_c *TemplateCreate) SetExperiment(v singbox.Experiment) *TemplateCreate {
 	_c.mutation.SetExperiment(v)
 	return _c
 }
 
 // SetNillableExperiment sets the "experiment" field if the given value is not nil.
-func (_c *TemplateCreate) SetNillableExperiment(v *config1.Experiment) *TemplateCreate {
+func (_c *TemplateCreate) SetNillableExperiment(v *singbox.Experiment) *TemplateCreate {
 	if v != nil {
 		_c.SetExperiment(*v)
 	}

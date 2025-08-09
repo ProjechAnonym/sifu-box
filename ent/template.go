@@ -5,8 +5,8 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	config1 "sifu-box/config"
 	"sifu-box/ent/template"
+	"sifu-box/singbox"
 	"strings"
 
 	"entgo.io/ent"
@@ -21,19 +21,19 @@ type Template struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// DNS holds the value of the "dns" field.
-	DNS config1.DNS `json:"dns,omitempty"`
+	DNS singbox.DNS `json:"dns,omitempty"`
 	// Log holds the value of the "log" field.
-	Log config1.Log `json:"log,omitempty"`
+	Log singbox.Log `json:"log,omitempty"`
 	// Route holds the value of the "route" field.
-	Route config1.Route `json:"route,omitempty"`
+	Route singbox.Route `json:"route,omitempty"`
 	// Inbounds holds the value of the "inbounds" field.
-	Inbounds []config1.Inbound `json:"inbounds,omitempty"`
+	Inbounds []singbox.Inbound `json:"inbounds,omitempty"`
 	// OutboundGroups holds the value of the "outbound_groups" field.
-	OutboundGroups []config1.OutboundGroup `json:"outbound_groups,omitempty"`
+	OutboundGroups []singbox.OutboundGroup `json:"outbound_groups,omitempty"`
 	// Ntp holds the value of the "ntp" field.
-	Ntp config1.Ntp `json:"ntp,omitempty"`
+	Ntp singbox.Ntp `json:"ntp,omitempty"`
 	// Experiment holds the value of the "experiment" field.
-	Experiment config1.Experiment `json:"experiment,omitempty"`
+	Experiment singbox.Experiment `json:"experiment,omitempty"`
 	// Providers holds the value of the "providers" field.
 	Providers    []string `json:"providers,omitempty"`
 	selectValues sql.SelectValues

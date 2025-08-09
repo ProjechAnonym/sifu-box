@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	config1 "sifu-box/config"
 	"sifu-box/ent/predicate"
 	"sifu-box/ent/template"
+	"sifu-box/singbox"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -44,13 +44,13 @@ func (_u *TemplateUpdate) SetNillableName(v *string) *TemplateUpdate {
 }
 
 // SetDNS sets the "dns" field.
-func (_u *TemplateUpdate) SetDNS(v config1.DNS) *TemplateUpdate {
+func (_u *TemplateUpdate) SetDNS(v singbox.DNS) *TemplateUpdate {
 	_u.mutation.SetDNS(v)
 	return _u
 }
 
 // SetNillableDNS sets the "dns" field if the given value is not nil.
-func (_u *TemplateUpdate) SetNillableDNS(v *config1.DNS) *TemplateUpdate {
+func (_u *TemplateUpdate) SetNillableDNS(v *singbox.DNS) *TemplateUpdate {
 	if v != nil {
 		_u.SetDNS(*v)
 	}
@@ -64,13 +64,13 @@ func (_u *TemplateUpdate) ClearDNS() *TemplateUpdate {
 }
 
 // SetLog sets the "log" field.
-func (_u *TemplateUpdate) SetLog(v config1.Log) *TemplateUpdate {
+func (_u *TemplateUpdate) SetLog(v singbox.Log) *TemplateUpdate {
 	_u.mutation.SetLog(v)
 	return _u
 }
 
 // SetNillableLog sets the "log" field if the given value is not nil.
-func (_u *TemplateUpdate) SetNillableLog(v *config1.Log) *TemplateUpdate {
+func (_u *TemplateUpdate) SetNillableLog(v *singbox.Log) *TemplateUpdate {
 	if v != nil {
 		_u.SetLog(*v)
 	}
@@ -84,13 +84,13 @@ func (_u *TemplateUpdate) ClearLog() *TemplateUpdate {
 }
 
 // SetRoute sets the "route" field.
-func (_u *TemplateUpdate) SetRoute(v config1.Route) *TemplateUpdate {
+func (_u *TemplateUpdate) SetRoute(v singbox.Route) *TemplateUpdate {
 	_u.mutation.SetRoute(v)
 	return _u
 }
 
 // SetNillableRoute sets the "route" field if the given value is not nil.
-func (_u *TemplateUpdate) SetNillableRoute(v *config1.Route) *TemplateUpdate {
+func (_u *TemplateUpdate) SetNillableRoute(v *singbox.Route) *TemplateUpdate {
 	if v != nil {
 		_u.SetRoute(*v)
 	}
@@ -104,13 +104,13 @@ func (_u *TemplateUpdate) ClearRoute() *TemplateUpdate {
 }
 
 // SetInbounds sets the "inbounds" field.
-func (_u *TemplateUpdate) SetInbounds(v []config1.Inbound) *TemplateUpdate {
+func (_u *TemplateUpdate) SetInbounds(v []singbox.Inbound) *TemplateUpdate {
 	_u.mutation.SetInbounds(v)
 	return _u
 }
 
 // AppendInbounds appends value to the "inbounds" field.
-func (_u *TemplateUpdate) AppendInbounds(v []config1.Inbound) *TemplateUpdate {
+func (_u *TemplateUpdate) AppendInbounds(v []singbox.Inbound) *TemplateUpdate {
 	_u.mutation.AppendInbounds(v)
 	return _u
 }
@@ -122,13 +122,13 @@ func (_u *TemplateUpdate) ClearInbounds() *TemplateUpdate {
 }
 
 // SetOutboundGroups sets the "outbound_groups" field.
-func (_u *TemplateUpdate) SetOutboundGroups(v []config1.OutboundGroup) *TemplateUpdate {
+func (_u *TemplateUpdate) SetOutboundGroups(v []singbox.OutboundGroup) *TemplateUpdate {
 	_u.mutation.SetOutboundGroups(v)
 	return _u
 }
 
 // AppendOutboundGroups appends value to the "outbound_groups" field.
-func (_u *TemplateUpdate) AppendOutboundGroups(v []config1.OutboundGroup) *TemplateUpdate {
+func (_u *TemplateUpdate) AppendOutboundGroups(v []singbox.OutboundGroup) *TemplateUpdate {
 	_u.mutation.AppendOutboundGroups(v)
 	return _u
 }
@@ -140,13 +140,13 @@ func (_u *TemplateUpdate) ClearOutboundGroups() *TemplateUpdate {
 }
 
 // SetNtp sets the "ntp" field.
-func (_u *TemplateUpdate) SetNtp(v config1.Ntp) *TemplateUpdate {
+func (_u *TemplateUpdate) SetNtp(v singbox.Ntp) *TemplateUpdate {
 	_u.mutation.SetNtp(v)
 	return _u
 }
 
 // SetNillableNtp sets the "ntp" field if the given value is not nil.
-func (_u *TemplateUpdate) SetNillableNtp(v *config1.Ntp) *TemplateUpdate {
+func (_u *TemplateUpdate) SetNillableNtp(v *singbox.Ntp) *TemplateUpdate {
 	if v != nil {
 		_u.SetNtp(*v)
 	}
@@ -160,13 +160,13 @@ func (_u *TemplateUpdate) ClearNtp() *TemplateUpdate {
 }
 
 // SetExperiment sets the "experiment" field.
-func (_u *TemplateUpdate) SetExperiment(v config1.Experiment) *TemplateUpdate {
+func (_u *TemplateUpdate) SetExperiment(v singbox.Experiment) *TemplateUpdate {
 	_u.mutation.SetExperiment(v)
 	return _u
 }
 
 // SetNillableExperiment sets the "experiment" field if the given value is not nil.
-func (_u *TemplateUpdate) SetNillableExperiment(v *config1.Experiment) *TemplateUpdate {
+func (_u *TemplateUpdate) SetNillableExperiment(v *singbox.Experiment) *TemplateUpdate {
 	if v != nil {
 		_u.SetExperiment(*v)
 	}
@@ -352,13 +352,13 @@ func (_u *TemplateUpdateOne) SetNillableName(v *string) *TemplateUpdateOne {
 }
 
 // SetDNS sets the "dns" field.
-func (_u *TemplateUpdateOne) SetDNS(v config1.DNS) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetDNS(v singbox.DNS) *TemplateUpdateOne {
 	_u.mutation.SetDNS(v)
 	return _u
 }
 
 // SetNillableDNS sets the "dns" field if the given value is not nil.
-func (_u *TemplateUpdateOne) SetNillableDNS(v *config1.DNS) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetNillableDNS(v *singbox.DNS) *TemplateUpdateOne {
 	if v != nil {
 		_u.SetDNS(*v)
 	}
@@ -372,13 +372,13 @@ func (_u *TemplateUpdateOne) ClearDNS() *TemplateUpdateOne {
 }
 
 // SetLog sets the "log" field.
-func (_u *TemplateUpdateOne) SetLog(v config1.Log) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetLog(v singbox.Log) *TemplateUpdateOne {
 	_u.mutation.SetLog(v)
 	return _u
 }
 
 // SetNillableLog sets the "log" field if the given value is not nil.
-func (_u *TemplateUpdateOne) SetNillableLog(v *config1.Log) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetNillableLog(v *singbox.Log) *TemplateUpdateOne {
 	if v != nil {
 		_u.SetLog(*v)
 	}
@@ -392,13 +392,13 @@ func (_u *TemplateUpdateOne) ClearLog() *TemplateUpdateOne {
 }
 
 // SetRoute sets the "route" field.
-func (_u *TemplateUpdateOne) SetRoute(v config1.Route) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetRoute(v singbox.Route) *TemplateUpdateOne {
 	_u.mutation.SetRoute(v)
 	return _u
 }
 
 // SetNillableRoute sets the "route" field if the given value is not nil.
-func (_u *TemplateUpdateOne) SetNillableRoute(v *config1.Route) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetNillableRoute(v *singbox.Route) *TemplateUpdateOne {
 	if v != nil {
 		_u.SetRoute(*v)
 	}
@@ -412,13 +412,13 @@ func (_u *TemplateUpdateOne) ClearRoute() *TemplateUpdateOne {
 }
 
 // SetInbounds sets the "inbounds" field.
-func (_u *TemplateUpdateOne) SetInbounds(v []config1.Inbound) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetInbounds(v []singbox.Inbound) *TemplateUpdateOne {
 	_u.mutation.SetInbounds(v)
 	return _u
 }
 
 // AppendInbounds appends value to the "inbounds" field.
-func (_u *TemplateUpdateOne) AppendInbounds(v []config1.Inbound) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) AppendInbounds(v []singbox.Inbound) *TemplateUpdateOne {
 	_u.mutation.AppendInbounds(v)
 	return _u
 }
@@ -430,13 +430,13 @@ func (_u *TemplateUpdateOne) ClearInbounds() *TemplateUpdateOne {
 }
 
 // SetOutboundGroups sets the "outbound_groups" field.
-func (_u *TemplateUpdateOne) SetOutboundGroups(v []config1.OutboundGroup) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetOutboundGroups(v []singbox.OutboundGroup) *TemplateUpdateOne {
 	_u.mutation.SetOutboundGroups(v)
 	return _u
 }
 
 // AppendOutboundGroups appends value to the "outbound_groups" field.
-func (_u *TemplateUpdateOne) AppendOutboundGroups(v []config1.OutboundGroup) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) AppendOutboundGroups(v []singbox.OutboundGroup) *TemplateUpdateOne {
 	_u.mutation.AppendOutboundGroups(v)
 	return _u
 }
@@ -448,13 +448,13 @@ func (_u *TemplateUpdateOne) ClearOutboundGroups() *TemplateUpdateOne {
 }
 
 // SetNtp sets the "ntp" field.
-func (_u *TemplateUpdateOne) SetNtp(v config1.Ntp) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetNtp(v singbox.Ntp) *TemplateUpdateOne {
 	_u.mutation.SetNtp(v)
 	return _u
 }
 
 // SetNillableNtp sets the "ntp" field if the given value is not nil.
-func (_u *TemplateUpdateOne) SetNillableNtp(v *config1.Ntp) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetNillableNtp(v *singbox.Ntp) *TemplateUpdateOne {
 	if v != nil {
 		_u.SetNtp(*v)
 	}
@@ -468,13 +468,13 @@ func (_u *TemplateUpdateOne) ClearNtp() *TemplateUpdateOne {
 }
 
 // SetExperiment sets the "experiment" field.
-func (_u *TemplateUpdateOne) SetExperiment(v config1.Experiment) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetExperiment(v singbox.Experiment) *TemplateUpdateOne {
 	_u.mutation.SetExperiment(v)
 	return _u
 }
 
 // SetNillableExperiment sets the "experiment" field if the given value is not nil.
-func (_u *TemplateUpdateOne) SetNillableExperiment(v *config1.Experiment) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetNillableExperiment(v *singbox.Experiment) *TemplateUpdateOne {
 	if v != nil {
 		_u.SetExperiment(*v)
 	}
