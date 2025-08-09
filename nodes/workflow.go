@@ -1,7 +1,6 @@
 package nodes
 
 import (
-	"context"
 	"net/http"
 	"sifu-box/ent"
 	"sync"
@@ -17,7 +16,7 @@ import (
 //
 // 返回值:
 //   - []error: 在处理过程中发生的错误列表
-func Merge(providers []*ent.Provider, ent_client *ent.Client, logger *zap.Logger) []error {
+func Fetch(providers []*ent.Provider, ent_client *ent.Client, logger *zap.Logger) []error {
 	var jobs sync.WaitGroup
 	var errChan = make(chan error, 5)
 	var countChan = make(chan int, 5)
@@ -73,22 +72,22 @@ func Merge(providers []*ent.Provider, ent_client *ent.Client, logger *zap.Logger
 					errChan <- err
 					return
 				}
-
-				if err := ent_client.Provider.UpdateOne(provider).SetNodes(outbounds).Exec(context.Background()); err != nil {
+				if err := updateNodes(provider.Name, provider.UUID, outbounds, ent_client); err != nil {
 					errChan <- err
 					return
 				}
+
 			} else {
 				outbounds, err := fetchFromLocal(provider.Name, provider.Path, logger)
 				if err != nil {
 					errChan <- err
 					return
 				}
-
-				if err := ent_client.Provider.UpdateOne(provider).SetNodes(outbounds).Exec(context.Background()); err != nil {
+				if err := updateNodes(provider.Name, provider.UUID, outbounds, ent_client); err != nil {
 					errChan <- err
 					return
 				}
+
 			}
 		}()
 	}

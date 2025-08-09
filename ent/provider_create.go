@@ -43,6 +43,20 @@ func (_c *ProviderCreate) SetRemote(v bool) *ProviderCreate {
 	return _c
 }
 
+// SetUUID sets the "uuid" field.
+func (_c *ProviderCreate) SetUUID(v string) *ProviderCreate {
+	_c.mutation.SetUUID(v)
+	return _c
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (_c *ProviderCreate) SetNillableUUID(v *string) *ProviderCreate {
+	if v != nil {
+		_c.SetUUID(*v)
+	}
+	return _c
+}
+
 // Mutation returns the ProviderMutation object of the builder.
 func (_c *ProviderCreate) Mutation() *ProviderMutation {
 	return _c.mutation
@@ -96,6 +110,11 @@ func (_c *ProviderCreate) check() error {
 	if _, ok := _c.mutation.Remote(); !ok {
 		return &ValidationError{Name: "remote", err: errors.New(`ent: missing required field "Provider.remote"`)}
 	}
+	if v, ok := _c.mutation.UUID(); ok {
+		if err := provider.UUIDValidator(v); err != nil {
+			return &ValidationError{Name: "uuid", err: fmt.Errorf(`ent: validator failed for field "Provider.uuid": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -137,6 +156,10 @@ func (_c *ProviderCreate) createSpec() (*Provider, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Remote(); ok {
 		_spec.SetField(provider.FieldRemote, field.TypeBool, value)
 		_node.Remote = value
+	}
+	if value, ok := _c.mutation.UUID(); ok {
+		_spec.SetField(provider.FieldUUID, field.TypeString, value)
+		_node.UUID = value
 	}
 	return _node, _spec
 }

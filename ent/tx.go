@@ -14,6 +14,10 @@ type Tx struct {
 	config
 	// Provider is the client for interacting with the Provider builders.
 	Provider *ProviderClient
+	// Ruleset is the client for interacting with the Ruleset builders.
+	Ruleset *RulesetClient
+	// Template is the client for interacting with the Template builders.
+	Template *TemplateClient
 
 	// lazily loaded.
 	client     *Client
@@ -146,6 +150,8 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Provider = NewProviderClient(tx.config)
+	tx.Ruleset = NewRulesetClient(tx.config)
+	tx.Template = NewTemplateClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

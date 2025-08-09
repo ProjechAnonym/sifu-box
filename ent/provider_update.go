@@ -88,6 +88,26 @@ func (_u *ProviderUpdate) SetNillableRemote(v *bool) *ProviderUpdate {
 	return _u
 }
 
+// SetUUID sets the "uuid" field.
+func (_u *ProviderUpdate) SetUUID(v string) *ProviderUpdate {
+	_u.mutation.SetUUID(v)
+	return _u
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (_u *ProviderUpdate) SetNillableUUID(v *string) *ProviderUpdate {
+	if v != nil {
+		_u.SetUUID(*v)
+	}
+	return _u
+}
+
+// ClearUUID clears the value of the "uuid" field.
+func (_u *ProviderUpdate) ClearUUID() *ProviderUpdate {
+	_u.mutation.ClearUUID()
+	return _u
+}
+
 // Mutation returns the ProviderMutation object of the builder.
 func (_u *ProviderUpdate) Mutation() *ProviderMutation {
 	return _u.mutation
@@ -132,6 +152,11 @@ func (_u *ProviderUpdate) check() error {
 			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "Provider.path": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.UUID(); ok {
+		if err := provider.UUIDValidator(v); err != nil {
+			return &ValidationError{Name: "uuid", err: fmt.Errorf(`ent: validator failed for field "Provider.uuid": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -166,6 +191,12 @@ func (_u *ProviderUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Remote(); ok {
 		_spec.SetField(provider.FieldRemote, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.UUID(); ok {
+		_spec.SetField(provider.FieldUUID, field.TypeString, value)
+	}
+	if _u.mutation.UUIDCleared() {
+		_spec.ClearField(provider.FieldUUID, field.TypeString)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -247,6 +278,26 @@ func (_u *ProviderUpdateOne) SetNillableRemote(v *bool) *ProviderUpdateOne {
 	return _u
 }
 
+// SetUUID sets the "uuid" field.
+func (_u *ProviderUpdateOne) SetUUID(v string) *ProviderUpdateOne {
+	_u.mutation.SetUUID(v)
+	return _u
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (_u *ProviderUpdateOne) SetNillableUUID(v *string) *ProviderUpdateOne {
+	if v != nil {
+		_u.SetUUID(*v)
+	}
+	return _u
+}
+
+// ClearUUID clears the value of the "uuid" field.
+func (_u *ProviderUpdateOne) ClearUUID() *ProviderUpdateOne {
+	_u.mutation.ClearUUID()
+	return _u
+}
+
 // Mutation returns the ProviderMutation object of the builder.
 func (_u *ProviderUpdateOne) Mutation() *ProviderMutation {
 	return _u.mutation
@@ -304,6 +355,11 @@ func (_u *ProviderUpdateOne) check() error {
 			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "Provider.path": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.UUID(); ok {
+		if err := provider.UUIDValidator(v); err != nil {
+			return &ValidationError{Name: "uuid", err: fmt.Errorf(`ent: validator failed for field "Provider.uuid": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -355,6 +411,12 @@ func (_u *ProviderUpdateOne) sqlSave(ctx context.Context) (_node *Provider, err 
 	}
 	if value, ok := _u.mutation.Remote(); ok {
 		_spec.SetField(provider.FieldRemote, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.UUID(); ok {
+		_spec.SetField(provider.FieldUUID, field.TypeString, value)
+	}
+	if _u.mutation.UUIDCleared() {
+		_spec.ClearField(provider.FieldUUID, field.TypeString)
 	}
 	_node = &Provider{config: _u.config}
 	_spec.Assign = _node.assignValues

@@ -15,16 +15,61 @@ var (
 		{Name: "path", Type: field.TypeString, Size: 1000},
 		{Name: "nodes", Type: field.TypeJSON, Nullable: true},
 		{Name: "remote", Type: field.TypeBool},
+		{Name: "uuid", Type: field.TypeString, Nullable: true, Size: 32},
 	}
 	// ProvidersTable holds the schema information for the "providers" table.
 	ProvidersTable = &schema.Table{
 		Name:       "providers",
 		Columns:    ProvidersColumns,
 		PrimaryKey: []*schema.Column{ProvidersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "provider_name_path",
+				Unique:  true,
+				Columns: []*schema.Column{ProvidersColumns[1], ProvidersColumns[2]},
+			},
+		},
+	}
+	// RulesetsColumns holds the columns for the "rulesets" table.
+	RulesetsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
+		{Name: "path", Type: field.TypeString, Size: 1000},
+		{Name: "remote", Type: field.TypeBool},
+		{Name: "binary", Type: field.TypeBool},
+		{Name: "download_detour", Type: field.TypeString, Nullable: true},
+		{Name: "update_interval", Type: field.TypeString, Nullable: true, Size: 30},
+	}
+	// RulesetsTable holds the schema information for the "rulesets" table.
+	RulesetsTable = &schema.Table{
+		Name:       "rulesets",
+		Columns:    RulesetsColumns,
+		PrimaryKey: []*schema.Column{RulesetsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "ruleset_name_path",
+				Unique:  true,
+				Columns: []*schema.Column{RulesetsColumns[1], RulesetsColumns[2]},
+			},
+		},
+	}
+	// TemplatesColumns holds the columns for the "templates" table.
+	TemplatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
+		{Name: "dns", Type: field.TypeJSON},
+	}
+	// TemplatesTable holds the schema information for the "templates" table.
+	TemplatesTable = &schema.Table{
+		Name:       "templates",
+		Columns:    TemplatesColumns,
+		PrimaryKey: []*schema.Column{TemplatesColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ProvidersTable,
+		RulesetsTable,
+		TemplatesTable,
 	}
 )
 

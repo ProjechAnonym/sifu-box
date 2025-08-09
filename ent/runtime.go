@@ -4,7 +4,9 @@ package ent
 
 import (
 	"sifu-box/ent/provider"
+	"sifu-box/ent/ruleset"
 	"sifu-box/ent/schema"
+	"sifu-box/ent/template"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -43,6 +45,72 @@ func init() {
 		return func(_path string) error {
 			for _, fn := range fns {
 				if err := fn(_path); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// providerDescUUID is the schema descriptor for uuid field.
+	providerDescUUID := providerFields[4].Descriptor()
+	// provider.UUIDValidator is a validator for the "uuid" field. It is called by the builders before save.
+	provider.UUIDValidator = providerDescUUID.Validators[0].(func(string) error)
+	rulesetFields := schema.Ruleset{}.Fields()
+	_ = rulesetFields
+	// rulesetDescName is the schema descriptor for name field.
+	rulesetDescName := rulesetFields[0].Descriptor()
+	// ruleset.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	ruleset.NameValidator = func() func(string) error {
+		validators := rulesetDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// rulesetDescPath is the schema descriptor for path field.
+	rulesetDescPath := rulesetFields[1].Descriptor()
+	// ruleset.PathValidator is a validator for the "path" field. It is called by the builders before save.
+	ruleset.PathValidator = func() func(string) error {
+		validators := rulesetDescPath.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(_path string) error {
+			for _, fn := range fns {
+				if err := fn(_path); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// rulesetDescUpdateInterval is the schema descriptor for update_interval field.
+	rulesetDescUpdateInterval := rulesetFields[5].Descriptor()
+	// ruleset.UpdateIntervalValidator is a validator for the "update_interval" field. It is called by the builders before save.
+	ruleset.UpdateIntervalValidator = rulesetDescUpdateInterval.Validators[0].(func(string) error)
+	templateFields := schema.Template{}.Fields()
+	_ = templateFields
+	// templateDescName is the schema descriptor for name field.
+	templateDescName := templateFields[0].Descriptor()
+	// template.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	template.NameValidator = func() func(string) error {
+		validators := templateDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
 					return err
 				}
 			}

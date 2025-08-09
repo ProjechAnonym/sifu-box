@@ -3,17 +3,16 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
-	"sifu-box/ent/provider"
+	"sifu-box/ent/ruleset"
 	"strings"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 )
 
-// Provider is the model entity for the Provider schema.
-type Provider struct {
+// Ruleset is the model entity for the Ruleset schema.
+type Ruleset struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
@@ -21,27 +20,27 @@ type Provider struct {
 	Name string `json:"name,omitempty"`
 	// Path holds the value of the "path" field.
 	Path string `json:"path,omitempty"`
-	// Nodes holds the value of the "nodes" field.
-	Nodes []map[string]interface{} `json:"nodes,omitempty"`
 	// Remote holds the value of the "remote" field.
 	Remote bool `json:"remote,omitempty"`
-	// UUID holds the value of the "uuid" field.
-	UUID         string `json:"uuid,omitempty"`
-	selectValues sql.SelectValues
+	// Binary holds the value of the "binary" field.
+	Binary bool `json:"binary,omitempty"`
+	// DownloadDetour holds the value of the "download_detour" field.
+	DownloadDetour string `json:"download_detour,omitempty"`
+	// UpdateInterval holds the value of the "update_interval" field.
+	UpdateInterval string `json:"update_interval,omitempty"`
+	selectValues   sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Provider) scanValues(columns []string) ([]any, error) {
+func (*Ruleset) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case provider.FieldNodes:
-			values[i] = new([]byte)
-		case provider.FieldRemote:
+		case ruleset.FieldRemote, ruleset.FieldBinary:
 			values[i] = new(sql.NullBool)
-		case provider.FieldID:
+		case ruleset.FieldID:
 			values[i] = new(sql.NullInt64)
-		case provider.FieldName, provider.FieldPath, provider.FieldUUID:
+		case ruleset.FieldName, ruleset.FieldPath, ruleset.FieldDownloadDetour, ruleset.FieldUpdateInterval:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -51,50 +50,54 @@ func (*Provider) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Provider fields.
-func (_m *Provider) assignValues(columns []string, values []any) error {
+// to the Ruleset fields.
+func (_m *Ruleset) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case provider.FieldID:
+		case ruleset.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int(value.Int64)
-		case provider.FieldName:
+		case ruleset.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				_m.Name = value.String
 			}
-		case provider.FieldPath:
+		case ruleset.FieldPath:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field path", values[i])
 			} else if value.Valid {
 				_m.Path = value.String
 			}
-		case provider.FieldNodes:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field nodes", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_m.Nodes); err != nil {
-					return fmt.Errorf("unmarshal field nodes: %w", err)
-				}
-			}
-		case provider.FieldRemote:
+		case ruleset.FieldRemote:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field remote", values[i])
 			} else if value.Valid {
 				_m.Remote = value.Bool
 			}
-		case provider.FieldUUID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field uuid", values[i])
+		case ruleset.FieldBinary:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field binary", values[i])
 			} else if value.Valid {
-				_m.UUID = value.String
+				_m.Binary = value.Bool
+			}
+		case ruleset.FieldDownloadDetour:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field download_detour", values[i])
+			} else if value.Valid {
+				_m.DownloadDetour = value.String
+			}
+		case ruleset.FieldUpdateInterval:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field update_interval", values[i])
+			} else if value.Valid {
+				_m.UpdateInterval = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -103,34 +106,34 @@ func (_m *Provider) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the Provider.
+// Value returns the ent.Value that was dynamically selected and assigned to the Ruleset.
 // This includes values selected through modifiers, order, etc.
-func (_m *Provider) Value(name string) (ent.Value, error) {
+func (_m *Ruleset) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// Update returns a builder for updating this Provider.
-// Note that you need to call Provider.Unwrap() before calling this method if this Provider
+// Update returns a builder for updating this Ruleset.
+// Note that you need to call Ruleset.Unwrap() before calling this method if this Ruleset
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *Provider) Update() *ProviderUpdateOne {
-	return NewProviderClient(_m.config).UpdateOne(_m)
+func (_m *Ruleset) Update() *RulesetUpdateOne {
+	return NewRulesetClient(_m.config).UpdateOne(_m)
 }
 
-// Unwrap unwraps the Provider entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the Ruleset entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *Provider) Unwrap() *Provider {
+func (_m *Ruleset) Unwrap() *Ruleset {
 	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Provider is not a transactional entity")
+		panic("ent: Ruleset is not a transactional entity")
 	}
 	_m.config.driver = _tx.drv
 	return _m
 }
 
 // String implements the fmt.Stringer.
-func (_m *Provider) String() string {
+func (_m *Ruleset) String() string {
 	var builder strings.Builder
-	builder.WriteString("Provider(")
+	builder.WriteString("Ruleset(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
@@ -138,17 +141,20 @@ func (_m *Provider) String() string {
 	builder.WriteString("path=")
 	builder.WriteString(_m.Path)
 	builder.WriteString(", ")
-	builder.WriteString("nodes=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Nodes))
-	builder.WriteString(", ")
 	builder.WriteString("remote=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Remote))
 	builder.WriteString(", ")
-	builder.WriteString("uuid=")
-	builder.WriteString(_m.UUID)
+	builder.WriteString("binary=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Binary))
+	builder.WriteString(", ")
+	builder.WriteString("download_detour=")
+	builder.WriteString(_m.DownloadDetour)
+	builder.WriteString(", ")
+	builder.WriteString("update_interval=")
+	builder.WriteString(_m.UpdateInterval)
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// Providers is a parsable slice of Provider.
-type Providers []*Provider
+// Rulesets is a parsable slice of Ruleset.
+type Rulesets []*Ruleset

@@ -35,5 +35,5 @@ func main() {
 		fmt.Println(err)
 	}
 	providers, _ := ent_client.Provider.Query().All(context.Background())
-	nodes.Merge(providers, ent_client, taskLogger)
+	nodes.Fetch(providers, ent_client, taskLogger)
 }
