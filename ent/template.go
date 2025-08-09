@@ -5,6 +5,7 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
+	config1 "sifu-box/config"
 	"sifu-box/ent/template"
 	"strings"
 
@@ -20,7 +21,21 @@ type Template struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// DNS holds the value of the "dns" field.
-	DNS          []map[string]interface{} `json:"dns,omitempty"`
+	DNS config1.DNS `json:"dns,omitempty"`
+	// Log holds the value of the "log" field.
+	Log config1.Log `json:"log,omitempty"`
+	// Route holds the value of the "route" field.
+	Route config1.Route `json:"route,omitempty"`
+	// Inbounds holds the value of the "inbounds" field.
+	Inbounds []config1.Inbound `json:"inbounds,omitempty"`
+	// OutboundGroups holds the value of the "outbound_groups" field.
+	OutboundGroups []config1.OutboundGroup `json:"outbound_groups,omitempty"`
+	// Ntp holds the value of the "ntp" field.
+	Ntp config1.Ntp `json:"ntp,omitempty"`
+	// Experiment holds the value of the "experiment" field.
+	Experiment config1.Experiment `json:"experiment,omitempty"`
+	// Providers holds the value of the "providers" field.
+	Providers    []string `json:"providers,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -29,7 +44,7 @@ func (*Template) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case template.FieldDNS:
+		case template.FieldDNS, template.FieldLog, template.FieldRoute, template.FieldInbounds, template.FieldOutboundGroups, template.FieldNtp, template.FieldExperiment, template.FieldProviders:
 			values[i] = new([]byte)
 		case template.FieldID:
 			values[i] = new(sql.NullInt64)
@@ -68,6 +83,62 @@ func (_m *Template) assignValues(columns []string, values []any) error {
 			} else if value != nil && len(*value) > 0 {
 				if err := json.Unmarshal(*value, &_m.DNS); err != nil {
 					return fmt.Errorf("unmarshal field dns: %w", err)
+				}
+			}
+		case template.FieldLog:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field log", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Log); err != nil {
+					return fmt.Errorf("unmarshal field log: %w", err)
+				}
+			}
+		case template.FieldRoute:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field route", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Route); err != nil {
+					return fmt.Errorf("unmarshal field route: %w", err)
+				}
+			}
+		case template.FieldInbounds:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field inbounds", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Inbounds); err != nil {
+					return fmt.Errorf("unmarshal field inbounds: %w", err)
+				}
+			}
+		case template.FieldOutboundGroups:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field outbound_groups", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.OutboundGroups); err != nil {
+					return fmt.Errorf("unmarshal field outbound_groups: %w", err)
+				}
+			}
+		case template.FieldNtp:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field ntp", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Ntp); err != nil {
+					return fmt.Errorf("unmarshal field ntp: %w", err)
+				}
+			}
+		case template.FieldExperiment:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field experiment", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Experiment); err != nil {
+					return fmt.Errorf("unmarshal field experiment: %w", err)
+				}
+			}
+		case template.FieldProviders:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field providers", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Providers); err != nil {
+					return fmt.Errorf("unmarshal field providers: %w", err)
 				}
 			}
 		default:
@@ -111,6 +182,27 @@ func (_m *Template) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("dns=")
 	builder.WriteString(fmt.Sprintf("%v", _m.DNS))
+	builder.WriteString(", ")
+	builder.WriteString("log=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Log))
+	builder.WriteString(", ")
+	builder.WriteString("route=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Route))
+	builder.WriteString(", ")
+	builder.WriteString("inbounds=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Inbounds))
+	builder.WriteString(", ")
+	builder.WriteString("outbound_groups=")
+	builder.WriteString(fmt.Sprintf("%v", _m.OutboundGroups))
+	builder.WriteString(", ")
+	builder.WriteString("ntp=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Ntp))
+	builder.WriteString(", ")
+	builder.WriteString("experiment=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Experiment))
+	builder.WriteString(", ")
+	builder.WriteString("providers=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Providers))
 	builder.WriteByte(')')
 	return builder.String()
 }

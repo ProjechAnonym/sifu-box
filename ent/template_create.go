@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	config1 "sifu-box/config"
 	"sifu-box/ent/template"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -26,8 +27,90 @@ func (_c *TemplateCreate) SetName(v string) *TemplateCreate {
 }
 
 // SetDNS sets the "dns" field.
-func (_c *TemplateCreate) SetDNS(v []map[string]interface{}) *TemplateCreate {
+func (_c *TemplateCreate) SetDNS(v config1.DNS) *TemplateCreate {
 	_c.mutation.SetDNS(v)
+	return _c
+}
+
+// SetNillableDNS sets the "dns" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableDNS(v *config1.DNS) *TemplateCreate {
+	if v != nil {
+		_c.SetDNS(*v)
+	}
+	return _c
+}
+
+// SetLog sets the "log" field.
+func (_c *TemplateCreate) SetLog(v config1.Log) *TemplateCreate {
+	_c.mutation.SetLog(v)
+	return _c
+}
+
+// SetNillableLog sets the "log" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableLog(v *config1.Log) *TemplateCreate {
+	if v != nil {
+		_c.SetLog(*v)
+	}
+	return _c
+}
+
+// SetRoute sets the "route" field.
+func (_c *TemplateCreate) SetRoute(v config1.Route) *TemplateCreate {
+	_c.mutation.SetRoute(v)
+	return _c
+}
+
+// SetNillableRoute sets the "route" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableRoute(v *config1.Route) *TemplateCreate {
+	if v != nil {
+		_c.SetRoute(*v)
+	}
+	return _c
+}
+
+// SetInbounds sets the "inbounds" field.
+func (_c *TemplateCreate) SetInbounds(v []config1.Inbound) *TemplateCreate {
+	_c.mutation.SetInbounds(v)
+	return _c
+}
+
+// SetOutboundGroups sets the "outbound_groups" field.
+func (_c *TemplateCreate) SetOutboundGroups(v []config1.OutboundGroup) *TemplateCreate {
+	_c.mutation.SetOutboundGroups(v)
+	return _c
+}
+
+// SetNtp sets the "ntp" field.
+func (_c *TemplateCreate) SetNtp(v config1.Ntp) *TemplateCreate {
+	_c.mutation.SetNtp(v)
+	return _c
+}
+
+// SetNillableNtp sets the "ntp" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableNtp(v *config1.Ntp) *TemplateCreate {
+	if v != nil {
+		_c.SetNtp(*v)
+	}
+	return _c
+}
+
+// SetExperiment sets the "experiment" field.
+func (_c *TemplateCreate) SetExperiment(v config1.Experiment) *TemplateCreate {
+	_c.mutation.SetExperiment(v)
+	return _c
+}
+
+// SetNillableExperiment sets the "experiment" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableExperiment(v *config1.Experiment) *TemplateCreate {
+	if v != nil {
+		_c.SetExperiment(*v)
+	}
+	return _c
+}
+
+// SetProviders sets the "providers" field.
+func (_c *TemplateCreate) SetProviders(v []string) *TemplateCreate {
+	_c.mutation.SetProviders(v)
 	return _c
 }
 
@@ -73,9 +156,6 @@ func (_c *TemplateCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Template.name": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.DNS(); !ok {
-		return &ValidationError{Name: "dns", err: errors.New(`ent: missing required field "Template.dns"`)}
-	}
 	return nil
 }
 
@@ -109,6 +189,34 @@ func (_c *TemplateCreate) createSpec() (*Template, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.DNS(); ok {
 		_spec.SetField(template.FieldDNS, field.TypeJSON, value)
 		_node.DNS = value
+	}
+	if value, ok := _c.mutation.Log(); ok {
+		_spec.SetField(template.FieldLog, field.TypeJSON, value)
+		_node.Log = value
+	}
+	if value, ok := _c.mutation.Route(); ok {
+		_spec.SetField(template.FieldRoute, field.TypeJSON, value)
+		_node.Route = value
+	}
+	if value, ok := _c.mutation.Inbounds(); ok {
+		_spec.SetField(template.FieldInbounds, field.TypeJSON, value)
+		_node.Inbounds = value
+	}
+	if value, ok := _c.mutation.OutboundGroups(); ok {
+		_spec.SetField(template.FieldOutboundGroups, field.TypeJSON, value)
+		_node.OutboundGroups = value
+	}
+	if value, ok := _c.mutation.Ntp(); ok {
+		_spec.SetField(template.FieldNtp, field.TypeJSON, value)
+		_node.Ntp = value
+	}
+	if value, ok := _c.mutation.Experiment(); ok {
+		_spec.SetField(template.FieldExperiment, field.TypeJSON, value)
+		_node.Experiment = value
+	}
+	if value, ok := _c.mutation.Providers(); ok {
+		_spec.SetField(template.FieldProviders, field.TypeJSON, value)
+		_node.Providers = value
 	}
 	return _node, _spec
 }

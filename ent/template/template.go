@@ -15,6 +15,20 @@ const (
 	FieldName = "name"
 	// FieldDNS holds the string denoting the dns field in the database.
 	FieldDNS = "dns"
+	// FieldLog holds the string denoting the log field in the database.
+	FieldLog = "log"
+	// FieldRoute holds the string denoting the route field in the database.
+	FieldRoute = "route"
+	// FieldInbounds holds the string denoting the inbounds field in the database.
+	FieldInbounds = "inbounds"
+	// FieldOutboundGroups holds the string denoting the outbound_groups field in the database.
+	FieldOutboundGroups = "outbound_groups"
+	// FieldNtp holds the string denoting the ntp field in the database.
+	FieldNtp = "ntp"
+	// FieldExperiment holds the string denoting the experiment field in the database.
+	FieldExperiment = "experiment"
+	// FieldProviders holds the string denoting the providers field in the database.
+	FieldProviders = "providers"
 	// Table holds the table name of the template in the database.
 	Table = "templates"
 )
@@ -24,6 +38,13 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldDNS,
+	FieldLog,
+	FieldRoute,
+	FieldInbounds,
+	FieldOutboundGroups,
+	FieldNtp,
+	FieldExperiment,
+	FieldProviders,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

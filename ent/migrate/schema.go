@@ -57,7 +57,14 @@ var (
 	TemplatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Unique: true, Size: 30},
-		{Name: "dns", Type: field.TypeJSON},
+		{Name: "dns", Type: field.TypeJSON, Nullable: true},
+		{Name: "log", Type: field.TypeJSON, Nullable: true},
+		{Name: "route", Type: field.TypeJSON, Nullable: true},
+		{Name: "inbounds", Type: field.TypeJSON, Nullable: true},
+		{Name: "outbound_groups", Type: field.TypeJSON, Nullable: true},
+		{Name: "ntp", Type: field.TypeJSON, Nullable: true},
+		{Name: "experiment", Type: field.TypeJSON, Nullable: true},
+		{Name: "providers", Type: field.TypeJSON, Nullable: true},
 	}
 	// TemplatesTable holds the schema information for the "templates" table.
 	TemplatesTable = &schema.Table{

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	config1 "sifu-box/config"
 	"sifu-box/ent/predicate"
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
@@ -1270,16 +1271,25 @@ func (m *RulesetMutation) ResetEdge(name string) error {
 // TemplateMutation represents an operation that mutates the Template nodes in the graph.
 type TemplateMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	name          *string
-	dns           *[]map[string]interface{}
-	appenddns     []map[string]interface{}
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Template, error)
-	predicates    []predicate.Template
+	op                    Op
+	typ                   string
+	id                    *int
+	name                  *string
+	dns                   *config1.DNS
+	log                   *config1.Log
+	route                 *config1.Route
+	inbounds              *[]config1.Inbound
+	appendinbounds        []config1.Inbound
+	outbound_groups       *[]config1.OutboundGroup
+	appendoutbound_groups []config1.OutboundGroup
+	ntp                   *config1.Ntp
+	experiment            *config1.Experiment
+	providers             *[]string
+	appendproviders       []string
+	clearedFields         map[string]struct{}
+	done                  bool
+	oldValue              func(context.Context) (*Template, error)
+	predicates            []predicate.Template
 }
 
 var _ ent.Mutation = (*TemplateMutation)(nil)
@@ -1417,13 +1427,12 @@ func (m *TemplateMutation) ResetName() {
 }
 
 // SetDNS sets the "dns" field.
-func (m *TemplateMutation) SetDNS(value []map[string]interface{}) {
-	m.dns = &value
-	m.appenddns = nil
+func (m *TemplateMutation) SetDNS(c config1.DNS) {
+	m.dns = &c
 }
 
 // DNS returns the value of the "dns" field in the mutation.
-func (m *TemplateMutation) DNS() (r []map[string]interface{}, exists bool) {
+func (m *TemplateMutation) DNS() (r config1.DNS, exists bool) {
 	v := m.dns
 	if v == nil {
 		return
@@ -1434,7 +1443,7 @@ func (m *TemplateMutation) DNS() (r []map[string]interface{}, exists bool) {
 // OldDNS returns the old "dns" field's value of the Template entity.
 // If the Template object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldDNS(ctx context.Context) (v []map[string]interface{}, err error) {
+func (m *TemplateMutation) OldDNS(ctx context.Context) (v config1.DNS, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDNS is only allowed on UpdateOne operations")
 	}
@@ -1448,23 +1457,413 @@ func (m *TemplateMutation) OldDNS(ctx context.Context) (v []map[string]interface
 	return oldValue.DNS, nil
 }
 
-// AppendDNS adds value to the "dns" field.
-func (m *TemplateMutation) AppendDNS(value []map[string]interface{}) {
-	m.appenddns = append(m.appenddns, value...)
+// ClearDNS clears the value of the "dns" field.
+func (m *TemplateMutation) ClearDNS() {
+	m.dns = nil
+	m.clearedFields[template.FieldDNS] = struct{}{}
 }
 
-// AppendedDNS returns the list of values that were appended to the "dns" field in this mutation.
-func (m *TemplateMutation) AppendedDNS() ([]map[string]interface{}, bool) {
-	if len(m.appenddns) == 0 {
-		return nil, false
-	}
-	return m.appenddns, true
+// DNSCleared returns if the "dns" field was cleared in this mutation.
+func (m *TemplateMutation) DNSCleared() bool {
+	_, ok := m.clearedFields[template.FieldDNS]
+	return ok
 }
 
 // ResetDNS resets all changes to the "dns" field.
 func (m *TemplateMutation) ResetDNS() {
 	m.dns = nil
-	m.appenddns = nil
+	delete(m.clearedFields, template.FieldDNS)
+}
+
+// SetLog sets the "log" field.
+func (m *TemplateMutation) SetLog(c config1.Log) {
+	m.log = &c
+}
+
+// Log returns the value of the "log" field in the mutation.
+func (m *TemplateMutation) Log() (r config1.Log, exists bool) {
+	v := m.log
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLog returns the old "log" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldLog(ctx context.Context) (v config1.Log, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLog is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLog requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLog: %w", err)
+	}
+	return oldValue.Log, nil
+}
+
+// ClearLog clears the value of the "log" field.
+func (m *TemplateMutation) ClearLog() {
+	m.log = nil
+	m.clearedFields[template.FieldLog] = struct{}{}
+}
+
+// LogCleared returns if the "log" field was cleared in this mutation.
+func (m *TemplateMutation) LogCleared() bool {
+	_, ok := m.clearedFields[template.FieldLog]
+	return ok
+}
+
+// ResetLog resets all changes to the "log" field.
+func (m *TemplateMutation) ResetLog() {
+	m.log = nil
+	delete(m.clearedFields, template.FieldLog)
+}
+
+// SetRoute sets the "route" field.
+func (m *TemplateMutation) SetRoute(c config1.Route) {
+	m.route = &c
+}
+
+// Route returns the value of the "route" field in the mutation.
+func (m *TemplateMutation) Route() (r config1.Route, exists bool) {
+	v := m.route
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRoute returns the old "route" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldRoute(ctx context.Context) (v config1.Route, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRoute is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRoute requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRoute: %w", err)
+	}
+	return oldValue.Route, nil
+}
+
+// ClearRoute clears the value of the "route" field.
+func (m *TemplateMutation) ClearRoute() {
+	m.route = nil
+	m.clearedFields[template.FieldRoute] = struct{}{}
+}
+
+// RouteCleared returns if the "route" field was cleared in this mutation.
+func (m *TemplateMutation) RouteCleared() bool {
+	_, ok := m.clearedFields[template.FieldRoute]
+	return ok
+}
+
+// ResetRoute resets all changes to the "route" field.
+func (m *TemplateMutation) ResetRoute() {
+	m.route = nil
+	delete(m.clearedFields, template.FieldRoute)
+}
+
+// SetInbounds sets the "inbounds" field.
+func (m *TemplateMutation) SetInbounds(c []config1.Inbound) {
+	m.inbounds = &c
+	m.appendinbounds = nil
+}
+
+// Inbounds returns the value of the "inbounds" field in the mutation.
+func (m *TemplateMutation) Inbounds() (r []config1.Inbound, exists bool) {
+	v := m.inbounds
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInbounds returns the old "inbounds" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldInbounds(ctx context.Context) (v []config1.Inbound, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInbounds is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInbounds requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInbounds: %w", err)
+	}
+	return oldValue.Inbounds, nil
+}
+
+// AppendInbounds adds c to the "inbounds" field.
+func (m *TemplateMutation) AppendInbounds(c []config1.Inbound) {
+	m.appendinbounds = append(m.appendinbounds, c...)
+}
+
+// AppendedInbounds returns the list of values that were appended to the "inbounds" field in this mutation.
+func (m *TemplateMutation) AppendedInbounds() ([]config1.Inbound, bool) {
+	if len(m.appendinbounds) == 0 {
+		return nil, false
+	}
+	return m.appendinbounds, true
+}
+
+// ClearInbounds clears the value of the "inbounds" field.
+func (m *TemplateMutation) ClearInbounds() {
+	m.inbounds = nil
+	m.appendinbounds = nil
+	m.clearedFields[template.FieldInbounds] = struct{}{}
+}
+
+// InboundsCleared returns if the "inbounds" field was cleared in this mutation.
+func (m *TemplateMutation) InboundsCleared() bool {
+	_, ok := m.clearedFields[template.FieldInbounds]
+	return ok
+}
+
+// ResetInbounds resets all changes to the "inbounds" field.
+func (m *TemplateMutation) ResetInbounds() {
+	m.inbounds = nil
+	m.appendinbounds = nil
+	delete(m.clearedFields, template.FieldInbounds)
+}
+
+// SetOutboundGroups sets the "outbound_groups" field.
+func (m *TemplateMutation) SetOutboundGroups(cg []config1.OutboundGroup) {
+	m.outbound_groups = &cg
+	m.appendoutbound_groups = nil
+}
+
+// OutboundGroups returns the value of the "outbound_groups" field in the mutation.
+func (m *TemplateMutation) OutboundGroups() (r []config1.OutboundGroup, exists bool) {
+	v := m.outbound_groups
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOutboundGroups returns the old "outbound_groups" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldOutboundGroups(ctx context.Context) (v []config1.OutboundGroup, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOutboundGroups is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOutboundGroups requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOutboundGroups: %w", err)
+	}
+	return oldValue.OutboundGroups, nil
+}
+
+// AppendOutboundGroups adds cg to the "outbound_groups" field.
+func (m *TemplateMutation) AppendOutboundGroups(cg []config1.OutboundGroup) {
+	m.appendoutbound_groups = append(m.appendoutbound_groups, cg...)
+}
+
+// AppendedOutboundGroups returns the list of values that were appended to the "outbound_groups" field in this mutation.
+func (m *TemplateMutation) AppendedOutboundGroups() ([]config1.OutboundGroup, bool) {
+	if len(m.appendoutbound_groups) == 0 {
+		return nil, false
+	}
+	return m.appendoutbound_groups, true
+}
+
+// ClearOutboundGroups clears the value of the "outbound_groups" field.
+func (m *TemplateMutation) ClearOutboundGroups() {
+	m.outbound_groups = nil
+	m.appendoutbound_groups = nil
+	m.clearedFields[template.FieldOutboundGroups] = struct{}{}
+}
+
+// OutboundGroupsCleared returns if the "outbound_groups" field was cleared in this mutation.
+func (m *TemplateMutation) OutboundGroupsCleared() bool {
+	_, ok := m.clearedFields[template.FieldOutboundGroups]
+	return ok
+}
+
+// ResetOutboundGroups resets all changes to the "outbound_groups" field.
+func (m *TemplateMutation) ResetOutboundGroups() {
+	m.outbound_groups = nil
+	m.appendoutbound_groups = nil
+	delete(m.clearedFields, template.FieldOutboundGroups)
+}
+
+// SetNtp sets the "ntp" field.
+func (m *TemplateMutation) SetNtp(c config1.Ntp) {
+	m.ntp = &c
+}
+
+// Ntp returns the value of the "ntp" field in the mutation.
+func (m *TemplateMutation) Ntp() (r config1.Ntp, exists bool) {
+	v := m.ntp
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNtp returns the old "ntp" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldNtp(ctx context.Context) (v config1.Ntp, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNtp is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNtp requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNtp: %w", err)
+	}
+	return oldValue.Ntp, nil
+}
+
+// ClearNtp clears the value of the "ntp" field.
+func (m *TemplateMutation) ClearNtp() {
+	m.ntp = nil
+	m.clearedFields[template.FieldNtp] = struct{}{}
+}
+
+// NtpCleared returns if the "ntp" field was cleared in this mutation.
+func (m *TemplateMutation) NtpCleared() bool {
+	_, ok := m.clearedFields[template.FieldNtp]
+	return ok
+}
+
+// ResetNtp resets all changes to the "ntp" field.
+func (m *TemplateMutation) ResetNtp() {
+	m.ntp = nil
+	delete(m.clearedFields, template.FieldNtp)
+}
+
+// SetExperiment sets the "experiment" field.
+func (m *TemplateMutation) SetExperiment(c config1.Experiment) {
+	m.experiment = &c
+}
+
+// Experiment returns the value of the "experiment" field in the mutation.
+func (m *TemplateMutation) Experiment() (r config1.Experiment, exists bool) {
+	v := m.experiment
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExperiment returns the old "experiment" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldExperiment(ctx context.Context) (v config1.Experiment, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExperiment is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExperiment requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExperiment: %w", err)
+	}
+	return oldValue.Experiment, nil
+}
+
+// ClearExperiment clears the value of the "experiment" field.
+func (m *TemplateMutation) ClearExperiment() {
+	m.experiment = nil
+	m.clearedFields[template.FieldExperiment] = struct{}{}
+}
+
+// ExperimentCleared returns if the "experiment" field was cleared in this mutation.
+func (m *TemplateMutation) ExperimentCleared() bool {
+	_, ok := m.clearedFields[template.FieldExperiment]
+	return ok
+}
+
+// ResetExperiment resets all changes to the "experiment" field.
+func (m *TemplateMutation) ResetExperiment() {
+	m.experiment = nil
+	delete(m.clearedFields, template.FieldExperiment)
+}
+
+// SetProviders sets the "providers" field.
+func (m *TemplateMutation) SetProviders(s []string) {
+	m.providers = &s
+	m.appendproviders = nil
+}
+
+// Providers returns the value of the "providers" field in the mutation.
+func (m *TemplateMutation) Providers() (r []string, exists bool) {
+	v := m.providers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProviders returns the old "providers" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldProviders(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProviders is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProviders requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProviders: %w", err)
+	}
+	return oldValue.Providers, nil
+}
+
+// AppendProviders adds s to the "providers" field.
+func (m *TemplateMutation) AppendProviders(s []string) {
+	m.appendproviders = append(m.appendproviders, s...)
+}
+
+// AppendedProviders returns the list of values that were appended to the "providers" field in this mutation.
+func (m *TemplateMutation) AppendedProviders() ([]string, bool) {
+	if len(m.appendproviders) == 0 {
+		return nil, false
+	}
+	return m.appendproviders, true
+}
+
+// ClearProviders clears the value of the "providers" field.
+func (m *TemplateMutation) ClearProviders() {
+	m.providers = nil
+	m.appendproviders = nil
+	m.clearedFields[template.FieldProviders] = struct{}{}
+}
+
+// ProvidersCleared returns if the "providers" field was cleared in this mutation.
+func (m *TemplateMutation) ProvidersCleared() bool {
+	_, ok := m.clearedFields[template.FieldProviders]
+	return ok
+}
+
+// ResetProviders resets all changes to the "providers" field.
+func (m *TemplateMutation) ResetProviders() {
+	m.providers = nil
+	m.appendproviders = nil
+	delete(m.clearedFields, template.FieldProviders)
 }
 
 // Where appends a list predicates to the TemplateMutation builder.
@@ -1501,12 +1900,33 @@ func (m *TemplateMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TemplateMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 9)
 	if m.name != nil {
 		fields = append(fields, template.FieldName)
 	}
 	if m.dns != nil {
 		fields = append(fields, template.FieldDNS)
+	}
+	if m.log != nil {
+		fields = append(fields, template.FieldLog)
+	}
+	if m.route != nil {
+		fields = append(fields, template.FieldRoute)
+	}
+	if m.inbounds != nil {
+		fields = append(fields, template.FieldInbounds)
+	}
+	if m.outbound_groups != nil {
+		fields = append(fields, template.FieldOutboundGroups)
+	}
+	if m.ntp != nil {
+		fields = append(fields, template.FieldNtp)
+	}
+	if m.experiment != nil {
+		fields = append(fields, template.FieldExperiment)
+	}
+	if m.providers != nil {
+		fields = append(fields, template.FieldProviders)
 	}
 	return fields
 }
@@ -1520,6 +1940,20 @@ func (m *TemplateMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case template.FieldDNS:
 		return m.DNS()
+	case template.FieldLog:
+		return m.Log()
+	case template.FieldRoute:
+		return m.Route()
+	case template.FieldInbounds:
+		return m.Inbounds()
+	case template.FieldOutboundGroups:
+		return m.OutboundGroups()
+	case template.FieldNtp:
+		return m.Ntp()
+	case template.FieldExperiment:
+		return m.Experiment()
+	case template.FieldProviders:
+		return m.Providers()
 	}
 	return nil, false
 }
@@ -1533,6 +1967,20 @@ func (m *TemplateMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldName(ctx)
 	case template.FieldDNS:
 		return m.OldDNS(ctx)
+	case template.FieldLog:
+		return m.OldLog(ctx)
+	case template.FieldRoute:
+		return m.OldRoute(ctx)
+	case template.FieldInbounds:
+		return m.OldInbounds(ctx)
+	case template.FieldOutboundGroups:
+		return m.OldOutboundGroups(ctx)
+	case template.FieldNtp:
+		return m.OldNtp(ctx)
+	case template.FieldExperiment:
+		return m.OldExperiment(ctx)
+	case template.FieldProviders:
+		return m.OldProviders(ctx)
 	}
 	return nil, fmt.Errorf("unknown Template field %s", name)
 }
@@ -1550,11 +1998,60 @@ func (m *TemplateMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case template.FieldDNS:
-		v, ok := value.([]map[string]interface{})
+		v, ok := value.(config1.DNS)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDNS(v)
+		return nil
+	case template.FieldLog:
+		v, ok := value.(config1.Log)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLog(v)
+		return nil
+	case template.FieldRoute:
+		v, ok := value.(config1.Route)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRoute(v)
+		return nil
+	case template.FieldInbounds:
+		v, ok := value.([]config1.Inbound)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInbounds(v)
+		return nil
+	case template.FieldOutboundGroups:
+		v, ok := value.([]config1.OutboundGroup)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOutboundGroups(v)
+		return nil
+	case template.FieldNtp:
+		v, ok := value.(config1.Ntp)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNtp(v)
+		return nil
+	case template.FieldExperiment:
+		v, ok := value.(config1.Experiment)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExperiment(v)
+		return nil
+	case template.FieldProviders:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProviders(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Template field %s", name)
@@ -1585,7 +2082,32 @@ func (m *TemplateMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *TemplateMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(template.FieldDNS) {
+		fields = append(fields, template.FieldDNS)
+	}
+	if m.FieldCleared(template.FieldLog) {
+		fields = append(fields, template.FieldLog)
+	}
+	if m.FieldCleared(template.FieldRoute) {
+		fields = append(fields, template.FieldRoute)
+	}
+	if m.FieldCleared(template.FieldInbounds) {
+		fields = append(fields, template.FieldInbounds)
+	}
+	if m.FieldCleared(template.FieldOutboundGroups) {
+		fields = append(fields, template.FieldOutboundGroups)
+	}
+	if m.FieldCleared(template.FieldNtp) {
+		fields = append(fields, template.FieldNtp)
+	}
+	if m.FieldCleared(template.FieldExperiment) {
+		fields = append(fields, template.FieldExperiment)
+	}
+	if m.FieldCleared(template.FieldProviders) {
+		fields = append(fields, template.FieldProviders)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -1598,6 +2120,32 @@ func (m *TemplateMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *TemplateMutation) ClearField(name string) error {
+	switch name {
+	case template.FieldDNS:
+		m.ClearDNS()
+		return nil
+	case template.FieldLog:
+		m.ClearLog()
+		return nil
+	case template.FieldRoute:
+		m.ClearRoute()
+		return nil
+	case template.FieldInbounds:
+		m.ClearInbounds()
+		return nil
+	case template.FieldOutboundGroups:
+		m.ClearOutboundGroups()
+		return nil
+	case template.FieldNtp:
+		m.ClearNtp()
+		return nil
+	case template.FieldExperiment:
+		m.ClearExperiment()
+		return nil
+	case template.FieldProviders:
+		m.ClearProviders()
+		return nil
+	}
 	return fmt.Errorf("unknown Template nullable field %s", name)
 }
 
@@ -1610,6 +2158,27 @@ func (m *TemplateMutation) ResetField(name string) error {
 		return nil
 	case template.FieldDNS:
 		m.ResetDNS()
+		return nil
+	case template.FieldLog:
+		m.ResetLog()
+		return nil
+	case template.FieldRoute:
+		m.ResetRoute()
+		return nil
+	case template.FieldInbounds:
+		m.ResetInbounds()
+		return nil
+	case template.FieldOutboundGroups:
+		m.ResetOutboundGroups()
+		return nil
+	case template.FieldNtp:
+		m.ResetNtp()
+		return nil
+	case template.FieldExperiment:
+		m.ResetExperiment()
+		return nil
+	case template.FieldProviders:
+		m.ResetProviders()
 		return nil
 	}
 	return fmt.Errorf("unknown Template field %s", name)

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	config1 "sifu-box/config"
 	"sifu-box/ent/predicate"
 	"sifu-box/ent/template"
 
@@ -43,14 +44,156 @@ func (_u *TemplateUpdate) SetNillableName(v *string) *TemplateUpdate {
 }
 
 // SetDNS sets the "dns" field.
-func (_u *TemplateUpdate) SetDNS(v []map[string]interface{}) *TemplateUpdate {
+func (_u *TemplateUpdate) SetDNS(v config1.DNS) *TemplateUpdate {
 	_u.mutation.SetDNS(v)
 	return _u
 }
 
-// AppendDNS appends value to the "dns" field.
-func (_u *TemplateUpdate) AppendDNS(v []map[string]interface{}) *TemplateUpdate {
-	_u.mutation.AppendDNS(v)
+// SetNillableDNS sets the "dns" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableDNS(v *config1.DNS) *TemplateUpdate {
+	if v != nil {
+		_u.SetDNS(*v)
+	}
+	return _u
+}
+
+// ClearDNS clears the value of the "dns" field.
+func (_u *TemplateUpdate) ClearDNS() *TemplateUpdate {
+	_u.mutation.ClearDNS()
+	return _u
+}
+
+// SetLog sets the "log" field.
+func (_u *TemplateUpdate) SetLog(v config1.Log) *TemplateUpdate {
+	_u.mutation.SetLog(v)
+	return _u
+}
+
+// SetNillableLog sets the "log" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableLog(v *config1.Log) *TemplateUpdate {
+	if v != nil {
+		_u.SetLog(*v)
+	}
+	return _u
+}
+
+// ClearLog clears the value of the "log" field.
+func (_u *TemplateUpdate) ClearLog() *TemplateUpdate {
+	_u.mutation.ClearLog()
+	return _u
+}
+
+// SetRoute sets the "route" field.
+func (_u *TemplateUpdate) SetRoute(v config1.Route) *TemplateUpdate {
+	_u.mutation.SetRoute(v)
+	return _u
+}
+
+// SetNillableRoute sets the "route" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableRoute(v *config1.Route) *TemplateUpdate {
+	if v != nil {
+		_u.SetRoute(*v)
+	}
+	return _u
+}
+
+// ClearRoute clears the value of the "route" field.
+func (_u *TemplateUpdate) ClearRoute() *TemplateUpdate {
+	_u.mutation.ClearRoute()
+	return _u
+}
+
+// SetInbounds sets the "inbounds" field.
+func (_u *TemplateUpdate) SetInbounds(v []config1.Inbound) *TemplateUpdate {
+	_u.mutation.SetInbounds(v)
+	return _u
+}
+
+// AppendInbounds appends value to the "inbounds" field.
+func (_u *TemplateUpdate) AppendInbounds(v []config1.Inbound) *TemplateUpdate {
+	_u.mutation.AppendInbounds(v)
+	return _u
+}
+
+// ClearInbounds clears the value of the "inbounds" field.
+func (_u *TemplateUpdate) ClearInbounds() *TemplateUpdate {
+	_u.mutation.ClearInbounds()
+	return _u
+}
+
+// SetOutboundGroups sets the "outbound_groups" field.
+func (_u *TemplateUpdate) SetOutboundGroups(v []config1.OutboundGroup) *TemplateUpdate {
+	_u.mutation.SetOutboundGroups(v)
+	return _u
+}
+
+// AppendOutboundGroups appends value to the "outbound_groups" field.
+func (_u *TemplateUpdate) AppendOutboundGroups(v []config1.OutboundGroup) *TemplateUpdate {
+	_u.mutation.AppendOutboundGroups(v)
+	return _u
+}
+
+// ClearOutboundGroups clears the value of the "outbound_groups" field.
+func (_u *TemplateUpdate) ClearOutboundGroups() *TemplateUpdate {
+	_u.mutation.ClearOutboundGroups()
+	return _u
+}
+
+// SetNtp sets the "ntp" field.
+func (_u *TemplateUpdate) SetNtp(v config1.Ntp) *TemplateUpdate {
+	_u.mutation.SetNtp(v)
+	return _u
+}
+
+// SetNillableNtp sets the "ntp" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableNtp(v *config1.Ntp) *TemplateUpdate {
+	if v != nil {
+		_u.SetNtp(*v)
+	}
+	return _u
+}
+
+// ClearNtp clears the value of the "ntp" field.
+func (_u *TemplateUpdate) ClearNtp() *TemplateUpdate {
+	_u.mutation.ClearNtp()
+	return _u
+}
+
+// SetExperiment sets the "experiment" field.
+func (_u *TemplateUpdate) SetExperiment(v config1.Experiment) *TemplateUpdate {
+	_u.mutation.SetExperiment(v)
+	return _u
+}
+
+// SetNillableExperiment sets the "experiment" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableExperiment(v *config1.Experiment) *TemplateUpdate {
+	if v != nil {
+		_u.SetExperiment(*v)
+	}
+	return _u
+}
+
+// ClearExperiment clears the value of the "experiment" field.
+func (_u *TemplateUpdate) ClearExperiment() *TemplateUpdate {
+	_u.mutation.ClearExperiment()
+	return _u
+}
+
+// SetProviders sets the "providers" field.
+func (_u *TemplateUpdate) SetProviders(v []string) *TemplateUpdate {
+	_u.mutation.SetProviders(v)
+	return _u
+}
+
+// AppendProviders appends value to the "providers" field.
+func (_u *TemplateUpdate) AppendProviders(v []string) *TemplateUpdate {
+	_u.mutation.AppendProviders(v)
+	return _u
+}
+
+// ClearProviders clears the value of the "providers" field.
+func (_u *TemplateUpdate) ClearProviders() *TemplateUpdate {
+	_u.mutation.ClearProviders()
 	return _u
 }
 
@@ -114,10 +257,65 @@ func (_u *TemplateUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.DNS(); ok {
 		_spec.SetField(template.FieldDNS, field.TypeJSON, value)
 	}
-	if value, ok := _u.mutation.AppendedDNS(); ok {
+	if _u.mutation.DNSCleared() {
+		_spec.ClearField(template.FieldDNS, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Log(); ok {
+		_spec.SetField(template.FieldLog, field.TypeJSON, value)
+	}
+	if _u.mutation.LogCleared() {
+		_spec.ClearField(template.FieldLog, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Route(); ok {
+		_spec.SetField(template.FieldRoute, field.TypeJSON, value)
+	}
+	if _u.mutation.RouteCleared() {
+		_spec.ClearField(template.FieldRoute, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Inbounds(); ok {
+		_spec.SetField(template.FieldInbounds, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedInbounds(); ok {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, template.FieldDNS, value)
+			sqljson.Append(u, template.FieldInbounds, value)
 		})
+	}
+	if _u.mutation.InboundsCleared() {
+		_spec.ClearField(template.FieldInbounds, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.OutboundGroups(); ok {
+		_spec.SetField(template.FieldOutboundGroups, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedOutboundGroups(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, template.FieldOutboundGroups, value)
+		})
+	}
+	if _u.mutation.OutboundGroupsCleared() {
+		_spec.ClearField(template.FieldOutboundGroups, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Ntp(); ok {
+		_spec.SetField(template.FieldNtp, field.TypeJSON, value)
+	}
+	if _u.mutation.NtpCleared() {
+		_spec.ClearField(template.FieldNtp, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Experiment(); ok {
+		_spec.SetField(template.FieldExperiment, field.TypeJSON, value)
+	}
+	if _u.mutation.ExperimentCleared() {
+		_spec.ClearField(template.FieldExperiment, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Providers(); ok {
+		_spec.SetField(template.FieldProviders, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedProviders(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, template.FieldProviders, value)
+		})
+	}
+	if _u.mutation.ProvidersCleared() {
+		_spec.ClearField(template.FieldProviders, field.TypeJSON)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -154,14 +352,156 @@ func (_u *TemplateUpdateOne) SetNillableName(v *string) *TemplateUpdateOne {
 }
 
 // SetDNS sets the "dns" field.
-func (_u *TemplateUpdateOne) SetDNS(v []map[string]interface{}) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetDNS(v config1.DNS) *TemplateUpdateOne {
 	_u.mutation.SetDNS(v)
 	return _u
 }
 
-// AppendDNS appends value to the "dns" field.
-func (_u *TemplateUpdateOne) AppendDNS(v []map[string]interface{}) *TemplateUpdateOne {
-	_u.mutation.AppendDNS(v)
+// SetNillableDNS sets the "dns" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableDNS(v *config1.DNS) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetDNS(*v)
+	}
+	return _u
+}
+
+// ClearDNS clears the value of the "dns" field.
+func (_u *TemplateUpdateOne) ClearDNS() *TemplateUpdateOne {
+	_u.mutation.ClearDNS()
+	return _u
+}
+
+// SetLog sets the "log" field.
+func (_u *TemplateUpdateOne) SetLog(v config1.Log) *TemplateUpdateOne {
+	_u.mutation.SetLog(v)
+	return _u
+}
+
+// SetNillableLog sets the "log" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableLog(v *config1.Log) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetLog(*v)
+	}
+	return _u
+}
+
+// ClearLog clears the value of the "log" field.
+func (_u *TemplateUpdateOne) ClearLog() *TemplateUpdateOne {
+	_u.mutation.ClearLog()
+	return _u
+}
+
+// SetRoute sets the "route" field.
+func (_u *TemplateUpdateOne) SetRoute(v config1.Route) *TemplateUpdateOne {
+	_u.mutation.SetRoute(v)
+	return _u
+}
+
+// SetNillableRoute sets the "route" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableRoute(v *config1.Route) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetRoute(*v)
+	}
+	return _u
+}
+
+// ClearRoute clears the value of the "route" field.
+func (_u *TemplateUpdateOne) ClearRoute() *TemplateUpdateOne {
+	_u.mutation.ClearRoute()
+	return _u
+}
+
+// SetInbounds sets the "inbounds" field.
+func (_u *TemplateUpdateOne) SetInbounds(v []config1.Inbound) *TemplateUpdateOne {
+	_u.mutation.SetInbounds(v)
+	return _u
+}
+
+// AppendInbounds appends value to the "inbounds" field.
+func (_u *TemplateUpdateOne) AppendInbounds(v []config1.Inbound) *TemplateUpdateOne {
+	_u.mutation.AppendInbounds(v)
+	return _u
+}
+
+// ClearInbounds clears the value of the "inbounds" field.
+func (_u *TemplateUpdateOne) ClearInbounds() *TemplateUpdateOne {
+	_u.mutation.ClearInbounds()
+	return _u
+}
+
+// SetOutboundGroups sets the "outbound_groups" field.
+func (_u *TemplateUpdateOne) SetOutboundGroups(v []config1.OutboundGroup) *TemplateUpdateOne {
+	_u.mutation.SetOutboundGroups(v)
+	return _u
+}
+
+// AppendOutboundGroups appends value to the "outbound_groups" field.
+func (_u *TemplateUpdateOne) AppendOutboundGroups(v []config1.OutboundGroup) *TemplateUpdateOne {
+	_u.mutation.AppendOutboundGroups(v)
+	return _u
+}
+
+// ClearOutboundGroups clears the value of the "outbound_groups" field.
+func (_u *TemplateUpdateOne) ClearOutboundGroups() *TemplateUpdateOne {
+	_u.mutation.ClearOutboundGroups()
+	return _u
+}
+
+// SetNtp sets the "ntp" field.
+func (_u *TemplateUpdateOne) SetNtp(v config1.Ntp) *TemplateUpdateOne {
+	_u.mutation.SetNtp(v)
+	return _u
+}
+
+// SetNillableNtp sets the "ntp" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableNtp(v *config1.Ntp) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetNtp(*v)
+	}
+	return _u
+}
+
+// ClearNtp clears the value of the "ntp" field.
+func (_u *TemplateUpdateOne) ClearNtp() *TemplateUpdateOne {
+	_u.mutation.ClearNtp()
+	return _u
+}
+
+// SetExperiment sets the "experiment" field.
+func (_u *TemplateUpdateOne) SetExperiment(v config1.Experiment) *TemplateUpdateOne {
+	_u.mutation.SetExperiment(v)
+	return _u
+}
+
+// SetNillableExperiment sets the "experiment" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableExperiment(v *config1.Experiment) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetExperiment(*v)
+	}
+	return _u
+}
+
+// ClearExperiment clears the value of the "experiment" field.
+func (_u *TemplateUpdateOne) ClearExperiment() *TemplateUpdateOne {
+	_u.mutation.ClearExperiment()
+	return _u
+}
+
+// SetProviders sets the "providers" field.
+func (_u *TemplateUpdateOne) SetProviders(v []string) *TemplateUpdateOne {
+	_u.mutation.SetProviders(v)
+	return _u
+}
+
+// AppendProviders appends value to the "providers" field.
+func (_u *TemplateUpdateOne) AppendProviders(v []string) *TemplateUpdateOne {
+	_u.mutation.AppendProviders(v)
+	return _u
+}
+
+// ClearProviders clears the value of the "providers" field.
+func (_u *TemplateUpdateOne) ClearProviders() *TemplateUpdateOne {
+	_u.mutation.ClearProviders()
 	return _u
 }
 
@@ -255,10 +595,65 @@ func (_u *TemplateUpdateOne) sqlSave(ctx context.Context) (_node *Template, err 
 	if value, ok := _u.mutation.DNS(); ok {
 		_spec.SetField(template.FieldDNS, field.TypeJSON, value)
 	}
-	if value, ok := _u.mutation.AppendedDNS(); ok {
+	if _u.mutation.DNSCleared() {
+		_spec.ClearField(template.FieldDNS, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Log(); ok {
+		_spec.SetField(template.FieldLog, field.TypeJSON, value)
+	}
+	if _u.mutation.LogCleared() {
+		_spec.ClearField(template.FieldLog, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Route(); ok {
+		_spec.SetField(template.FieldRoute, field.TypeJSON, value)
+	}
+	if _u.mutation.RouteCleared() {
+		_spec.ClearField(template.FieldRoute, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Inbounds(); ok {
+		_spec.SetField(template.FieldInbounds, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedInbounds(); ok {
 		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, template.FieldDNS, value)
+			sqljson.Append(u, template.FieldInbounds, value)
 		})
+	}
+	if _u.mutation.InboundsCleared() {
+		_spec.ClearField(template.FieldInbounds, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.OutboundGroups(); ok {
+		_spec.SetField(template.FieldOutboundGroups, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedOutboundGroups(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, template.FieldOutboundGroups, value)
+		})
+	}
+	if _u.mutation.OutboundGroupsCleared() {
+		_spec.ClearField(template.FieldOutboundGroups, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Ntp(); ok {
+		_spec.SetField(template.FieldNtp, field.TypeJSON, value)
+	}
+	if _u.mutation.NtpCleared() {
+		_spec.ClearField(template.FieldNtp, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Experiment(); ok {
+		_spec.SetField(template.FieldExperiment, field.TypeJSON, value)
+	}
+	if _u.mutation.ExperimentCleared() {
+		_spec.ClearField(template.FieldExperiment, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Providers(); ok {
+		_spec.SetField(template.FieldProviders, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedProviders(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, template.FieldProviders, value)
+		})
+	}
+	if _u.mutation.ProvidersCleared() {
+		_spec.ClearField(template.FieldProviders, field.TypeJSON)
 	}
 	_node = &Template{config: _u.config}
 	_spec.Assign = _node.assignValues
