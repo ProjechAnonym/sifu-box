@@ -10,12 +10,5 @@ type DNS struct {
 	Reverse_mapping   bool             `json:"reverse_mapping,omitempty" yaml:"reverse_mapping,omitempty"`
 	Client_subnet     string           `json:"client_subnet,omitempty" yaml:"client_subnet,omitempty"`
 	Rules             []map[string]any `json:"rules,omitempty" yaml:"rules,omitempty"`
-	Servers           []Server         `json:"servers,omitempty" yaml:"servers,omitempty"`
-}
-type Server struct {
-	Type        string         `json:"type" yaml:"type"`
-	Tag         string         `json:"tag" yaml:"tag"`
-	Server      string         `json:"server,omitempty" yaml:"server,omitempty"`
-	Server_port int            `json:"server_port,omitempty" yaml:"server_port,omitempty"`
-	Extra       map[string]any `json:",inline" yaml:",inline"`
+	Servers           []map[string]any `json:"servers,omitempty" yaml:"servers,omitempty"`
 }

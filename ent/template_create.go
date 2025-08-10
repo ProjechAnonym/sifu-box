@@ -69,7 +69,7 @@ func (_c *TemplateCreate) SetNillableRoute(v *singbox.Route) *TemplateCreate {
 }
 
 // SetInbounds sets the "inbounds" field.
-func (_c *TemplateCreate) SetInbounds(v []singbox.Inbound) *TemplateCreate {
+func (_c *TemplateCreate) SetInbounds(v []map[string]interface{}) *TemplateCreate {
 	_c.mutation.SetInbounds(v)
 	return _c
 }

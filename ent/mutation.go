@@ -1278,8 +1278,8 @@ type TemplateMutation struct {
 	dns                   *singbox.DNS
 	log                   *singbox.Log
 	route                 *singbox.Route
-	inbounds              *[]singbox.Inbound
-	appendinbounds        []singbox.Inbound
+	inbounds              *[]map[string]interface{}
+	appendinbounds        []map[string]interface{}
 	outbound_groups       *[]singbox.OutboundGroup
 	appendoutbound_groups []singbox.OutboundGroup
 	ntp                   *singbox.Ntp
@@ -1574,13 +1574,13 @@ func (m *TemplateMutation) ResetRoute() {
 }
 
 // SetInbounds sets the "inbounds" field.
-func (m *TemplateMutation) SetInbounds(s []singbox.Inbound) {
-	m.inbounds = &s
+func (m *TemplateMutation) SetInbounds(value []map[string]interface{}) {
+	m.inbounds = &value
 	m.appendinbounds = nil
 }
 
 // Inbounds returns the value of the "inbounds" field in the mutation.
-func (m *TemplateMutation) Inbounds() (r []singbox.Inbound, exists bool) {
+func (m *TemplateMutation) Inbounds() (r []map[string]interface{}, exists bool) {
 	v := m.inbounds
 	if v == nil {
 		return
@@ -1591,7 +1591,7 @@ func (m *TemplateMutation) Inbounds() (r []singbox.Inbound, exists bool) {
 // OldInbounds returns the old "inbounds" field's value of the Template entity.
 // If the Template object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TemplateMutation) OldInbounds(ctx context.Context) (v []singbox.Inbound, err error) {
+func (m *TemplateMutation) OldInbounds(ctx context.Context) (v []map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldInbounds is only allowed on UpdateOne operations")
 	}
@@ -1605,13 +1605,13 @@ func (m *TemplateMutation) OldInbounds(ctx context.Context) (v []singbox.Inbound
 	return oldValue.Inbounds, nil
 }
 
-// AppendInbounds adds s to the "inbounds" field.
-func (m *TemplateMutation) AppendInbounds(s []singbox.Inbound) {
-	m.appendinbounds = append(m.appendinbounds, s...)
+// AppendInbounds adds value to the "inbounds" field.
+func (m *TemplateMutation) AppendInbounds(value []map[string]interface{}) {
+	m.appendinbounds = append(m.appendinbounds, value...)
 }
 
 // AppendedInbounds returns the list of values that were appended to the "inbounds" field in this mutation.
-func (m *TemplateMutation) AppendedInbounds() ([]singbox.Inbound, bool) {
+func (m *TemplateMutation) AppendedInbounds() ([]map[string]interface{}, bool) {
 	if len(m.appendinbounds) == 0 {
 		return nil, false
 	}
@@ -2019,7 +2019,7 @@ func (m *TemplateMutation) SetField(name string, value ent.Value) error {
 		m.SetRoute(v)
 		return nil
 	case template.FieldInbounds:
-		v, ok := value.([]singbox.Inbound)
+		v, ok := value.([]map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

@@ -27,7 +27,7 @@ type Template struct {
 	// Route holds the value of the "route" field.
 	Route singbox.Route `json:"route,omitempty"`
 	// Inbounds holds the value of the "inbounds" field.
-	Inbounds []singbox.Inbound `json:"inbounds,omitempty"`
+	Inbounds []map[string]interface{} `json:"inbounds,omitempty"`
 	// OutboundGroups holds the value of the "outbound_groups" field.
 	OutboundGroups []singbox.OutboundGroup `json:"outbound_groups,omitempty"`
 	// Ntp holds the value of the "ntp" field.

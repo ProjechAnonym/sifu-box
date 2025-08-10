@@ -104,13 +104,13 @@ func (_u *TemplateUpdate) ClearRoute() *TemplateUpdate {
 }
 
 // SetInbounds sets the "inbounds" field.
-func (_u *TemplateUpdate) SetInbounds(v []singbox.Inbound) *TemplateUpdate {
+func (_u *TemplateUpdate) SetInbounds(v []map[string]interface{}) *TemplateUpdate {
 	_u.mutation.SetInbounds(v)
 	return _u
 }
 
 // AppendInbounds appends value to the "inbounds" field.
-func (_u *TemplateUpdate) AppendInbounds(v []singbox.Inbound) *TemplateUpdate {
+func (_u *TemplateUpdate) AppendInbounds(v []map[string]interface{}) *TemplateUpdate {
 	_u.mutation.AppendInbounds(v)
 	return _u
 }
@@ -412,13 +412,13 @@ func (_u *TemplateUpdateOne) ClearRoute() *TemplateUpdateOne {
 }
 
 // SetInbounds sets the "inbounds" field.
-func (_u *TemplateUpdateOne) SetInbounds(v []singbox.Inbound) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) SetInbounds(v []map[string]interface{}) *TemplateUpdateOne {
 	_u.mutation.SetInbounds(v)
 	return _u
 }
 
 // AppendInbounds appends value to the "inbounds" field.
-func (_u *TemplateUpdateOne) AppendInbounds(v []singbox.Inbound) *TemplateUpdateOne {
+func (_u *TemplateUpdateOne) AppendInbounds(v []map[string]interface{}) *TemplateUpdateOne {
 	_u.mutation.AppendInbounds(v)
 	return _u
 }
