@@ -21,6 +21,8 @@ const (
 	FieldRemote = "remote"
 	// FieldUUID holds the string denoting the uuid field in the database.
 	FieldUUID = "uuid"
+	// FieldUpdated holds the string denoting the updated field in the database.
+	FieldUpdated = "updated"
 	// Table holds the table name of the provider in the database.
 	Table = "providers"
 )
@@ -33,6 +35,7 @@ var Columns = []string{
 	FieldNodes,
 	FieldRemote,
 	FieldUUID,
+	FieldUpdated,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -80,4 +83,9 @@ func ByRemote(opts ...sql.OrderTermOption) OrderOption {
 // ByUUID orders the results by the uuid field.
 func ByUUID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUUID, opts...).ToFunc()
+}
+
+// ByUpdated orders the results by the updated field.
+func ByUpdated(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdated, opts...).ToFunc()
 }

@@ -108,6 +108,26 @@ func (_u *ProviderUpdate) ClearUUID() *ProviderUpdate {
 	return _u
 }
 
+// SetUpdated sets the "updated" field.
+func (_u *ProviderUpdate) SetUpdated(v bool) *ProviderUpdate {
+	_u.mutation.SetUpdated(v)
+	return _u
+}
+
+// SetNillableUpdated sets the "updated" field if the given value is not nil.
+func (_u *ProviderUpdate) SetNillableUpdated(v *bool) *ProviderUpdate {
+	if v != nil {
+		_u.SetUpdated(*v)
+	}
+	return _u
+}
+
+// ClearUpdated clears the value of the "updated" field.
+func (_u *ProviderUpdate) ClearUpdated() *ProviderUpdate {
+	_u.mutation.ClearUpdated()
+	return _u
+}
+
 // Mutation returns the ProviderMutation object of the builder.
 func (_u *ProviderUpdate) Mutation() *ProviderMutation {
 	return _u.mutation
@@ -197,6 +217,12 @@ func (_u *ProviderUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.UUIDCleared() {
 		_spec.ClearField(provider.FieldUUID, field.TypeString)
+	}
+	if value, ok := _u.mutation.Updated(); ok {
+		_spec.SetField(provider.FieldUpdated, field.TypeBool, value)
+	}
+	if _u.mutation.UpdatedCleared() {
+		_spec.ClearField(provider.FieldUpdated, field.TypeBool)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -295,6 +321,26 @@ func (_u *ProviderUpdateOne) SetNillableUUID(v *string) *ProviderUpdateOne {
 // ClearUUID clears the value of the "uuid" field.
 func (_u *ProviderUpdateOne) ClearUUID() *ProviderUpdateOne {
 	_u.mutation.ClearUUID()
+	return _u
+}
+
+// SetUpdated sets the "updated" field.
+func (_u *ProviderUpdateOne) SetUpdated(v bool) *ProviderUpdateOne {
+	_u.mutation.SetUpdated(v)
+	return _u
+}
+
+// SetNillableUpdated sets the "updated" field if the given value is not nil.
+func (_u *ProviderUpdateOne) SetNillableUpdated(v *bool) *ProviderUpdateOne {
+	if v != nil {
+		_u.SetUpdated(*v)
+	}
+	return _u
+}
+
+// ClearUpdated clears the value of the "updated" field.
+func (_u *ProviderUpdateOne) ClearUpdated() *ProviderUpdateOne {
+	_u.mutation.ClearUpdated()
 	return _u
 }
 
@@ -417,6 +463,12 @@ func (_u *ProviderUpdateOne) sqlSave(ctx context.Context) (_node *Provider, err 
 	}
 	if _u.mutation.UUIDCleared() {
 		_spec.ClearField(provider.FieldUUID, field.TypeString)
+	}
+	if value, ok := _u.mutation.Updated(); ok {
+		_spec.SetField(provider.FieldUpdated, field.TypeBool, value)
+	}
+	if _u.mutation.UpdatedCleared() {
+		_spec.ClearField(provider.FieldUpdated, field.TypeBool)
 	}
 	_node = &Provider{config: _u.config}
 	_spec.Assign = _node.assignValues

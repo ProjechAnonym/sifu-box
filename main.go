@@ -26,17 +26,17 @@ func init() {
 func main() {
 	taskLogger := initial.GetLogger(dir, "task", true)
 	defer taskLogger.Sync()
-	if err := ent_client.Provider.Create().SetName("M78").SetRemote(true).SetPath("https://sub.m78sc.cn/api/v1/client/subscribe?token=083387dce0f02a10e8115379f9871c6d").Exec(context.Background()); err != nil {
-		fmt.Println(err)
-	}
-	if err := ent_client.Provider.Create().SetName("test1").SetRemote(false).SetPath("/opt/sifubox/1.yaml").Exec(context.Background()); err != nil {
-		fmt.Println(err)
-	}
-	if err := ent_client.Provider.Create().SetName("vless_test2").SetRemote(true).SetPath("https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub").Exec(context.Background()); err != nil {
-		fmt.Println(err)
-	}
+	// if err := ent_client.Provider.Create().SetName("M78").SetRemote(true).SetPath("https://sub.m78sc.cn/api/v1/client/subscribe?token=083387dce0f02a10e8115379f9871c6d").Exec(context.Background()); err != nil {
+	// 	fmt.Println(err)
+	// }
+	// if err := ent_client.Provider.Create().SetName("test1").SetRemote(false).SetPath("/opt/sifubox/1.yaml").Exec(context.Background()); err != nil {
+	// 	fmt.Println(err)
+	// }
+	// if err := ent_client.Provider.Create().SetName("vless_test2").SetRemote(true).SetPath("https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub").Exec(context.Background()); err != nil {
+	// 	fmt.Println(err)
+	// }
 	test(ent_client)
-	generate.Process(ent_client, taskLogger)
+	fmt.Println(generate.Process(dir, ent_client, taskLogger))
 }
 func test(ent_client *ent.Client) {
 	experiment := singbox.Experiment{Clash_api: singbox.Clash_api{External_controller: "127.0.0.1:9090", External_ui: "/ui", Secret: "123456"}}
@@ -55,7 +55,7 @@ func test(ent_client *ent.Client) {
 		Rules:     []map[string]any{{"user": []string{"bind"}, "action": "route", "outbound": "direct"}, {"port": []int{53}, "action": "hijack-dns"}, {"protocol": []string{"dns"}, "action": "hijack-dns"}, {"ip_is_private": true, "action": "route", "outbound": "direct"}, {"protocol": []string{"quic"}, "action": "reject"}},
 		Rule_sets: []singbox.Rule_set{{Type: "remote", Tag: "china-ip", Format: "binary", URL: "https://github.com/MetaCubeX/meta-rules-dat/raw/bd4354ba7f11a22883b919ac9fb9f7034fb51b31/geo/geoip/cn.srs", Download_detour: "select", Update_interval: "1d"}},
 	}
-	if err := ent_client.Template.Create().SetName("default").SetDNS(dns).SetExperiment(experiment).SetInbounds(inbounds).SetRoute(route).SetOutboundGroups(outbounds).SetProviders([]string{"M78", "test1", "vless_test2"}).Exec(context.Background()); err != nil {
+	if err := ent_client.Template.Create().SetName("default1").SetDNS(dns).SetExperiment(experiment).SetInbounds(inbounds).SetRoute(route).SetOutboundGroups(outbounds).SetProviders([]string{"M78", "test1", "vless_test2"}).Exec(context.Background()); err != nil {
 		fmt.Println(err)
 	}
 }

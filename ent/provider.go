@@ -26,7 +26,9 @@ type Provider struct {
 	// Remote holds the value of the "remote" field.
 	Remote bool `json:"remote,omitempty"`
 	// UUID holds the value of the "uuid" field.
-	UUID         string `json:"uuid,omitempty"`
+	UUID string `json:"uuid,omitempty"`
+	// Updated holds the value of the "updated" field.
+	Updated      bool `json:"updated,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -37,7 +39,7 @@ func (*Provider) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case provider.FieldNodes:
 			values[i] = new([]byte)
-		case provider.FieldRemote:
+		case provider.FieldRemote, provider.FieldUpdated:
 			values[i] = new(sql.NullBool)
 		case provider.FieldID:
 			values[i] = new(sql.NullInt64)
@@ -96,6 +98,12 @@ func (_m *Provider) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.UUID = value.String
 			}
+		case provider.FieldUpdated:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field updated", values[i])
+			} else if value.Valid {
+				_m.Updated = value.Bool
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -146,6 +154,9 @@ func (_m *Provider) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("uuid=")
 	builder.WriteString(_m.UUID)
+	builder.WriteString(", ")
+	builder.WriteString("updated=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Updated))
 	builder.WriteByte(')')
 	return builder.String()
 }

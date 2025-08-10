@@ -16,6 +16,7 @@ var (
 		{Name: "nodes", Type: field.TypeJSON, Nullable: true},
 		{Name: "remote", Type: field.TypeBool},
 		{Name: "uuid", Type: field.TypeString, Nullable: true, Size: 32},
+		{Name: "updated", Type: field.TypeBool, Nullable: true},
 	}
 	// ProvidersTable holds the schema information for the "providers" table.
 	ProvidersTable = &schema.Table{

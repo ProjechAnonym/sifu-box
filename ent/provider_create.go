@@ -57,6 +57,20 @@ func (_c *ProviderCreate) SetNillableUUID(v *string) *ProviderCreate {
 	return _c
 }
 
+// SetUpdated sets the "updated" field.
+func (_c *ProviderCreate) SetUpdated(v bool) *ProviderCreate {
+	_c.mutation.SetUpdated(v)
+	return _c
+}
+
+// SetNillableUpdated sets the "updated" field if the given value is not nil.
+func (_c *ProviderCreate) SetNillableUpdated(v *bool) *ProviderCreate {
+	if v != nil {
+		_c.SetUpdated(*v)
+	}
+	return _c
+}
+
 // Mutation returns the ProviderMutation object of the builder.
 func (_c *ProviderCreate) Mutation() *ProviderMutation {
 	return _c.mutation
@@ -160,6 +174,10 @@ func (_c *ProviderCreate) createSpec() (*Provider, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.UUID(); ok {
 		_spec.SetField(provider.FieldUUID, field.TypeString, value)
 		_node.UUID = value
+	}
+	if value, ok := _c.mutation.Updated(); ok {
+		_spec.SetField(provider.FieldUpdated, field.TypeBool, value)
+		_node.Updated = value
 	}
 	return _node, _spec
 }

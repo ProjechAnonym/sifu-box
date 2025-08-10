@@ -73,6 +73,11 @@ func UUID(v string) predicate.Provider {
 	return predicate.Provider(sql.FieldEQ(FieldUUID, v))
 }
 
+// Updated applies equality check predicate on the "updated" field. It's identical to UpdatedEQ.
+func Updated(v bool) predicate.Provider {
+	return predicate.Provider(sql.FieldEQ(FieldUpdated, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Provider {
 	return predicate.Provider(sql.FieldEQ(FieldName, v))
@@ -296,6 +301,26 @@ func UUIDEqualFold(v string) predicate.Provider {
 // UUIDContainsFold applies the ContainsFold predicate on the "uuid" field.
 func UUIDContainsFold(v string) predicate.Provider {
 	return predicate.Provider(sql.FieldContainsFold(FieldUUID, v))
+}
+
+// UpdatedEQ applies the EQ predicate on the "updated" field.
+func UpdatedEQ(v bool) predicate.Provider {
+	return predicate.Provider(sql.FieldEQ(FieldUpdated, v))
+}
+
+// UpdatedNEQ applies the NEQ predicate on the "updated" field.
+func UpdatedNEQ(v bool) predicate.Provider {
+	return predicate.Provider(sql.FieldNEQ(FieldUpdated, v))
+}
+
+// UpdatedIsNil applies the IsNil predicate on the "updated" field.
+func UpdatedIsNil() predicate.Provider {
+	return predicate.Provider(sql.FieldIsNull(FieldUpdated))
+}
+
+// UpdatedNotNil applies the NotNil predicate on the "updated" field.
+func UpdatedNotNil() predicate.Provider {
+	return predicate.Provider(sql.FieldNotNull(FieldUpdated))
 }
 
 // And groups predicates with the AND operator between them.
