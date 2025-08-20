@@ -197,6 +197,26 @@ func (_u *TemplateUpdate) ClearProviders() *TemplateUpdate {
 	return _u
 }
 
+// SetChanged sets the "changed" field.
+func (_u *TemplateUpdate) SetChanged(v bool) *TemplateUpdate {
+	_u.mutation.SetChanged(v)
+	return _u
+}
+
+// SetNillableChanged sets the "changed" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableChanged(v *bool) *TemplateUpdate {
+	if v != nil {
+		_u.SetChanged(*v)
+	}
+	return _u
+}
+
+// ClearChanged clears the value of the "changed" field.
+func (_u *TemplateUpdate) ClearChanged() *TemplateUpdate {
+	_u.mutation.ClearChanged()
+	return _u
+}
+
 // Mutation returns the TemplateMutation object of the builder.
 func (_u *TemplateUpdate) Mutation() *TemplateMutation {
 	return _u.mutation
@@ -316,6 +336,12 @@ func (_u *TemplateUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.ProvidersCleared() {
 		_spec.ClearField(template.FieldProviders, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Changed(); ok {
+		_spec.SetField(template.FieldChanged, field.TypeBool, value)
+	}
+	if _u.mutation.ChangedCleared() {
+		_spec.ClearField(template.FieldChanged, field.TypeBool)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -505,6 +531,26 @@ func (_u *TemplateUpdateOne) ClearProviders() *TemplateUpdateOne {
 	return _u
 }
 
+// SetChanged sets the "changed" field.
+func (_u *TemplateUpdateOne) SetChanged(v bool) *TemplateUpdateOne {
+	_u.mutation.SetChanged(v)
+	return _u
+}
+
+// SetNillableChanged sets the "changed" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableChanged(v *bool) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetChanged(*v)
+	}
+	return _u
+}
+
+// ClearChanged clears the value of the "changed" field.
+func (_u *TemplateUpdateOne) ClearChanged() *TemplateUpdateOne {
+	_u.mutation.ClearChanged()
+	return _u
+}
+
 // Mutation returns the TemplateMutation object of the builder.
 func (_u *TemplateUpdateOne) Mutation() *TemplateMutation {
 	return _u.mutation
@@ -654,6 +700,12 @@ func (_u *TemplateUpdateOne) sqlSave(ctx context.Context) (_node *Template, err 
 	}
 	if _u.mutation.ProvidersCleared() {
 		_spec.ClearField(template.FieldProviders, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Changed(); ok {
+		_spec.SetField(template.FieldChanged, field.TypeBool, value)
+	}
+	if _u.mutation.ChangedCleared() {
+		_spec.ClearField(template.FieldChanged, field.TypeBool)
 	}
 	_node = &Template{config: _u.config}
 	_spec.Assign = _node.assignValues

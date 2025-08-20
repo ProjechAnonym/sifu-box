@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -12,7 +13,11 @@ func shadowsocksFromYaml(content map[string]any) map[string]any {
 	for k, v := range content {
 		switch k {
 		case "port":
-			outbound["server_port"] = v
+			if _, ok := v.(int); !ok {
+				outbound["server_port"] = 0
+				continue
+			}
+			outbound["server_port"] = v.(int)
 		case "cipher":
 			outbound["method"] = v
 		case "name":
@@ -31,7 +36,12 @@ func shadowsocksFromBase64(content *url.URL) (map[string]any, error) {
 	outbound := make(map[string]any)
 	outbound["tag"] = content.Fragment
 	outbound["server"] = content.Hostname()
-	outbound["server_port"] = content.Port()
+	port, err := strconv.Atoi(content.Port())
+	if err != nil {
+		return nil, fmt.Errorf(`端口转换错误, %s`, err.Error())
+	}
+
+	outbound["server_port"] = port
 	message, err := base64.RawURLEncoding.DecodeString(content.User.String())
 	if err != nil {
 		return nil, err

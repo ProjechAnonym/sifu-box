@@ -12,20 +12,28 @@ func vmessFromYaml(content map[string]any) map[string]any {
 	for k, v := range content {
 		switch k {
 		case "port":
-			outbound["server_port"] = v
+			if _, ok := v.(int); !ok {
+				outbound["server_port"] = 0
+				continue
+			}
+			outbound["server_port"] = v.(int)
 		case "cipher":
 			outbound["security"] = v
 		case "name":
 			outbound["tag"] = v
 		case "alterId":
-			outbound["alter_id"] = v
+			if _, ok := v.(int); !ok {
+				outbound["alter_id"] = 0
+				continue
+			}
+			outbound["alter_id"] = v.(int)
 		case "network":
 			transport["type"] = v
 		case "ws-opts":
 			if opts, ok := v.(map[string]any); ok {
 				if headers, ok := opts["headers"].(map[string]any); ok {
 					if host, ok := headers["Host"].(string); ok {
-						transport["host"] = host
+						transport["headers"] = map[string]any{"host": host}
 					}
 				}
 				if path, ok := opts["path"].(string); ok {
@@ -63,9 +71,18 @@ func vmessFromBase64(content *url.URL) (map[string]any, error) {
 		case "add":
 			outbound["server"] = v
 		case "port":
-			outbound["server_port"] = v
+			if _, ok := v.(int); !ok {
+				outbound["server_port"] = 0
+				continue
+			}
+			outbound["server_port"] = v.(int)
 		case "aid":
-			outbound["alter_id"] = v
+			if _, ok := v.(int); !ok {
+				outbound["alter_id"] = 0
+				continue
+			}
+			outbound["alter_id"] = v.(int)
+
 		case "id":
 			outbound["uuid"] = v
 		case "net":
@@ -76,8 +93,15 @@ func vmessFromBase64(content *url.URL) (map[string]any, error) {
 			transport["host"] = v
 		}
 	}
+	if transport["type"] == "ws" {
+		transport["headers"] = map[string]any{"host": transport["host"]}
+		delete(transport, "host")
+	}
 	outbound["type"] = "vmess"
 	outbound["security"] = "auto" // 默认安全性为 auto
+	if transport["type"] != "ws" && transport["type"] != "http" && transport["type"] != "quic" && transport["type"] != "grpc" && transport["type"] != "httpupgrade" {
+		return outbound, nil
+	}
 	outbound["transport"] = transport
 	return outbound, nil
 }

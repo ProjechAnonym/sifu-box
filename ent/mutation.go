@@ -1359,6 +1359,7 @@ type TemplateMutation struct {
 	experiment            *singbox.Experiment
 	providers             *[]string
 	appendproviders       []string
+	changed               *bool
 	clearedFields         map[string]struct{}
 	done                  bool
 	oldValue              func(context.Context) (*Template, error)
@@ -1939,6 +1940,55 @@ func (m *TemplateMutation) ResetProviders() {
 	delete(m.clearedFields, template.FieldProviders)
 }
 
+// SetChanged sets the "changed" field.
+func (m *TemplateMutation) SetChanged(b bool) {
+	m.changed = &b
+}
+
+// Changed returns the value of the "changed" field in the mutation.
+func (m *TemplateMutation) Changed() (r bool, exists bool) {
+	v := m.changed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChanged returns the old "changed" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldChanged(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChanged is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChanged requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChanged: %w", err)
+	}
+	return oldValue.Changed, nil
+}
+
+// ClearChanged clears the value of the "changed" field.
+func (m *TemplateMutation) ClearChanged() {
+	m.changed = nil
+	m.clearedFields[template.FieldChanged] = struct{}{}
+}
+
+// ChangedCleared returns if the "changed" field was cleared in this mutation.
+func (m *TemplateMutation) ChangedCleared() bool {
+	_, ok := m.clearedFields[template.FieldChanged]
+	return ok
+}
+
+// ResetChanged resets all changes to the "changed" field.
+func (m *TemplateMutation) ResetChanged() {
+	m.changed = nil
+	delete(m.clearedFields, template.FieldChanged)
+}
+
 // Where appends a list predicates to the TemplateMutation builder.
 func (m *TemplateMutation) Where(ps ...predicate.Template) {
 	m.predicates = append(m.predicates, ps...)
@@ -1973,7 +2023,7 @@ func (m *TemplateMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TemplateMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.name != nil {
 		fields = append(fields, template.FieldName)
 	}
@@ -2001,6 +2051,9 @@ func (m *TemplateMutation) Fields() []string {
 	if m.providers != nil {
 		fields = append(fields, template.FieldProviders)
 	}
+	if m.changed != nil {
+		fields = append(fields, template.FieldChanged)
+	}
 	return fields
 }
 
@@ -2027,6 +2080,8 @@ func (m *TemplateMutation) Field(name string) (ent.Value, bool) {
 		return m.Experiment()
 	case template.FieldProviders:
 		return m.Providers()
+	case template.FieldChanged:
+		return m.Changed()
 	}
 	return nil, false
 }
@@ -2054,6 +2109,8 @@ func (m *TemplateMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldExperiment(ctx)
 	case template.FieldProviders:
 		return m.OldProviders(ctx)
+	case template.FieldChanged:
+		return m.OldChanged(ctx)
 	}
 	return nil, fmt.Errorf("unknown Template field %s", name)
 }
@@ -2126,6 +2183,13 @@ func (m *TemplateMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetProviders(v)
 		return nil
+	case template.FieldChanged:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChanged(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Template field %s", name)
 }
@@ -2180,6 +2244,9 @@ func (m *TemplateMutation) ClearedFields() []string {
 	if m.FieldCleared(template.FieldProviders) {
 		fields = append(fields, template.FieldProviders)
 	}
+	if m.FieldCleared(template.FieldChanged) {
+		fields = append(fields, template.FieldChanged)
+	}
 	return fields
 }
 
@@ -2218,6 +2285,9 @@ func (m *TemplateMutation) ClearField(name string) error {
 	case template.FieldProviders:
 		m.ClearProviders()
 		return nil
+	case template.FieldChanged:
+		m.ClearChanged()
+		return nil
 	}
 	return fmt.Errorf("unknown Template nullable field %s", name)
 }
@@ -2252,6 +2322,9 @@ func (m *TemplateMutation) ResetField(name string) error {
 		return nil
 	case template.FieldProviders:
 		m.ResetProviders()
+		return nil
+	case template.FieldChanged:
+		m.ResetChanged()
 		return nil
 	}
 	return fmt.Errorf("unknown Template field %s", name)

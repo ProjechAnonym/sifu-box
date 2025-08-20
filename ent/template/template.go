@@ -29,6 +29,8 @@ const (
 	FieldExperiment = "experiment"
 	// FieldProviders holds the string denoting the providers field in the database.
 	FieldProviders = "providers"
+	// FieldChanged holds the string denoting the changed field in the database.
+	FieldChanged = "changed"
 	// Table holds the table name of the template in the database.
 	Table = "templates"
 )
@@ -45,6 +47,7 @@ var Columns = []string{
 	FieldNtp,
 	FieldExperiment,
 	FieldProviders,
+	FieldChanged,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -73,4 +76,9 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByChanged orders the results by the changed field.
+func ByChanged(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldChanged, opts...).ToFunc()
 }

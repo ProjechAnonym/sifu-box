@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"net/url"
+	"strconv"
 )
 
 func trojanFromYaml(content map[string]any) map[string]any {
@@ -11,7 +12,11 @@ func trojanFromYaml(content map[string]any) map[string]any {
 	for k, v := range content {
 		switch k {
 		case "port":
-			outbound["server_port"] = v
+			if _, ok := v.(int); !ok {
+				outbound["server_port"] = 0
+				continue
+			}
+			outbound["server_port"] = v.(int)
 		case "password":
 			outbound["password"] = v
 		case "name":
@@ -28,7 +33,7 @@ func trojanFromYaml(content map[string]any) map[string]any {
 			if opts, ok := v.(map[string]any); ok {
 				if headers, ok := opts["headers"].(map[string]any); ok {
 					if host, ok := headers["Host"].(string); ok {
-						transport["host"] = host
+						transport["headers"] = map[string]any{"host": host}
 					}
 				}
 				if path, ok := opts["path"].(string); ok {
@@ -59,13 +64,22 @@ func trojanFromBase64(content *url.URL) map[string]any {
 	}
 	outbound["tag"] = content.Fragment
 	outbound["server"] = content.Hostname()
-	outbound["server_port"] = content.Port()
+	port, err := strconv.Atoi(content.Port())
+	if err != nil {
+		return nil
+	}
+
+	outbound["server_port"] = port
 	outbound["password"] = content.User.String()
 	outbound["type"] = "trojan"
 	if content.Query().Get("type") != "" {
 		transport["type"] = content.Query().Get("type")
 		transport["host"] = content.Query().Get("host")
 		transport["path"] = content.Query().Get("path")
+		if transport["type"] == "ws" {
+			transport["headers"] = map[string]any{"host": transport["host"]}
+			delete(transport, "host")
+		}
 		outbound["transport"] = transport
 	}
 	outbound["tls"] = tls
