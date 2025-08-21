@@ -53,14 +53,14 @@ func vmessFromYaml(content map[string]any) map[string]any {
 	return outbound
 
 }
-func vmessFromBase64(content *url.URL) (map[string]any, error) {
+func vmessFromBase64(content *url.URL) map[string]any {
 	data, err := base64.StdEncoding.DecodeString(content.Host)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 	config := make(map[string]any)
 	if err := json.Unmarshal(data, &config); err != nil {
-		return nil, err
+		return nil
 	}
 	outbound := make(map[string]any)
 	transport := make(map[string]any)
@@ -100,8 +100,8 @@ func vmessFromBase64(content *url.URL) (map[string]any, error) {
 	outbound["type"] = "vmess"
 	outbound["security"] = "auto" // 默认安全性为 auto
 	if transport["type"] != "ws" && transport["type"] != "http" && transport["type"] != "quic" && transport["type"] != "grpc" && transport["type"] != "httpupgrade" {
-		return outbound, nil
+		return outbound
 	}
 	outbound["transport"] = transport
-	return outbound, nil
+	return outbound
 }

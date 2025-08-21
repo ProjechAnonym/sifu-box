@@ -170,19 +170,9 @@ func generateFromBase64(content []byte, logger *zap.Logger) ([]map[string]interf
 		}
 		switch link.Scheme {
 		case "ss":
-			outbound, err := shadowsocksFromBase64(link)
-			if err != nil {
-				logger.Error(fmt.Sprintf(`"%s"协议解析失败: [%s]`, link.Scheme, err.Error()))
-				continue
-			}
-			outbounds = append(outbounds, outbound)
+			outbounds = append(outbounds, shadowsocksFromBase64(link))
 		case "vmess":
-			outbound, err := vmessFromBase64(link)
-			if err != nil {
-				logger.Error(fmt.Sprintf(`"%s"协议解析失败: [%s]`, link.Scheme, err.Error()))
-				continue
-			}
-			outbounds = append(outbounds, outbound)
+			outbounds = append(outbounds, vmessFromBase64(link))
 		case "trojan":
 			outbounds = append(outbounds, trojanFromBase64(link))
 		case "vless":
