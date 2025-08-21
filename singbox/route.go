@@ -10,6 +10,7 @@ type Route struct {
 	Default_mark             int              `json:"default_mark,omitempty" yaml:"default_mark,omitempty"`
 	Default_network_strategy string           `json:"default_network_strategy,omitempty" yaml:"default_network_strategy,omitempty"`
 	Default_fallback_delay   string           `json:"default_fallback_delay,omitempty" yaml:"default_fallback_delay,omitempty"`
+	Default_domain_resolver  map[string]any   `json:"default_domain_resolver,omitempty" yaml:"default_domain_resolver,omitempty"`
 }
 type Rule_set struct {
 	Type            string `json:"type" yaml:"type"`

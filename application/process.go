@@ -123,8 +123,9 @@ func Process(dir string, ent_client *ent.Client, logger *zap.Logger) []error {
 			// 遍历模板关联的机场, 检查是否需要更新
 			for _, name := range template.Providers {
 
-				if update_map[name] && template.Changed {
+				if update_map[name] || template.Changed {
 					config := Config{}
+
 					// 生成配置文件
 					if err := config.Generate(dir, template, provider_nodes, logger); err != nil {
 						logger.Error(err.Error())

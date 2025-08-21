@@ -43,11 +43,11 @@ func (c *Config) Generate(dir string, template *ent.Template, outbound_map map[s
 			logger.Error(fmt.Sprintf(`出站组解析失败: [%s]`, err.Error()))
 		}
 		outbounds = append(outbounds, outbound)
-	}
 
+	}
 	// 合并额外的出站配置
-	for _, v := range outbound_map {
-		outbounds = append(outbounds, v...)
+	for _, provider_name := range template.Providers {
+		outbounds = append(outbounds, outbound_map[provider_name]...)
 	}
 
 	// 将处理后的配置赋值给当前配置对象
