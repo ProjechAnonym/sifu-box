@@ -42,7 +42,7 @@ func main() {
 	test(ent_client)
 	application.Process(dir, ent_client, taskLogger)
 	// template, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
-	application.BootService(taskLogger, dir, fmt.Sprintf("%x", md5.Sum([]byte("default6"))), &exec_lock)
+	application.BootService(taskLogger, dir, fmt.Sprintf("%x", md5.Sum([]byte("default"))), &exec_lock)
 	for {
 		time.Sleep(time.Second * 5)
 	}
