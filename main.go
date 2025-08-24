@@ -2,14 +2,13 @@ package main
 
 import (
 	"context"
-	"crypto/md5"
 	"fmt"
 	"sifu-box/application"
 	"sifu-box/cmd"
 	"sifu-box/ent"
+	"sifu-box/ent/template"
 	"sifu-box/initial"
 	"sifu-box/singbox"
-	"sync"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -27,7 +26,10 @@ func init() {
 	init_logger.Info("初始化数据库成功")
 }
 func main() {
-	var exec_lock = sync.Mutex{}
+	err_chan := make(chan error, 5)
+
+	operation := make(chan int, 5)
+	name_chan := make(chan string, 5)
 	taskLogger := initial.GetLogger(dir, "task", true)
 	defer taskLogger.Sync()
 	if err := ent_client.Provider.Create().SetName("M78").SetRemote(true).SetPath("https://sub.m78sc.cn/api/v1/client/subscribe?token=083387dce0f02a10e8115379f9871c6d").Exec(context.Background()); err != nil {
@@ -41,10 +43,14 @@ func main() {
 		fmt.Println(err)
 	}
 	test(ent_client)
+	name, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
+	name_chan <- name.Name
+	operation <- 0
 	application.Process(dir, ent_client, taskLogger)
-	// template, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
-	fmt.Println(application.BootService(taskLogger, dir, fmt.Sprintf("%x", md5.Sum([]byte("default6"))), &exec_lock))
-	application.CheckService(taskLogger, &exec_lock)
+
+	application.ServiceControl(&operation, taskLogger, dir, &err_chan, &name_chan)
+
+	// application.CheckService(taskLogger, &exec_lock)
 	for {
 		time.Sleep(time.Second * 5)
 	}
@@ -67,7 +73,7 @@ func test(ent_client *ent.Client) {
 		Rules:                   []map[string]any{{"user": []string{"bind"}, "action": "route", "outbound": "direct"}, {"port": []int{53}, "action": "hijack-dns"}, {"protocol": []string{"dns"}, "action": "hijack-dns"}, {"ip_is_private": true, "action": "route", "outbound": "direct"}, {"protocol": []string{"quic"}, "action": "reject"}},
 		Rule_sets:               []singbox.Rule_set{{Type: "remote", Tag: "china-ip", Format: "binary", URL: "https://github.com/MetaCubeX/meta-rules-dat/raw/bd4354ba7f11a22883b919ac9fb9f7034fb51b31/geo/geoip/cn.srs", Download_detour: "direct", Update_interval: "1d"}},
 	}
-	if err := ent_client.Template.Create().SetName("default6").SetDNS(dns).SetExperiment(experiment).SetInbounds(inbounds).SetRoute(route).SetOutboundGroups(outbounds).SetProviders([]string{"M78"}).SetChanged(true).Exec(context.Background()); err != nil {
+	if err := ent_client.Template.Create().SetName("default").SetDNS(dns).SetExperiment(experiment).SetInbounds(inbounds).SetRoute(route).SetOutboundGroups(outbounds).SetProviders([]string{"M78"}).SetChanged(true).Exec(context.Background()); err != nil {
 		fmt.Println(err)
 	}
 }
