@@ -51,9 +51,21 @@ func stopService(pid *int, logger *zap.Logger, err_chan *chan error) {
 		*err_chan <- errors.New("未找到进程, 重新检查进程状态")
 		return
 	}
-	sh.Command("kill", "-9", fmt.Sprintf("%d", *pid)).Run()
+	if err := sh.Command("kill", "-9", fmt.Sprintf("%d", *pid)).Run(); err != nil {
+		logger.Error(fmt.Sprintf("执行停止命令失败: [%s]", err.Error()))
+		*err_chan <- err
+	}
 }
-
+func reloadService(pid *int, logger *zap.Logger, err_chan *chan error) {
+	if *pid <= 0 {
+		*err_chan <- errors.New("未找到进程, 重新检查进程状态")
+		return
+	}
+	if err := sh.Command("kill", "-HUP", fmt.Sprintf("%d", *pid)).Run(); err != nil {
+		logger.Error(fmt.Sprintf("执行停止命令失败: [%s]", err.Error()))
+		*err_chan <- err
+	}
+}
 func ServiceControl(operation *chan int, logger *zap.Logger, dir string, err_chan *chan error, name_chan *chan string) {
 	singbox_pid := 0
 	exit_chan := make(chan int, 5)
@@ -62,15 +74,19 @@ func ServiceControl(operation *chan int, logger *zap.Logger, dir string, err_cha
 		select {
 		case op := <-*operation:
 			switch op {
-			case 0:
+			case BOOT_SERVICE:
 				if boot_process {
 					continue
 				}
 				boot_process = true
 				go bootService(logger, dir, &singbox_pid, name_chan, err_chan, &exit_chan)
 				*operation <- 1
-			case 1:
+			case CHECK_SERVICE:
 				checkService(&singbox_pid, logger, err_chan)
+			case RELOAD_SERVICE:
+				reloadService(&singbox_pid, logger, err_chan)
+			case STOP_SERVICE:
+				stopService(&singbox_pid, logger, err_chan)
 			}
 		case exit_process := <-exit_chan:
 			switch exit_process {

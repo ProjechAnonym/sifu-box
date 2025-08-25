@@ -48,8 +48,11 @@ func main() {
 	operation <- 0
 	application.Process(dir, ent_client, taskLogger)
 
-	application.ServiceControl(&operation, taskLogger, dir, &err_chan, &name_chan)
-
+	go application.ServiceControl(&operation, taskLogger, dir, &err_chan, &name_chan)
+	time.Sleep(time.Second * 5)
+	operation <- 2
+	time.Sleep(time.Second * 10)
+	operation <- 2
 	// application.CheckService(taskLogger, &exec_lock)
 	for {
 		time.Sleep(time.Second * 5)
