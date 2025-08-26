@@ -114,16 +114,16 @@ func (_c *TemplateCreate) SetProviders(v []string) *TemplateCreate {
 	return _c
 }
 
-// SetChanged sets the "changed" field.
-func (_c *TemplateCreate) SetChanged(v bool) *TemplateCreate {
-	_c.mutation.SetChanged(v)
+// SetUpdated sets the "updated" field.
+func (_c *TemplateCreate) SetUpdated(v bool) *TemplateCreate {
+	_c.mutation.SetUpdated(v)
 	return _c
 }
 
-// SetNillableChanged sets the "changed" field if the given value is not nil.
-func (_c *TemplateCreate) SetNillableChanged(v *bool) *TemplateCreate {
+// SetNillableUpdated sets the "updated" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableUpdated(v *bool) *TemplateCreate {
 	if v != nil {
-		_c.SetChanged(*v)
+		_c.SetUpdated(*v)
 	}
 	return _c
 }
@@ -232,9 +232,9 @@ func (_c *TemplateCreate) createSpec() (*Template, *sqlgraph.CreateSpec) {
 		_spec.SetField(template.FieldProviders, field.TypeJSON, value)
 		_node.Providers = value
 	}
-	if value, ok := _c.mutation.Changed(); ok {
-		_spec.SetField(template.FieldChanged, field.TypeBool, value)
-		_node.Changed = value
+	if value, ok := _c.mutation.Updated(); ok {
+		_spec.SetField(template.FieldUpdated, field.TypeBool, value)
+		_node.Updated = value
 	}
 	return _node, _spec
 }

@@ -58,9 +58,9 @@ func Name(v string) predicate.Template {
 	return predicate.Template(sql.FieldEQ(FieldName, v))
 }
 
-// Changed applies equality check predicate on the "changed" field. It's identical to ChangedEQ.
-func Changed(v bool) predicate.Template {
-	return predicate.Template(sql.FieldEQ(FieldChanged, v))
+// Updated applies equality check predicate on the "updated" field. It's identical to UpdatedEQ.
+func Updated(v bool) predicate.Template {
+	return predicate.Template(sql.FieldEQ(FieldUpdated, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -208,24 +208,24 @@ func ProvidersNotNil() predicate.Template {
 	return predicate.Template(sql.FieldNotNull(FieldProviders))
 }
 
-// ChangedEQ applies the EQ predicate on the "changed" field.
-func ChangedEQ(v bool) predicate.Template {
-	return predicate.Template(sql.FieldEQ(FieldChanged, v))
+// UpdatedEQ applies the EQ predicate on the "updated" field.
+func UpdatedEQ(v bool) predicate.Template {
+	return predicate.Template(sql.FieldEQ(FieldUpdated, v))
 }
 
-// ChangedNEQ applies the NEQ predicate on the "changed" field.
-func ChangedNEQ(v bool) predicate.Template {
-	return predicate.Template(sql.FieldNEQ(FieldChanged, v))
+// UpdatedNEQ applies the NEQ predicate on the "updated" field.
+func UpdatedNEQ(v bool) predicate.Template {
+	return predicate.Template(sql.FieldNEQ(FieldUpdated, v))
 }
 
-// ChangedIsNil applies the IsNil predicate on the "changed" field.
-func ChangedIsNil() predicate.Template {
-	return predicate.Template(sql.FieldIsNull(FieldChanged))
+// UpdatedIsNil applies the IsNil predicate on the "updated" field.
+func UpdatedIsNil() predicate.Template {
+	return predicate.Template(sql.FieldIsNull(FieldUpdated))
 }
 
-// ChangedNotNil applies the NotNil predicate on the "changed" field.
-func ChangedNotNil() predicate.Template {
-	return predicate.Template(sql.FieldNotNull(FieldChanged))
+// UpdatedNotNil applies the NotNil predicate on the "updated" field.
+func UpdatedNotNil() predicate.Template {
+	return predicate.Template(sql.FieldNotNull(FieldUpdated))
 }
 
 // And groups predicates with the AND operator between them.

@@ -36,8 +36,8 @@ type Template struct {
 	Experiment singbox.Experiment `json:"experiment,omitempty"`
 	// Providers holds the value of the "providers" field.
 	Providers []string `json:"providers,omitempty"`
-	// Changed holds the value of the "changed" field.
-	Changed      bool `json:"changed,omitempty"`
+	// Updated holds the value of the "updated" field.
+	Updated      bool `json:"updated,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -48,7 +48,7 @@ func (*Template) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case template.FieldDNS, template.FieldLog, template.FieldRoute, template.FieldInbounds, template.FieldOutboundGroups, template.FieldNtp, template.FieldExperiment, template.FieldProviders:
 			values[i] = new([]byte)
-		case template.FieldChanged:
+		case template.FieldUpdated:
 			values[i] = new(sql.NullBool)
 		case template.FieldID:
 			values[i] = new(sql.NullInt64)
@@ -145,11 +145,11 @@ func (_m *Template) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field providers: %w", err)
 				}
 			}
-		case template.FieldChanged:
+		case template.FieldUpdated:
 			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field changed", values[i])
+				return fmt.Errorf("unexpected type %T for field updated", values[i])
 			} else if value.Valid {
-				_m.Changed = value.Bool
+				_m.Updated = value.Bool
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -214,8 +214,8 @@ func (_m *Template) String() string {
 	builder.WriteString("providers=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Providers))
 	builder.WriteString(", ")
-	builder.WriteString("changed=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Changed))
+	builder.WriteString("updated=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Updated))
 	builder.WriteByte(')')
 	return builder.String()
 }

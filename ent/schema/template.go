@@ -19,7 +19,7 @@ func (Template) Fields() []ent.Field {
 		field.JSON("dns", singbox.DNS{}).Optional(), field.JSON("log", singbox.Log{}).Optional(),
 		field.JSON("route", singbox.Route{}).Optional(), field.JSON("inbounds", []map[string]any{}).Optional(),
 		field.JSON("outbound_groups", []singbox.OutboundGroup{}).Optional(), field.JSON("ntp", singbox.Ntp{}).Optional(),
-		field.JSON("experiment", singbox.Experiment{}).Optional(), field.Strings("providers").Optional(), field.Bool("changed").Optional(),
+		field.JSON("experiment", singbox.Experiment{}).Optional(), field.Strings("providers").Optional(), field.Bool("updated").Optional(),
 	}
 }
 

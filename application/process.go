@@ -123,7 +123,7 @@ func Process(dir string, ent_client *ent.Client, logger *zap.Logger) []error {
 			// 遍历模板关联的机场, 检查是否需要更新
 			for _, name := range template.Providers {
 
-				if update_map[name] || template.Changed {
+				if update_map[name] || template.Updated {
 					config := Config{}
 
 					// 生成配置文件
@@ -131,7 +131,7 @@ func Process(dir string, ent_client *ent.Client, logger *zap.Logger) []error {
 						logger.Error(err.Error())
 						errChan <- err
 					}
-					if err := ent_client.Template.UpdateOne(template).SetChanged(false).Exec(context.Background()); err != nil {
+					if err := ent_client.Template.UpdateOne(template).SetUpdated(false).Exec(context.Background()); err != nil {
 						errChan <- err
 					}
 					break

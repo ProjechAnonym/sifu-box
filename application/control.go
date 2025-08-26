@@ -12,9 +12,9 @@ import (
 	"go.uber.org/zap"
 )
 
-func bootService(logger *zap.Logger, dir string, pid *int, name_chan *chan string, err_chan *chan error, exit_chan *chan int) {
+func bootService(logger *zap.Logger, dir string, pid *int, name_chan *chan string, err_chan *chan error, exit *bool) {
 	defer func() {
-		*exit_chan <- 0
+		*exit = true
 		*pid = 0
 	}()
 	select {
@@ -68,33 +68,22 @@ func reloadService(pid *int, logger *zap.Logger, err_chan *chan error) {
 }
 func ServiceControl(operation *chan int, logger *zap.Logger, dir string, err_chan *chan error, name_chan *chan string) {
 	singbox_pid := 0
-	exit_chan := make(chan int, 5)
-	boot_process := false
-	for {
-		select {
-		case op := <-*operation:
-			switch op {
-			case BOOT_SERVICE:
-				if boot_process {
-					continue
-				}
-				boot_process = true
-				go bootService(logger, dir, &singbox_pid, name_chan, err_chan, &exit_chan)
-				*operation <- 1
-			case CHECK_SERVICE:
-				checkService(&singbox_pid, logger, err_chan)
-			case RELOAD_SERVICE:
-				reloadService(&singbox_pid, logger, err_chan)
-			case STOP_SERVICE:
-				stopService(&singbox_pid, logger, err_chan)
+	exit := true
+	for op := range *operation {
+		switch op {
+		case BOOT_SERVICE:
+			if !exit {
+				continue
 			}
-		case exit_process := <-exit_chan:
-			switch exit_process {
-			case 0:
-				boot_process = false
-			}
+			exit = false
+			go bootService(logger, dir, &singbox_pid, name_chan, err_chan, &exit)
+			*operation <- 1
+		case CHECK_SERVICE:
+			checkService(&singbox_pid, logger, err_chan)
+		case RELOAD_SERVICE:
+			reloadService(&singbox_pid, logger, err_chan)
+		case STOP_SERVICE:
+			stopService(&singbox_pid, logger, err_chan)
 		}
-
 	}
-
 }

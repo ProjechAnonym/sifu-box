@@ -45,11 +45,13 @@ func main() {
 	test(ent_client)
 	name, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
 	name_chan <- name.Name
-	operation <- 0
+
 	application.Process(dir, ent_client, taskLogger)
 
 	go application.ServiceControl(&operation, taskLogger, dir, &err_chan, &name_chan)
+	operation <- 0
 	time.Sleep(time.Second * 5)
+	fmt.Println(2)
 	operation <- 2
 	time.Sleep(time.Second * 10)
 	operation <- 2
@@ -76,7 +78,7 @@ func test(ent_client *ent.Client) {
 		Rules:                   []map[string]any{{"user": []string{"bind"}, "action": "route", "outbound": "direct"}, {"port": []int{53}, "action": "hijack-dns"}, {"protocol": []string{"dns"}, "action": "hijack-dns"}, {"ip_is_private": true, "action": "route", "outbound": "direct"}, {"protocol": []string{"quic"}, "action": "reject"}},
 		Rule_sets:               []singbox.Rule_set{{Type: "remote", Tag: "china-ip", Format: "binary", URL: "https://github.com/MetaCubeX/meta-rules-dat/raw/bd4354ba7f11a22883b919ac9fb9f7034fb51b31/geo/geoip/cn.srs", Download_detour: "direct", Update_interval: "1d"}},
 	}
-	if err := ent_client.Template.Create().SetName("default").SetDNS(dns).SetExperiment(experiment).SetInbounds(inbounds).SetRoute(route).SetOutboundGroups(outbounds).SetProviders([]string{"M78"}).SetChanged(true).Exec(context.Background()); err != nil {
+	if err := ent_client.Template.Create().SetName("default").SetDNS(dns).SetExperiment(experiment).SetInbounds(inbounds).SetRoute(route).SetOutboundGroups(outbounds).SetProviders([]string{"M78"}).SetUpdated(true).Exec(context.Background()); err != nil {
 		fmt.Println(err)
 	}
 }

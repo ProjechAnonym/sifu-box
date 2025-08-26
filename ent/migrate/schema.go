@@ -66,7 +66,7 @@ var (
 		{Name: "ntp", Type: field.TypeJSON, Nullable: true},
 		{Name: "experiment", Type: field.TypeJSON, Nullable: true},
 		{Name: "providers", Type: field.TypeJSON, Nullable: true},
-		{Name: "changed", Type: field.TypeBool, Nullable: true},
+		{Name: "updated", Type: field.TypeBool, Nullable: true},
 	}
 	// TemplatesTable holds the schema information for the "templates" table.
 	TemplatesTable = &schema.Table{
