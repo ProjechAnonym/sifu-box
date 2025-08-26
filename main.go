@@ -9,9 +9,11 @@ import (
 	"sifu-box/ent/template"
 	"sifu-box/initial"
 	"sifu-box/singbox"
+	"sync"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/robfig/cron/v3"
 )
 
 var config string
@@ -27,18 +29,34 @@ func init() {
 }
 func main() {
 	err_chan := make(chan error, 5)
-
 	operation := make(chan int, 5)
+	status_chan := make(chan bool, 5)
 	name_chan := make(chan string, 5)
+	exec_lock := sync.Mutex{}
 	taskLogger := initial.GetLogger(dir, "task", true)
-	defer taskLogger.Sync()
+	defer func() {
+		taskLogger.Sync()
+		ent_client.Close()
+	}()
 	if err := ent_client.Provider.Create().SetName("M78").SetRemote(true).SetPath("https://sub.m78sc.cn/api/v1/client/subscribe?token=083387dce0f02a10e8115379f9871c6d").Exec(context.Background()); err != nil {
 		fmt.Println(err)
 	}
-	//
-	// if err := ent_client.Provider.Create().SetName("test1").SetRemote(false).SetPath("/opt/sifubox/1.yaml").Exec(context.Background()); err != nil {
-	// 	fmt.Println(err)
-	// }
+	scheduler := cron.New()
+	scheduler.Start()
+	job_id, err := scheduler.AddFunc("* * * * *", func() {
+		for {
+			if exec_lock.TryLock() {
+				break
+			}
+		}
+		defer exec_lock.Unlock()
+		application.Process(dir, ent_client, taskLogger)
+		// operation <- application.RELOAD_SERVICE
+	})
+	if err != nil {
+		taskLogger.Error(fmt.Sprintf("添加定时任务失败: [%s]", err.Error()))
+	}
+	fmt.Println(job_id)
 	if err := ent_client.Provider.Create().SetName("vless_test2").SetRemote(true).SetPath("https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub").Exec(context.Background()); err != nil {
 		fmt.Println(err)
 	}
@@ -47,15 +65,7 @@ func main() {
 	name_chan <- name.Name
 
 	application.Process(dir, ent_client, taskLogger)
-
-	go application.ServiceControl(&operation, taskLogger, dir, &err_chan, &name_chan)
-	operation <- 0
-	time.Sleep(time.Second * 5)
-	fmt.Println(2)
-	operation <- 2
-	time.Sleep(time.Second * 10)
-	operation <- 2
-	// application.CheckService(taskLogger, &exec_lock)
+	go application.ServiceControl(&operation, taskLogger, dir, &err_chan, &name_chan, &status_chan)
 	for {
 		time.Sleep(time.Second * 5)
 	}

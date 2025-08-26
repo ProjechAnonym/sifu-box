@@ -12,23 +12,16 @@ import (
 	"go.uber.org/zap"
 )
 
-func bootService(logger *zap.Logger, dir string, pid *int, name_chan *chan string, err_chan *chan error, exit *bool) {
+func bootService(logger *zap.Logger, dir string, pid *int, name string, err_chan *chan error, exit *bool) {
 	defer func() {
 		*exit = true
 		*pid = 0
 	}()
-	select {
-	case name := <-*name_chan:
-		err := sh.Command(fmt.Sprintf(`%s/sing-box/sing-box`, dir), "-D", fmt.Sprintf(`%s/sing-box/lib`, dir), "-c", fmt.Sprintf(`%s/config/%x.json`, dir, md5.Sum([]byte(name))), "run").Run()
-		if err != nil {
-			logger.Error(fmt.Sprintf("执行启动命令失败: [%s]", err.Error()))
-			*err_chan <- err
-		}
-	case <-time.After(10 * time.Second):
-		logger.Error(`执行启动命令失败, 未接收到配置名称`)
-		*err_chan <- errors.New("执行启动命令失败, 未接收到配置名称")
+	err := sh.Command(fmt.Sprintf(`%s/sing-box/sing-box`, dir), "-D", fmt.Sprintf(`%s/sing-box/lib`, dir), "-c", fmt.Sprintf(`%s/config/%x.json`, dir, md5.Sum([]byte(name))), "run").Run()
+	if err != nil {
+		logger.Error(fmt.Sprintf("执行启动命令失败: [%s]", err.Error()))
+		*err_chan <- err
 	}
-
 }
 func checkService(pid *int, logger *zap.Logger, err_chan *chan error) {
 	session := sh.Command("pgrep", "-x", "sing-box")
@@ -48,6 +41,7 @@ func checkService(pid *int, logger *zap.Logger, err_chan *chan error) {
 }
 func stopService(pid *int, logger *zap.Logger, err_chan *chan error) {
 	if *pid <= 0 {
+		logger.Error("关闭失败, 未找到进程PID")
 		*err_chan <- errors.New("未找到进程, 重新检查进程状态")
 		return
 	}
@@ -58,6 +52,7 @@ func stopService(pid *int, logger *zap.Logger, err_chan *chan error) {
 }
 func reloadService(pid *int, logger *zap.Logger, err_chan *chan error) {
 	if *pid <= 0 {
+		logger.Error("重载失败, 未找到进程PID")
 		*err_chan <- errors.New("未找到进程, 重新检查进程状态")
 		return
 	}
@@ -66,24 +61,29 @@ func reloadService(pid *int, logger *zap.Logger, err_chan *chan error) {
 		*err_chan <- err
 	}
 }
-func ServiceControl(operation *chan int, logger *zap.Logger, dir string, err_chan *chan error, name_chan *chan string) {
+func ServiceControl(operation *chan int, logger *zap.Logger, dir string, err_chan *chan error, name_chan *chan string, status_chan *chan bool) {
 	singbox_pid := 0
 	exit := true
-	for op := range *operation {
-		switch op {
-		case BOOT_SERVICE:
+	for {
+		select {
+		case op := <-*operation:
+			switch op {
+			case CHECK_SERVICE:
+				checkService(&singbox_pid, logger, err_chan)
+				fmt.Println(singbox_pid)
+			case RELOAD_SERVICE:
+				reloadService(&singbox_pid, logger, err_chan)
+			case STOP_SERVICE:
+				stopService(&singbox_pid, logger, err_chan)
+			}
+		case name := <-*name_chan:
 			if !exit {
 				continue
 			}
 			exit = false
-			go bootService(logger, dir, &singbox_pid, name_chan, err_chan, &exit)
-			*operation <- 1
-		case CHECK_SERVICE:
-			checkService(&singbox_pid, logger, err_chan)
-		case RELOAD_SERVICE:
-			reloadService(&singbox_pid, logger, err_chan)
-		case STOP_SERVICE:
-			stopService(&singbox_pid, logger, err_chan)
+			go bootService(logger, dir, &singbox_pid, name, err_chan, &exit)
+			*operation <- CHECK_SERVICE
 		}
+
 	}
 }
