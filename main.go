@@ -51,11 +51,13 @@ func main() {
 		}
 		defer exec_lock.Unlock()
 		application.Process(dir, ent_client, taskLogger)
-		// operation <- application.RELOAD_SERVICE
+		operation <- application.RELOAD_SERVICE
 	})
+	operation <- application.CHECK_SERVICE
 	if err != nil {
 		taskLogger.Error(fmt.Sprintf("添加定时任务失败: [%s]", err.Error()))
 	}
+
 	fmt.Println(job_id)
 	if err := ent_client.Provider.Create().SetName("vless_test2").SetRemote(true).SetPath("https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub").Exec(context.Background()); err != nil {
 		fmt.Println(err)

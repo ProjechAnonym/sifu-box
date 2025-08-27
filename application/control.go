@@ -67,10 +67,12 @@ func ServiceControl(operation *chan int, logger *zap.Logger, dir string, err_cha
 	for {
 		select {
 		case op := <-*operation:
+			if exit {
+				continue
+			}
 			switch op {
 			case CHECK_SERVICE:
 				checkService(&singbox_pid, logger, err_chan)
-				fmt.Println(singbox_pid)
 			case RELOAD_SERVICE:
 				reloadService(&singbox_pid, logger, err_chan)
 			case STOP_SERVICE:
