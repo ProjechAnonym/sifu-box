@@ -17,10 +17,10 @@ func InitEntdb(dir string) *ent.Client {
 	}()
 	entClient, err := ent.Open(dialect.SQLite, fmt.Sprintf("file:%s/sifu-box.db?cache=shared&_fk=1", dir))
 	if err != nil {
-		panic(fmt.Sprintf("Connecting the Database has failed: [%s]", err.Error()))
+		panic(fmt.Sprintf("连接数据库失败: [%s]", err.Error()))
 	}
 	if err = entClient.Schema.Create(context.Background()); err != nil {
-		panic(fmt.Sprintf("Creating Tables has failed, check the working diretory: [%s]", err.Error()))
+		panic(fmt.Sprintf("创建表失败, 检查工作目录: [%s]", err.Error()))
 	}
 	return entClient
 }

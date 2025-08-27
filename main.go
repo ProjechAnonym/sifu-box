@@ -14,17 +14,20 @@ import (
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/robfig/cron/v3"
+	"github.com/tidwall/buntdb"
 )
 
 var config string
 var dir string
 var ent_client *ent.Client
+var bunt_client *buntdb.DB
 
 func init() {
 	config, dir = cmd.Command()
 	init_logger := initial.GetLogger(dir, "init", false)
 	defer init_logger.Sync()
 	ent_client = initial.InitEntdb(dir)
+	bunt_client = initial.InitBuntdb()
 	init_logger.Info("初始化数据库成功")
 }
 func main() {
@@ -53,7 +56,6 @@ func main() {
 		application.Process(dir, ent_client, taskLogger)
 		operation <- application.RELOAD_SERVICE
 	})
-	operation <- application.CHECK_SERVICE
 	if err != nil {
 		taskLogger.Error(fmt.Sprintf("添加定时任务失败: [%s]", err.Error()))
 	}
