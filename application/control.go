@@ -39,6 +39,7 @@ func checkService(pid *int, bunt_client *buntdb.DB, logger *zap.Logger) {
 		*pid = 0
 		logger.Error(fmt.Sprintf(`执行查看状态命令失败: [%s]`, err.Error()))
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf(`执行查看状态命令失败: [%s]`, err.Error()), logger)
+		return
 	}
 	*pid, err = strconv.Atoi(strings.Trim(string(res), "\n"))
 	if err != nil {
@@ -69,7 +70,7 @@ func reloadService(pid *int, bunt_client *buntdb.DB, logger *zap.Logger) {
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf(`执行停止命令失败: [%s]`, err.Error()), logger)
 	}
 }
-func ServiceControl(operation *chan int, logger *zap.Logger, dir string, buntdb_client *buntdb.DB) {
+func ServiceControl(operation *chan int, logger *zap.Logger, dir string, buntdb_client *buntdb.DB, status_chan *chan bool) {
 	singbox_pid := 0
 	exit := true
 	for signal := range *operation {
@@ -83,10 +84,13 @@ func ServiceControl(operation *chan int, logger *zap.Logger, dir string, buntdb_
 			*operation <- CHECK_SERVICE
 		case CHECK_SERVICE:
 			checkService(&singbox_pid, buntdb_client, logger)
+			*status_chan <- true
 		case RELOAD_SERVICE:
 			reloadService(&singbox_pid, buntdb_client, logger)
+			*status_chan <- true
 		case STOP_SERVICE:
 			stopService(&singbox_pid, buntdb_client, logger)
+			*status_chan <- true
 		}
 	}
 

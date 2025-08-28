@@ -9,6 +9,7 @@ import (
 	"sifu-box/ent/template"
 	"sifu-box/initial"
 	"sifu-box/singbox"
+	"sifu-box/utils"
 	"sync"
 	"time"
 
@@ -31,7 +32,8 @@ func init() {
 	init_logger.Info("初始化数据库成功")
 }
 func main() {
-	operation := make(chan int, 5)
+	signal_chan := make(chan int, 5)
+	status_chan := make(chan bool, 5)
 	exec_lock := sync.Mutex{}
 	taskLogger := initial.GetLogger(dir, "task", true)
 	defer func() {
@@ -51,7 +53,7 @@ func main() {
 		}
 		defer exec_lock.Unlock()
 		application.Process(dir, ent_client, taskLogger)
-		operation <- application.RELOAD_SERVICE
+		signal_chan <- application.RELOAD_SERVICE
 	})
 	if err != nil {
 		taskLogger.Error(fmt.Sprintf("添加定时任务失败: [%s]", err.Error()))
@@ -63,10 +65,11 @@ func main() {
 	}
 	test(ent_client)
 	name, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
-	fmt.Println(name.Name)
+	utils.SetValue(bunt_client, initial.ACTIVE_TEMPLATE, name.Name, taskLogger)
 
 	application.Process(dir, ent_client, taskLogger)
-	go application.ServiceControl(&operation, taskLogger, dir, bunt_client)
+	go application.ServiceControl(&signal_chan, taskLogger, dir, bunt_client, &status_chan)
+	signal_chan <- application.BOOT_SERVICE
 	for {
 		time.Sleep(time.Second * 5)
 	}
