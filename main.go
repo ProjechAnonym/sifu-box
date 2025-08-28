@@ -31,10 +31,7 @@ func init() {
 	init_logger.Info("初始化数据库成功")
 }
 func main() {
-	err_chan := make(chan error, 5)
 	operation := make(chan int, 5)
-	status_chan := make(chan bool, 5)
-	name_chan := make(chan string, 5)
 	exec_lock := sync.Mutex{}
 	taskLogger := initial.GetLogger(dir, "task", true)
 	defer func() {
@@ -66,10 +63,10 @@ func main() {
 	}
 	test(ent_client)
 	name, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
-	name_chan <- name.Name
+	fmt.Println(name.Name)
 
 	application.Process(dir, ent_client, taskLogger)
-	go application.ServiceControl(&operation, taskLogger, dir, &err_chan, &name_chan, &status_chan)
+	go application.ServiceControl(&operation, taskLogger, dir, bunt_client)
 	for {
 		time.Sleep(time.Second * 5)
 	}
