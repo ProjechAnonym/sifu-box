@@ -6,13 +6,13 @@ import (
 	"sifu-box/application"
 	"sifu-box/cmd"
 	"sifu-box/ent"
-	"sifu-box/ent/template"
 	"sifu-box/initial"
+	"sifu-box/middleware"
 	"sifu-box/singbox"
 	"sifu-box/utils"
 	"sync"
-	"time"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/robfig/cron/v3"
 	"github.com/tidwall/buntdb"
@@ -35,10 +35,13 @@ func main() {
 	signal_chan := make(chan int, 5)
 	status_chan := make(chan bool, 5)
 	exec_lock := sync.Mutex{}
-	taskLogger := initial.GetLogger(dir, "task", true)
+	task_logger := initial.GetLogger(dir, "task", true)
+	web_logger := initial.GetLogger(dir, "web", true)
 	defer func() {
-		taskLogger.Sync()
+		web_logger.Sync()
+		task_logger.Sync()
 		ent_client.Close()
+		bunt_client.Close()
 	}()
 	if err := ent_client.Provider.Create().SetName("M78").SetRemote(true).SetPath("https://sub.m78sc.cn/api/v1/client/subscribe?token=083387dce0f02a10e8115379f9871c6d").Exec(context.Background()); err != nil {
 		fmt.Println(err)
@@ -52,27 +55,32 @@ func main() {
 			}
 		}
 		defer exec_lock.Unlock()
-		application.Process(dir, ent_client, taskLogger)
+		application.Process(dir, ent_client, task_logger)
+		name, err := utils.GetValue(bunt_client, initial.ACTIVE_TEMPLATE, task_logger)
+		if err != nil {
+			task_logger.Error(fmt.Sprintf("获取激活模板失败: [%s]", err.Error()))
+			return
+		} else if name == "" {
+			task_logger.Error("未设置激活模板")
+			return
+		}
 		signal_chan <- application.RELOAD_SERVICE
 	})
 	if err != nil {
-		taskLogger.Error(fmt.Sprintf("添加定时任务失败: [%s]", err.Error()))
+		task_logger.Error(fmt.Sprintf("添加定时任务失败: [%s]", err.Error()))
 	}
-
 	fmt.Println(job_id)
-	if err := ent_client.Provider.Create().SetName("vless_test2").SetRemote(true).SetPath("https://raw.githubusercontent.com/Pawdroid/Free-servers/main/sub").Exec(context.Background()); err != nil {
-		fmt.Println(err)
-	}
-	test(ent_client)
-	name, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
-	utils.SetValue(bunt_client, initial.ACTIVE_TEMPLATE, name.Name, taskLogger)
+	go application.ServiceControl(&signal_chan, task_logger, dir, bunt_client, &status_chan)
+	application.Process(dir, ent_client, task_logger)
+	gin.SetMode(gin.ReleaseMode)
+	server := gin.Default()
+	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger))
+	server.Run(":8080")
 
-	application.Process(dir, ent_client, taskLogger)
-	go application.ServiceControl(&signal_chan, taskLogger, dir, bunt_client, &status_chan)
-	signal_chan <- application.BOOT_SERVICE
-	for {
-		time.Sleep(time.Second * 5)
-	}
+	// test(ent_client)
+	// name, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
+	// utils.SetValue(bunt_client, initial.ACTIVE_TEMPLATE, name.Name, taskLogger)
+
 }
 func test(ent_client *ent.Client) {
 	experiment := singbox.Experiment{Clash_api: singbox.Clash_api{External_controller: "127.0.0.1:9090", External_ui: "/ui", Secret: "123456"}}
