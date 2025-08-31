@@ -18,8 +18,8 @@ import (
 //   - []error: 在处理过程中发生的错误列表
 func Fetch(providers []*ent.Provider, ent_client *ent.Client, logger *zap.Logger) []error {
 	var jobs sync.WaitGroup
-	var errChan = make(chan error, 5)
-	var countChan = make(chan int, 5)
+	var err_chan = make(chan error, 5)
+	var count_chan = make(chan int, 5)
 	var errors []error
 	client := http.DefaultClient
 
@@ -29,11 +29,11 @@ func Fetch(providers []*ent.Provider, ent_client *ent.Client, logger *zap.Logger
 		defer func() {
 			jobs.Done()
 			var ok bool
-			if _, ok = <-countChan; ok {
-				close(countChan)
+			if _, ok = <-count_chan; ok {
+				close(count_chan)
 			}
-			if _, ok = <-errChan; ok {
-				close(errChan)
+			if _, ok = <-err_chan; ok {
+				close(err_chan)
 			}
 		}()
 		sum := 0
@@ -42,12 +42,12 @@ func Fetch(providers []*ent.Provider, ent_client *ent.Client, logger *zap.Logger
 				return
 			}
 			select {
-			case count, ok := <-countChan:
+			case count, ok := <-count_chan:
 				if !ok {
 					return
 				}
 				sum += count
-			case err, ok := <-errChan:
+			case err, ok := <-err_chan:
 				if !ok {
 					return
 				}
@@ -62,29 +62,29 @@ func Fetch(providers []*ent.Provider, ent_client *ent.Client, logger *zap.Logger
 		go func() {
 			defer func() {
 				jobs.Done()
-				countChan <- 1
+				count_chan <- 1
 			}()
 
 			// 根据 provider 是否是远程的, 选择不同的获取方式
 			if provider.Remote {
 				outbounds, err := fetchFromRemote(provider.Name, provider.Path, client, logger)
 				if err != nil {
-					errChan <- err
+					err_chan <- err
 					return
 				}
 				if err := updateNodes(provider.Name, provider.UUID, outbounds, ent_client); err != nil {
-					errChan <- err
+					err_chan <- err
 					return
 				}
 
 			} else {
 				outbounds, err := fetchFromLocal(provider.Name, provider.Path, logger)
 				if err != nil {
-					errChan <- err
+					err_chan <- err
 					return
 				}
 				if err := updateNodes(provider.Name, provider.UUID, outbounds, ent_client); err != nil {
-					errChan <- err
+					err_chan <- err
 					return
 				}
 

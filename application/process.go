@@ -73,8 +73,8 @@ func Process(dir string, ent_client *ent.Client, logger *zap.Logger) []error {
 
 	// 创建并发控制相关变量
 	var jobs sync.WaitGroup
-	var errChan = make(chan error, 5)
-	var countChan = make(chan int, 5)
+	var err_chan = make(chan error, 5)
+	var count_chan = make(chan int, 5)
 
 	// 启动监控协程, 用于收集处理结果和错误信息
 	jobs.Add(1)
@@ -82,11 +82,11 @@ func Process(dir string, ent_client *ent.Client, logger *zap.Logger) []error {
 		defer func() {
 			jobs.Done()
 			var ok bool
-			if _, ok = <-countChan; ok {
-				close(countChan)
+			if _, ok = <-count_chan; ok {
+				close(count_chan)
 			}
-			if _, ok = <-errChan; ok {
-				close(errChan)
+			if _, ok = <-err_chan; ok {
+				close(err_chan)
 			}
 		}()
 
@@ -97,12 +97,12 @@ func Process(dir string, ent_client *ent.Client, logger *zap.Logger) []error {
 				return
 			}
 			select {
-			case count, ok := <-countChan:
+			case count, ok := <-count_chan:
 				if !ok {
 					return
 				}
 				sum += count
-			case err, ok := <-errChan:
+			case err, ok := <-err_chan:
 				if !ok {
 					return
 				}
@@ -117,7 +117,7 @@ func Process(dir string, ent_client *ent.Client, logger *zap.Logger) []error {
 		go func() {
 			defer func() {
 				jobs.Done()
-				countChan <- 1
+				count_chan <- 1
 			}()
 
 			// 遍历模板关联的机场, 检查是否需要更新
@@ -129,10 +129,10 @@ func Process(dir string, ent_client *ent.Client, logger *zap.Logger) []error {
 					// 生成配置文件
 					if err := config.Generate(dir, template, provider_nodes, logger); err != nil {
 						logger.Error(err.Error())
-						errChan <- err
+						err_chan <- err
 					}
 					if err := ent_client.Template.UpdateOne(template).SetUpdated(false).Exec(context.Background()); err != nil {
-						errChan <- err
+						err_chan <- err
 					}
 					break
 				}
