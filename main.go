@@ -6,6 +6,7 @@ import (
 	"sifu-box/application"
 	"sifu-box/cmd"
 	"sifu-box/ent"
+	"sifu-box/ent/template"
 	"sifu-box/initial"
 	"sifu-box/middleware"
 	"sifu-box/singbox"
@@ -33,19 +34,21 @@ func init() {
 }
 func main() {
 	signal_chan := make(chan int, 5)
-	status_chan := make(chan bool, 5)
+	status_chan := make(chan int, 5)
 	exec_lock := sync.Mutex{}
 	task_logger := initial.GetLogger(dir, "task", true)
 	web_logger := initial.GetLogger(dir, "web", true)
+	go application.ServiceControl(&signal_chan, task_logger, dir, bunt_client, &status_chan)
 	defer func() {
 		web_logger.Sync()
 		task_logger.Sync()
 		ent_client.Close()
 		bunt_client.Close()
 	}()
-	if err := ent_client.Provider.Create().SetName("M78").SetRemote(true).SetPath("https://sub.m78sc.cn/api/v1/client/subscribe?token=083387dce0f02a10e8115379f9871c6d").Exec(context.Background()); err != nil {
-		fmt.Println(err)
-	}
+	// if err := ent_client.Provider.Create().SetName("M78").SetRemote(true).SetPath("https://sub.m78sc.cn/api/v1/client/subscribe?token=083387dce0f02a10e8115379f9871c6d").Exec(context.Background()); err != nil {
+	// 	fmt.Println(err)
+	// }
+
 	scheduler := cron.New()
 	scheduler.Start()
 	job_id, err := scheduler.AddFunc("* * * * *", func() {
@@ -65,24 +68,26 @@ func main() {
 			return
 		}
 		signal_chan <- application.RELOAD_SERVICE
+
 	})
 	if err != nil {
 		task_logger.Error(fmt.Sprintf("添加定时任务失败: [%s]", err.Error()))
 	}
 	fmt.Println(job_id)
-	go application.ServiceControl(&signal_chan, task_logger, dir, bunt_client, &status_chan)
+
 	application.Process(dir, ent_client, task_logger)
+	name, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
+	utils.SetValue(bunt_client, initial.ACTIVE_TEMPLATE, name.Name, task_logger)
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
 	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger))
 	server.Run(":8080")
 
 	// test(ent_client)
-	// name, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
-	// utils.SetValue(bunt_client, initial.ACTIVE_TEMPLATE, name.Name, taskLogger)
 
 }
 func test(ent_client *ent.Client) {
+	log := singbox.Log{Disabled: true}
 	experiment := singbox.Experiment{Clash_api: singbox.Clash_api{External_controller: "127.0.0.1:9090", External_ui: "/ui", Secret: "123456"}}
 	dns := singbox.DNS{
 		Servers: []map[string]any{
@@ -100,7 +105,7 @@ func test(ent_client *ent.Client) {
 		Rules:                   []map[string]any{{"user": []string{"bind"}, "action": "route", "outbound": "direct"}, {"port": []int{53}, "action": "hijack-dns"}, {"protocol": []string{"dns"}, "action": "hijack-dns"}, {"ip_is_private": true, "action": "route", "outbound": "direct"}, {"protocol": []string{"quic"}, "action": "reject"}},
 		Rule_sets:               []singbox.Rule_set{{Type: "remote", Tag: "china-ip", Format: "binary", URL: "https://github.com/MetaCubeX/meta-rules-dat/raw/bd4354ba7f11a22883b919ac9fb9f7034fb51b31/geo/geoip/cn.srs", Download_detour: "direct", Update_interval: "1d"}},
 	}
-	if err := ent_client.Template.Create().SetName("default").SetDNS(dns).SetExperiment(experiment).SetInbounds(inbounds).SetRoute(route).SetOutboundGroups(outbounds).SetProviders([]string{"M78"}).SetUpdated(true).Exec(context.Background()); err != nil {
+	if err := ent_client.Template.Update().Where(template.NameEQ("default")).SetDNS(dns).SetExperiment(experiment).SetInbounds(inbounds).SetRoute(route).SetOutboundGroups(outbounds).SetProviders([]string{"M78"}).SetUpdated(true).SetLog(log).Exec(context.Background()); err != nil {
 		fmt.Println(err)
 	}
 }
