@@ -96,5 +96,4 @@ func ServiceControl(operation *chan int, logger *zap.Logger, dir string, buntdb_
 			stopService(&singbox_pid, buntdb_client, logger, status_chan)
 		}
 	}
-
 }
