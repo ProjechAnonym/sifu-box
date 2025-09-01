@@ -14,11 +14,11 @@ import (
 	"go.uber.org/zap"
 )
 
-func bootService(logger *zap.Logger, dir string, pid *int, exit *bool, bunt_client *buntdb.DB, status_chan *chan int) {
+func boot(cron bool, dir string, pid *int, exit *bool, bunt_client *buntdb.DB, hook_chan *chan SignalHook, logger *zap.Logger) {
 	defer func() {
 		*exit = true
 		*pid = 0
-		*status_chan <- *pid
+		*hook_chan <- SignalHook{Cron: cron, PID: *pid}
 	}()
 	name, err := utils.GetValue(bunt_client, initial.ACTIVE_TEMPLATE, logger)
 	if err != nil {
@@ -31,7 +31,7 @@ func bootService(logger *zap.Logger, dir string, pid *int, exit *bool, bunt_clie
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf("执行启动命令失败: [%s]", err.Error()), logger)
 	}
 }
-func checkService(pid *int, bunt_client *buntdb.DB, logger *zap.Logger) {
+func check(pid *int, bunt_client *buntdb.DB, logger *zap.Logger) {
 	session := sh.Command("pgrep", "-x", "sing-box")
 	session.SetTimeout(time.Second * 3)
 	res, err := session.CombinedOutput()
@@ -47,21 +47,21 @@ func checkService(pid *int, bunt_client *buntdb.DB, logger *zap.Logger) {
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf(`转换pid数字失败: [%s]`, err.Error()), logger)
 	}
 }
-func stopService(pid *int, bunt_client *buntdb.DB, logger *zap.Logger, status_chan *chan int) {
+func stop(pid *int, cron bool, bunt_client *buntdb.DB, logger *zap.Logger, hook_chan *chan SignalHook) {
 	if *pid <= 0 {
-		*status_chan <- *pid
+		*hook_chan <- SignalHook{Cron: cron, PID: *pid}
 		logger.Error(`关闭失败, 未找到进程PID`)
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, `未找到进程, 重新检查进程状态`, logger)
 		return
 	}
 	if err := sh.Command("kill", "-9", fmt.Sprintf("%d", *pid)).Run(); err != nil {
-		*status_chan <- *pid
+		*hook_chan <- SignalHook{Cron: cron, PID: *pid}
 		logger.Error(fmt.Sprintf(`执行停止命令失败: [%s]`, err.Error()))
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf(`执行停止命令失败: [%s]`, err.Error()), logger)
 		return
 	}
 }
-func reloadService(pid *int, bunt_client *buntdb.DB, logger *zap.Logger) {
+func reload(pid *int, bunt_client *buntdb.DB, logger *zap.Logger) {
 	if *pid <= 0 {
 		*pid = 0
 		logger.Error(`重载失败, 未找到进程PID`)
@@ -74,26 +74,26 @@ func reloadService(pid *int, bunt_client *buntdb.DB, logger *zap.Logger) {
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf(`执行重载命令失败: [%s]`, err.Error()), logger)
 	}
 }
-func ServiceControl(operation *chan int, logger *zap.Logger, dir string, buntdb_client *buntdb.DB, status_chan *chan int) {
+func ServiceControl(operation *chan Signal, logger *zap.Logger, dir string, buntdb_client *buntdb.DB, hook_chan *chan SignalHook) {
 	singbox_pid := 0
 	exit := true
 	for signal := range *operation {
-		switch signal {
+		switch signal.Operation {
 		case BOOT_SERVICE:
 			if !exit {
 				continue
 			}
 			exit = false
-			go bootService(logger, dir, &singbox_pid, &exit, buntdb_client, status_chan)
-			*operation <- CHECK_SERVICE
+			go boot(signal.Cron, dir, &singbox_pid, &exit, buntdb_client, hook_chan, logger)
+			*operation <- Signal{Cron: signal.Cron, Operation: CHECK_SERVICE}
 		case CHECK_SERVICE:
-			checkService(&singbox_pid, buntdb_client, logger)
-			*status_chan <- singbox_pid
+			check(&singbox_pid, buntdb_client, logger)
+			*hook_chan <- SignalHook{Cron: signal.Cron, PID: singbox_pid}
 		case RELOAD_SERVICE:
-			reloadService(&singbox_pid, buntdb_client, logger)
-			*status_chan <- singbox_pid
+			reload(&singbox_pid, buntdb_client, logger)
+			*hook_chan <- SignalHook{Cron: signal.Cron, PID: singbox_pid}
 		case STOP_SERVICE:
-			stopService(&singbox_pid, buntdb_client, logger, status_chan)
+			stop(&singbox_pid, signal.Cron, buntdb_client, logger, hook_chan)
 		}
 	}
 }
