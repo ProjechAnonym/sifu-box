@@ -57,7 +57,7 @@ func preProcess(ent_client *ent.Client, logger *zap.Logger) (map[string]bool, ma
 //
 // 返回值:
 //   - []error: 处理过程中发生的错误列表
-func Process(dir string, ent_client *ent.Client, logger *zap.Logger) []error {
+func Process(work_dir string, ent_client *ent.Client, logger *zap.Logger) []error {
 	// 预处理阶段：获取变化机场信息、机场节点信息以及出现的错误列表
 	update_map, provider_nodes, fetch_errors, err := preProcess(ent_client, logger)
 	if err != nil {
@@ -127,7 +127,7 @@ func Process(dir string, ent_client *ent.Client, logger *zap.Logger) []error {
 					config := Config{}
 
 					// 生成配置文件
-					if err := config.Generate(dir, template, provider_nodes, logger); err != nil {
+					if err := config.Generate(work_dir, template, provider_nodes, logger); err != nil {
 						logger.Error(err.Error())
 						err_chan <- err
 					}

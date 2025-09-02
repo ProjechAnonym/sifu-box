@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func boot(cron bool, dir string, pid *int, exit *bool, bunt_client *buntdb.DB, hook_chan *chan SignalHook, logger *zap.Logger) {
+func boot(cron bool, work_dir string, pid *int, exit *bool, bunt_client *buntdb.DB, hook_chan *chan SignalHook, logger *zap.Logger) {
 	defer func() {
 		*exit = true
 		*pid = 0
@@ -26,7 +26,7 @@ func boot(cron bool, dir string, pid *int, exit *bool, bunt_client *buntdb.DB, h
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf(`获取当前使用模板错误: [%s]`, err.Error()), logger)
 		return
 	}
-	if err := sh.Command(fmt.Sprintf(`%s/sing-box/sing-box`, dir), "-D", fmt.Sprintf(`%s/sing-box/lib`, dir), "-c", fmt.Sprintf(`%s/config/%x.json`, dir, md5.Sum([]byte(name))), "run").Run(); err != nil {
+	if err := sh.Command(fmt.Sprintf(`%s/sing-box/sing-box`, work_dir), "-D", fmt.Sprintf(`%s/sing-box/lib`, work_dir), "-c", fmt.Sprintf(`%s/config/%x.json`, work_dir, md5.Sum([]byte(name))), "run").Run(); err != nil {
 		logger.Error(fmt.Sprintf("执行启动命令失败: [%s]", err.Error()))
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf("执行启动命令失败: [%s]", err.Error()), logger)
 	}
@@ -74,7 +74,7 @@ func reload(pid *int, bunt_client *buntdb.DB, logger *zap.Logger) {
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf(`执行重载命令失败: [%s]`, err.Error()), logger)
 	}
 }
-func ServiceControl(operation *chan Signal, logger *zap.Logger, dir string, buntdb_client *buntdb.DB, hook_chan *chan SignalHook) {
+func ServiceControl(operation *chan Signal, logger *zap.Logger, work_dir string, buntdb_client *buntdb.DB, hook_chan *chan SignalHook) {
 	singbox_pid := 0
 	exit := true
 	for signal := range *operation {
@@ -84,7 +84,7 @@ func ServiceControl(operation *chan Signal, logger *zap.Logger, dir string, bunt
 				continue
 			}
 			exit = false
-			go boot(signal.Cron, dir, &singbox_pid, &exit, buntdb_client, hook_chan, logger)
+			go boot(signal.Cron, work_dir, &singbox_pid, &exit, buntdb_client, hook_chan, logger)
 			*operation <- Signal{Cron: signal.Cron, Operation: CHECK_SERVICE}
 		case CHECK_SERVICE:
 			check(&singbox_pid, buntdb_client, logger)

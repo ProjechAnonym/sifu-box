@@ -9,6 +9,8 @@ import (
 	"sifu-box/ent/template"
 	"sifu-box/initial"
 	"sifu-box/middleware"
+	"sifu-box/model"
+	"sifu-box/route"
 	"sifu-box/singbox"
 	"sifu-box/utils"
 	"sync"
@@ -21,15 +23,15 @@ import (
 )
 
 var config string
-var dir string
+var work_dir string
 var ent_client *ent.Client
 var bunt_client *buntdb.DB
 
 func init() {
-	config, dir = cmd.Command()
-	init_logger := initial.GetLogger(dir, "init", false)
+	config, work_dir = cmd.Command()
+	init_logger := initial.GetLogger(work_dir, "init", false)
 	defer init_logger.Sync()
-	ent_client = initial.InitEntdb(dir)
+	ent_client = initial.InitEntdb(work_dir)
 	bunt_client = initial.InitBuntdb()
 	init_logger.Info("初始化数据库成功")
 }
@@ -39,9 +41,9 @@ func main() {
 	cron_chan := make(chan bool, 5)
 	web_chan := make(chan bool, 5)
 	exec_lock := sync.Mutex{}
-	task_logger := initial.GetLogger(dir, "task", true)
-	web_logger := initial.GetLogger(dir, "web", true)
-	go application.ServiceControl(&signal_chan, task_logger, dir, bunt_client, &hook_chan)
+	task_logger := initial.GetLogger(work_dir, "task", true)
+	web_logger := initial.GetLogger(work_dir, "web", true)
+	go application.ServiceControl(&signal_chan, task_logger, work_dir, bunt_client, &hook_chan)
 	go application.HookHandle(&hook_chan, &cron_chan, &web_chan, task_logger)
 	defer func() {
 		web_logger.Sync()
@@ -49,10 +51,6 @@ func main() {
 		ent_client.Close()
 		bunt_client.Close()
 	}()
-	// if err := ent_client.Provider.Create().SetName("M78").SetRemote(true).SetPath("https://sub.m78sc.cn/api/v1/client/subscribe?token=083387dce0f02a10e8115379f9871c6d").Exec(context.Background()); err != nil {
-	// 	fmt.Println(err)
-	// }
-	signal_chan <- application.Signal{Operation: application.BOOT_SERVICE, Cron: true}
 	scheduler := cron.New()
 	scheduler.Start()
 	job_id, err := scheduler.AddFunc("* * * * *", func() {
@@ -63,7 +61,7 @@ func main() {
 		}
 		defer exec_lock.Unlock()
 		task_logger.Info(`开始执行定时任务`)
-		application.Process(dir, ent_client, task_logger)
+		application.Process(work_dir, ent_client, task_logger)
 		name, err := utils.GetValue(bunt_client, initial.ACTIVE_TEMPLATE, task_logger)
 		if err != nil {
 			task_logger.Error(fmt.Sprintf("获取激活模板失败: [%s]", err.Error()))
@@ -80,7 +78,6 @@ func main() {
 			} else {
 				task_logger.Error(`重载sing-box失败`)
 			}
-
 		case <-time.After(time.Second * 10):
 			task_logger.Error(`接收操作结果超时`)
 		}
@@ -90,15 +87,15 @@ func main() {
 	}
 	fmt.Println(job_id)
 
-	application.Process(dir, ent_client, task_logger)
-	name, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
-	utils.SetValue(bunt_client, initial.ACTIVE_TEMPLATE, name.Name, task_logger)
+	application.Process(work_dir, ent_client, task_logger)
+	// name, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
+	// utils.SetValue(bunt_client, initial.ACTIVE_TEMPLATE, name.Name, task_logger)
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
 	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger))
+	api := server.Group("/api")
+	route.SettingLogin(api, &model.User{}, web_logger)
 	server.Run(":8080")
-
-	// test(ent_client)
 
 }
 func test(ent_client *ent.Client) {

@@ -11,6 +11,8 @@ require (
 	go.uber.org/zap v1.27.0
 )
 
+require github.com/golang-jwt/jwt/v5 v5.3.0 // indirect
+
 require (
 	ariga.io/atlas v0.32.1-0.20250325101103-175b25e1c1b9 // indirect
 	github.com/BurntSushi/toml v1.5.0 // indirect

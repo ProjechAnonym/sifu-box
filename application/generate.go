@@ -34,7 +34,7 @@ type Config struct {
 // 返回值:
 //
 //	error: 配置生成或保存过程中出现的错误
-func (c *Config) Generate(dir string, template *ent.Template, outbound_map map[string][]map[string]any, logger *zap.Logger) error {
+func (c *Config) Generate(work_dir string, template *ent.Template, outbound_map map[string][]map[string]any, logger *zap.Logger) error {
 	// 处理模板中的出站组配置
 	outbounds := []map[string]any{}
 	for _, outbound_group := range template.OutboundGroups {
@@ -66,7 +66,7 @@ func (c *Config) Generate(dir string, template *ent.Template, outbound_map map[s
 	}
 
 	// 将生成的配置保存到文件中, 文件名使用模板名称的MD5哈希值
-	if err := utils.WriteFile(path.Join(dir, "config", fmt.Sprintf(`%s.json`, fmt.Sprintf("%x", md5.Sum([]byte(template.Name))))), content, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644); err != nil {
+	if err := utils.WriteFile(path.Join(work_dir, "config", fmt.Sprintf(`%s.json`, fmt.Sprintf("%x", md5.Sum([]byte(template.Name))))), content, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644); err != nil {
 		return fmt.Errorf(`配置"%s"保存失败: [%s]`, template.Name, err.Error())
 	}
 	return nil
