@@ -7,7 +7,6 @@ import (
 type User struct {
 	Username string `json:"username" yaml:"username"`
 	Password string `json:"password" yaml:"password"`
-	Email    string `json:"email" yaml:"email"`
 	Code     string `json:"code" yaml:"code"`
 	Key      string `json:"key" yaml:"key"`
 }

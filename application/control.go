@@ -3,6 +3,7 @@ package application
 import (
 	"crypto/md5"
 	"fmt"
+	"path/filepath"
 	"sifu-box/initial"
 	"sifu-box/utils"
 	"strconv"
@@ -26,7 +27,10 @@ func boot(cron bool, work_dir string, pid *int, exit *bool, bunt_client *buntdb.
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf(`获取当前使用模板错误: [%s]`, err.Error()), logger)
 		return
 	}
-	if err := sh.Command(fmt.Sprintf(`%s/sing-box/sing-box`, work_dir), "-D", fmt.Sprintf(`%s/sing-box/lib`, work_dir), "-c", fmt.Sprintf(`%s/config/%x.json`, work_dir, md5.Sum([]byte(name))), "run").Run(); err != nil {
+	singbox_path := filepath.Join(work_dir, "sing-box", "sing-box")
+	singbox_lib := filepath.Join(work_dir, "sing-box", "lib")
+	singbox_config := filepath.Join(work_dir, "sing-box", "config", fmt.Sprintf("%x.json", md5.Sum([]byte(name))))
+	if err := sh.Command(singbox_path, "-D", singbox_lib, "-c", singbox_config, "run").Run(); err != nil {
 		logger.Error(fmt.Sprintf("执行启动命令失败: [%s]", err.Error()))
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf("执行启动命令失败: [%s]", err.Error()), logger)
 	}

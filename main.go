@@ -22,18 +22,20 @@ import (
 	"github.com/tidwall/buntdb"
 )
 
-var config string
+var config_path string
 var work_dir string
 var ent_client *ent.Client
 var bunt_client *buntdb.DB
 
 func init() {
-	config, work_dir = cmd.Command()
+	config_path, work_dir = cmd.Command()
 	init_logger := initial.GetLogger(work_dir, "init", false)
 	defer init_logger.Sync()
 	ent_client = initial.InitEntdb(work_dir)
 	bunt_client = initial.InitBuntdb()
 	init_logger.Info("初始化数据库成功")
+	initial.LoadSetting(config_path, bunt_client, init_logger)
+	init_logger.Info("初始化成功")
 }
 func main() {
 	signal_chan := make(chan application.Signal, 5)
@@ -51,6 +53,7 @@ func main() {
 		ent_client.Close()
 		bunt_client.Close()
 	}()
+
 	scheduler := cron.New()
 	scheduler.Start()
 	job_id, err := scheduler.AddFunc("* * * * *", func() {
@@ -86,10 +89,7 @@ func main() {
 		task_logger.Error(fmt.Sprintf("添加定时任务失败: [%s]", err.Error()))
 	}
 	fmt.Println(job_id)
-
 	application.Process(work_dir, ent_client, task_logger)
-	// name, _ := ent_client.Template.Query().Select(template.FieldName).First(context.Background())
-	// utils.SetValue(bunt_client, initial.ACTIVE_TEMPLATE, name.Name, task_logger)
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
 	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger))

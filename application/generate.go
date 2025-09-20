@@ -66,7 +66,7 @@ func (c *Config) Generate(work_dir string, template *ent.Template, outbound_map 
 	}
 
 	// 将生成的配置保存到文件中, 文件名使用模板名称的MD5哈希值
-	if err := utils.WriteFile(path.Join(work_dir, "config", fmt.Sprintf(`%s.json`, fmt.Sprintf("%x", md5.Sum([]byte(template.Name))))), content, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644); err != nil {
+	if err := utils.WriteFile(path.Join(work_dir, "sing-box", "config", fmt.Sprintf(`%s.json`, fmt.Sprintf("%x", md5.Sum([]byte(template.Name))))), content, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644); err != nil {
 		return fmt.Errorf(`配置"%s"保存失败: [%s]`, template.Name, err.Error())
 	}
 	return nil

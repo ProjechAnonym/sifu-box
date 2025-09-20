@@ -49,7 +49,7 @@ func SettingLogin(api *gin.RouterGroup, user *model.User, logger *zap.Logger) {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"message": "用户参数不正确"})
 		}
 	})
-	api.GET("/verify1", func(ctx *gin.Context) {
+	api.GET("/verify", func(ctx *gin.Context) {
 		authorization := ctx.GetHeader("Authorization")
 		token, admin, err := control.Verify(authorization, user.Key, logger)
 		if err != nil {
