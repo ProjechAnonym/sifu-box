@@ -43,3 +43,15 @@ func JwtAuth(secret string, logger *zap.Logger) gin.HandlerFunc {
 		}
 	}
 }
+
+func AdminAuth() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		admin := ctx.GetBool("admin")
+		if !admin {
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+				"message": "该账户无权限",
+			})
+			return
+		}
+	}
+}

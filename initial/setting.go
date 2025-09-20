@@ -11,11 +11,11 @@ import (
 )
 
 func LoadSetting(config_path string, buntdb_client *buntdb.DB, logger *zap.Logger) {
-	defer func() {
-		if r := recover(); r != nil {
-			fmt.Printf("%v\n", r)
-		}
-	}()
+	// defer func() {
+	// 	if r := recover(); r != nil {
+	// 		fmt.Printf("%v\n", r)
+	// 	}
+	// }()
 	content, err := utils.ReadFile(config_path)
 	if err != nil {
 		panic(fmt.Sprintf(`读取配置文件失败: [%s]`, err.Error()))

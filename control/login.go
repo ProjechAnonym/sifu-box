@@ -32,8 +32,8 @@ func Verify(authorization, secret string, logger *zap.Logger) (string, bool, err
 		return []byte(secret), nil
 	})
 	if err != nil {
-		logger.Error(fmt.Sprintf(`解析"authorization"字段失败: [%s]`, err.Error()))
-		return "", false, fmt.Errorf(`解析"authorization"字段失败`)
+		logger.Error(fmt.Sprintf(`解析"Authorization"字段失败: [%s]`, err.Error()))
+		return "", false, fmt.Errorf(`解析"Authorization"字段失败`)
 	}
 	if !token.Valid || token == nil {
 		return "", false, fmt.Errorf("token已经失效")

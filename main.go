@@ -9,7 +9,6 @@ import (
 	"sifu-box/ent/template"
 	"sifu-box/initial"
 	"sifu-box/middleware"
-	"sifu-box/model"
 	"sifu-box/route"
 	"sifu-box/singbox"
 	"sifu-box/utils"
@@ -22,13 +21,14 @@ import (
 	"github.com/tidwall/buntdb"
 )
 
+var listen string
 var config_path string
 var work_dir string
 var ent_client *ent.Client
 var bunt_client *buntdb.DB
 
 func init() {
-	config_path, work_dir = cmd.Command()
+	config_path, work_dir, listen = cmd.Command()
 	init_logger := initial.GetLogger(work_dir, "init", false)
 	defer init_logger.Sync()
 	ent_client = initial.InitEntdb(work_dir)
@@ -44,12 +44,14 @@ func main() {
 	web_chan := make(chan bool, 5)
 	exec_lock := sync.Mutex{}
 	task_logger := initial.GetLogger(work_dir, "task", true)
+	operation_logger := initial.GetLogger(work_dir, "operation", true)
 	web_logger := initial.GetLogger(work_dir, "web", true)
 	go application.ServiceControl(&signal_chan, task_logger, work_dir, bunt_client, &hook_chan)
 	go application.HookHandle(&hook_chan, &cron_chan, &web_chan, task_logger)
 	defer func() {
 		web_logger.Sync()
 		task_logger.Sync()
+		operation_logger.Sync()
 		ent_client.Close()
 		bunt_client.Close()
 	}()
@@ -94,8 +96,9 @@ func main() {
 	server := gin.Default()
 	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger))
 	api := server.Group("/api")
-	route.SettingLogin(api, &model.User{}, web_logger)
-	server.Run(":8080")
+	route.SettingLogin(api, bunt_client, operation_logger)
+	route.SettingConfiguration(api, bunt_client, ent_client, operation_logger)
+	server.Run(listen)
 
 }
 func test(ent_client *ent.Client) {
