@@ -78,10 +78,10 @@ func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_clie
 		path := ctx.PostForm("path")
 		remote := ctx.PostForm("remote") == "true"
 		if err := control.EditProvider(name, path, remote, ent_client, logger); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf(`修改机场"%s"失败`, name)})
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf(`修改机场"%s"成功`, name)})
+		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf(`修改机场"%s"配置成功`, name)})
 	})
 	configuration.DELETE("/delete/provider", middleware.AdminAuth(), func(ctx *gin.Context) {
 		name := ctx.PostFormArray("name")
@@ -132,7 +132,7 @@ func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_clie
 		binary := ctx.PostForm("binary") == "true"
 
 		if err := control.EditRuleset(name, path, update_interval, download_detour, remote, binary, ent_client, logger); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf(`修改规则集"%s"失败`, name)})
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
 		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf(`修改规则集"%s"成功`, name)})

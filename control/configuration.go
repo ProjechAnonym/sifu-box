@@ -100,13 +100,28 @@ func AddRuleset(rulesets []model.Ruleset, ent_client *ent.Client, logger *zap.Lo
 	return res
 }
 func EditProvider(name, path string, remote bool, ent_client *ent.Client, logger *zap.Logger) error {
-
+	exist, err := ent_client.Provider.Query().Where(provider.NameEQ(name)).Exist(context.Background())
+	if err != nil {
+		logger.Error(fmt.Sprintf(`查找机场"%s"失败: [%s]`, name, err.Error()))
+		return fmt.Errorf(`查找机场"%s"失败: [%s]`, name, err.Error())
+	} else if !exist {
+		logger.Error(fmt.Sprintf(`未找到机场"%s"`, name))
+		return fmt.Errorf(`机场"%s"不存在`, name)
+	}
 	if err := ent_client.Provider.Update().Where(provider.NameEQ(name)).SetPath(path).SetRemote(remote).Exec(context.Background()); err != nil {
 		logger.Error(fmt.Sprintf(`修改机场"%s"失败: [%s]`, name, err.Error()))
 	}
 	return nil
 }
 func EditRuleset(name, path, update_interval, download_detour string, remote, binary bool, ent_client *ent.Client, logger *zap.Logger) error {
+	exist, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(name)).Exist(context.Background())
+	if err != nil {
+		logger.Error(fmt.Sprintf(`查找规则集"%s"失败: [%s]`, name, err.Error()))
+		return fmt.Errorf(`查找规则集"%s"失败: [%s]`, name, err.Error())
+	} else if !exist {
+		logger.Error(fmt.Sprintf(`未找到规则集"%s"`, name))
+		return fmt.Errorf(`规则集"%s"不存在`, name)
+	}
 	if err := ent_client.Ruleset.Update().Where(ruleset.NameEQ(name)).SetPath(path).SetDownloadDetour(download_detour).SetUpdateInterval(update_interval).SetBinary(binary).SetRemote(remote).Exec(context.Background()); err != nil {
 		logger.Error(fmt.Sprintf(`修改机场"%s"失败: [%s]`, name, err.Error()))
 	}
