@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"sifu-box/application"
 	"sifu-box/ent"
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
@@ -174,4 +175,12 @@ func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []
 		res = append(res, gin.H{"status": true, "message": fmt.Sprintf(`删除规则集"%s"成功`, n)})
 	}
 	return res
+}
+func AddTemplate(template application.Config, ent_client *ent.Client, logger *zap.Logger) error {
+	if template.DNS == nil || template.Route == nil || template.Outbounds == nil || template.Inbounds == nil {
+		logger.Error(`模板信息不完整`)
+		return fmt.Errorf(`模板信息不完整, 至少包含DNS、路由、入站和出站信息`)
+	}
+
+	return nil
 }

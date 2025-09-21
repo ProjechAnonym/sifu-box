@@ -17,10 +17,10 @@ type Config struct {
 	Experiment *singbox.Experiment `json:"experimental,omitempty" yaml:"experimental,omitempty"`
 	Ntp        *singbox.Ntp        `json:"ntp,omitempty" yaml:"ntp,omitempty"`
 	Log        *singbox.Log        `json:"log,omitempty" yaml:"log,omitempty"`
-	DNS        singbox.DNS         `json:"dns" yaml:"dns"`
+	DNS        *singbox.DNS        `json:"dns" yaml:"dns"`
 	Inbounds   []map[string]any    `json:"inbounds" yaml:"inbounds"`
 	Outbounds  []map[string]any    `json:"outbounds" yaml:"outbounds"`
-	Route      singbox.Route       `json:"route" yaml:"route"`
+	Route      *singbox.Route      `json:"route" yaml:"route"`
 }
 
 // Generate 根据模板和出站映射生成配置文件
@@ -52,12 +52,12 @@ func (c *Config) Generate(work_dir string, template *ent.Template, outbound_map 
 
 	// 将处理后的配置赋值给当前配置对象
 	c.Outbounds = outbounds
-	c.Route = template.Route
+	c.Route = &template.Route
 	c.Inbounds = template.Inbounds
 	c.Log = &template.Log
 	c.Ntp = &template.Ntp
 	c.Experiment = &template.Experiment
-	c.DNS = template.DNS
+	c.DNS = &template.DNS
 
 	// 将配置对象序列化为JSON格式
 	content, err := json.MarshalIndent(c, "", "  ")

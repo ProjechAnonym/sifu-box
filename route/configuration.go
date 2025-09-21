@@ -3,6 +3,7 @@ package route
 import (
 	"fmt"
 	"net/http"
+	"sifu-box/application"
 	"sifu-box/control"
 	"sifu-box/ent"
 	"sifu-box/initial"
@@ -141,5 +142,13 @@ func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_clie
 		name := ctx.PostFormArray("name")
 		res := control.DeleteRuleset(name, ent_client, logger)
 		ctx.JSON(http.StatusMultiStatus, res)
+	})
+	configuration.POST("/add/template", middleware.AdminAuth(), func(ctx *gin.Context) {
+		template := application.Config{}
+		if err := ctx.BindJSON(&template); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
+			return
+		}
+
 	})
 }
