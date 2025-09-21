@@ -16,7 +16,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_client *ent.Client, logger *zap.Logger) {
+func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_client *ent.Client, work_dir string, logger *zap.Logger) {
 	content, err := utils.GetValue(bunt_client, initial.USER, logger)
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取用户配置信息失败: [%s]", err.Error()))
@@ -38,17 +38,39 @@ func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_clie
 			ctx.JSON(http.StatusOK, msg)
 		}
 	})
-	configuration.POST("/add/provider", middleware.AdminAuth(), func(ctx *gin.Context) {
-		provider := []struct {
-			Name   string `json:"name"`
-			Path   string `json:"path"`
-			Remote bool   `json:"remote"`
-		}{}
-		if err := ctx.BindJSON(&provider); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
+	configuration.POST("/add/provider/:remote", middleware.AdminAuth(), func(ctx *gin.Context) {
+		providers := []model.Provider{}
+		res := []gin.H{}
+		switch ctx.Param("remote") {
+		case "remote":
+			if err := ctx.BindJSON(&providers); err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
+				return
+			}
+		case "local":
+			form, err := ctx.MultipartForm()
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"message": "获取文件表单失败"})
+				return
+			}
+			files := form.File["file"]
+			for _, file := range files {
+				provider := model.Provider{}
+				if err := provider.AutoFill(file, work_dir); err != nil {
+					res = append(res, gin.H{"status": false, "message": err.Error()})
+					continue
+				}
+				if err := ctx.SaveUploadedFile(file, provider.Path); err != nil {
+					res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`保存文件"%s"失败: [%s]`, file.Filename, err.Error())})
+					continue
+				}
+				providers = append(providers, provider)
+			}
+		default:
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "未标明云端或本地"})
 			return
 		}
-		res := control.AddProvider(provider, ent_client, logger)
+		res = append(res, control.AddProvider(providers, ent_client, logger)...)
 		ctx.JSON(http.StatusMultiStatus, gin.H{"message": res})
 	})
 	configuration.PATCH("/edit/provider", middleware.AdminAuth(), func(ctx *gin.Context) {
@@ -66,29 +88,49 @@ func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_clie
 		res := control.DeleteProvider(name, ent_client, logger)
 		ctx.JSON(http.StatusMultiStatus, res)
 	})
-	configuration.POST("/add/ruleset", middleware.AdminAuth(), func(ctx *gin.Context) {
-		rulesets := []struct {
-			Name           string `json:"name"`
-			Path           string `json:"path"`
-			Remote         bool   `json:"remote"`
-			UpdateInterval string `json:"update_interval"`
-			Binary         bool   `json:"binary"`
-			DownloadDetour string `json:"download_detour"`
-		}{}
-		if err := ctx.BindJSON(&rulesets); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
+	configuration.POST("/add/ruleset/:remote", middleware.AdminAuth(), func(ctx *gin.Context) {
+		rulesets := []model.Ruleset{}
+		res := []gin.H{}
+		switch ctx.Param("remote") {
+		case "remote":
+			if err := ctx.BindJSON(&rulesets); err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
+				return
+			}
+		case "local":
+			form, err := ctx.MultipartForm()
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"message": "获取文件表单失败"})
+				return
+			}
+			files := form.File["file"]
+			for _, file := range files {
+				ruleset := model.Ruleset{}
+				if err := ruleset.AutoFill(file, work_dir); err != nil {
+					res = append(res, gin.H{"status": false, "message": err.Error()})
+					continue
+				}
+				if err := ctx.SaveUploadedFile(file, ruleset.Path); err != nil {
+					res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`保存文件"%s"失败: [%s]`, file.Filename, err.Error())})
+					continue
+				}
+				rulesets = append(rulesets, ruleset)
+			}
+		default:
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "未标明云端或本地"})
 			return
 		}
-		res := control.AddRuleset(rulesets, ent_client, logger)
+		res = append(res, control.AddRuleset(rulesets, ent_client, logger)...)
 		ctx.JSON(http.StatusMultiStatus, gin.H{"message": res})
 	})
 	configuration.PATCH("/edit/ruleset", middleware.AdminAuth(), func(ctx *gin.Context) {
 		name := ctx.PostForm("name")
 		path := ctx.PostForm("path")
-		remote := ctx.PostForm("remote") == "true"
-		update_interval := ctx.PostForm("update_interval")
-		binary := ctx.PostForm("binary") == "true"
 		download_detour := ctx.PostForm("download_detour")
+		update_interval := ctx.PostForm("update_interval")
+		remote := ctx.PostForm("remote") == "true"
+		binary := ctx.PostForm("binary") == "true"
+
 		if err := control.EditRuleset(name, path, update_interval, download_detour, remote, binary, ent_client, logger); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf(`修改规则集"%s"失败`, name)})
 			return

@@ -97,7 +97,7 @@ func main() {
 	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger))
 	api := server.Group("/api")
 	route.SettingLogin(api, bunt_client, operation_logger)
-	route.SettingConfiguration(api, bunt_client, ent_client, operation_logger)
+	route.SettingConfiguration(api, bunt_client, ent_client, work_dir, operation_logger)
 	server.Run(listen)
 
 }
