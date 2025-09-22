@@ -8,6 +8,7 @@ import (
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
 	"sifu-box/model"
+	"sifu-box/singbox"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -176,7 +177,22 @@ func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []
 	return res
 }
 func AddTemplate(template model.Template, ent_client *ent.Client, logger *zap.Logger) error {
-	if err := ent_client.Template.Create().SetName(template.Name).SetDNS(*template.DNS).SetExperiment(*template.Experiment).SetLog(*template.Log).SetRoute(*template.Route).SetProviders(template.Providers).SetInbounds(template.Inbounds).SetOutboundGroups(template.OutboundsGroup).SetNtp(*template.Ntp).Exec(context.Background()); err != nil {
+	if template.Log == nil {
+		template.Log = &singbox.Log{}
+	}
+	if template.Ntp == nil {
+		template.Ntp = &singbox.Ntp{}
+	}
+	if template.Experiment == nil {
+		template.Experiment = &singbox.Experiment{}
+	}
+	if template.DNS == nil {
+		template.DNS = &singbox.DNS{}
+	}
+	if template.Route == nil {
+		template.Route = &singbox.Route{}
+	}
+	if err := ent_client.Template.Create().SetUpdated(true).SetName(template.Name).SetDNS(*template.DNS).SetExperiment(*template.Experiment).SetLog(*template.Log).SetRoute(*template.Route).SetProviders(template.Providers).SetInbounds(template.Inbounds).SetOutboundGroups(template.OutboundsGroup).SetNtp(*template.Ntp).Exec(context.Background()); err != nil {
 		logger.Error(fmt.Sprintf(`添加模板"%s"失败: [%s]`, template.Name, err.Error()))
 		return fmt.Errorf(`添加模板"%s"失败: [%s]`, template.Name, err.Error())
 	}
