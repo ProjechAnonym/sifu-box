@@ -9,12 +9,12 @@ import (
 )
 
 type Ruleset struct {
-	Name           string `json:"name"`
-	Path           string `json:"path"`
-	Remote         bool   `json:"remote"`
-	UpdateInterval string `json:"update_interval"`
-	Binary         bool   `json:"binary"`
-	DownloadDetour string `json:"download_detour"`
+	Name           string `json:"name" yaml:"name"`
+	Path           string `json:"path" yaml:"path"`
+	Remote         bool   `json:"remote" yaml:"remote"`
+	UpdateInterval string `json:"update_interval" yaml:"update_interval"`
+	Binary         bool   `json:"binary" yaml:"binary"`
+	DownloadDetour string `json:"download_detour" yaml:"download_detour"`
 }
 
 func (r *Ruleset) AutoFill(file *multipart.FileHeader, work_dir string) error {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"sifu-box/application"
 	"sifu-box/ent"
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
@@ -176,11 +175,10 @@ func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []
 	}
 	return res
 }
-func AddTemplate(template application.Config, ent_client *ent.Client, logger *zap.Logger) error {
-	if template.DNS == nil || template.Route == nil || template.Outbounds == nil || template.Inbounds == nil {
-		logger.Error(`模板信息不完整`)
-		return fmt.Errorf(`模板信息不完整, 至少包含DNS、路由、入站和出站信息`)
+func AddTemplate(template model.Template, ent_client *ent.Client, logger *zap.Logger) error {
+	if err := ent_client.Template.Create().SetName(template.Name).SetDNS(*template.DNS).SetExperiment(*template.Experiment).SetLog(*template.Log).SetRoute(*template.Route).SetProviders(template.Providers).SetInbounds(template.Inbounds).SetOutboundGroups(template.OutboundsGroup).SetNtp(*template.Ntp).Exec(context.Background()); err != nil {
+		logger.Error(fmt.Sprintf(`添加模板"%s"失败: [%s]`, template.Name, err.Error()))
+		return fmt.Errorf(`添加模板"%s"失败: [%s]`, template.Name, err.Error())
 	}
-
 	return nil
 }

@@ -9,9 +9,9 @@ import (
 )
 
 type Provider struct {
-	Name   string `json:"name"`
-	Path   string `json:"path"`
-	Remote bool   `json:"remote"`
+	Name   string `json:"name" yaml:"name"`
+	Path   string `json:"path" yaml:"path"`
+	Remote bool   `json:"remote" yaml:"remote"`
 }
 
 func (p *Provider) AutoFill(file *multipart.FileHeader, work_dir string) error {

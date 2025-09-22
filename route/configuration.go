@@ -3,7 +3,6 @@ package route
 import (
 	"fmt"
 	"net/http"
-	"sifu-box/application"
 	"sifu-box/control"
 	"sifu-box/ent"
 	"sifu-box/initial"
@@ -144,11 +143,20 @@ func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_clie
 		ctx.JSON(http.StatusMultiStatus, res)
 	})
 	configuration.POST("/add/template", middleware.AdminAuth(), func(ctx *gin.Context) {
-		template := application.Config{}
+		template := model.Template{}
 		if err := ctx.BindJSON(&template); err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
 			return
 		}
-
+		if err := template.CheckField(); err != nil {
+			logger.Error(fmt.Sprintf(`模板字段"%s"出错: [%s]`, template.Name, err.Error()))
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf(`模板字段"%s"出错: [%s]`, template.Name, err.Error())})
+			return
+		}
+		if err := control.AddTemplate(template, ent_client, logger); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf(`添加模板"%s"成功`, template.Name)})
 	})
 }
