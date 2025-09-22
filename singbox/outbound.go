@@ -3,9 +3,10 @@ package singbox
 import "fmt"
 
 type OutboundGroup struct {
-	Type      string   `json:"type" yaml:"type"`
-	Tag       string   `json:"tag" yaml:"tag"`
-	Providers []string `json:"providers" yaml:"providers"`
+	Type       string   `json:"type" yaml:"type"`
+	Tag        string   `json:"tag" yaml:"tag"`
+	Providers  []string `json:"providers" yaml:"providers"`
+	Tag_Groups []string `json:"tag_groups" yaml:"tag_groups"`
 }
 
 // NewOutboundGroup 根据提供的出站配置创建一个新的出站组
@@ -24,7 +25,7 @@ func (o *OutboundGroup) NewOutboundGroup(outbounds map[string][]map[string]any) 
 		return outbound, nil
 	}
 	outbound["interrupt_exist_connections"] = false
-	outbound_tags := []string{}
+	outbound_tags := o.Tag_Groups
 	// 遍历所有机场, 收集出站节点标签
 	for _, provider := range o.Providers {
 		if _, exists := outbounds[provider]; !exists {

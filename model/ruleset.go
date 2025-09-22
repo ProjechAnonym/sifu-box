@@ -12,9 +12,9 @@ type Ruleset struct {
 	Name           string `json:"name" yaml:"name"`
 	Path           string `json:"path" yaml:"path"`
 	Remote         bool   `json:"remote" yaml:"remote"`
-	UpdateInterval string `json:"update_interval" yaml:"update_interval"`
+	UpdateInterval string `json:"update_interval,omitempty" yaml:"update_interval,omitempty"`
 	Binary         bool   `json:"binary" yaml:"binary"`
-	DownloadDetour string `json:"download_detour" yaml:"download_detour"`
+	DownloadDetour string `json:"download_detour,omitempty" yaml:"download_detour,omitempty"`
 }
 
 func (r *Ruleset) AutoFill(file *multipart.FileHeader, work_dir string) error {

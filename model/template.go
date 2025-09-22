@@ -7,12 +7,12 @@ import (
 
 type Template struct {
 	Name           string                  `json:"name" yaml:"name"`
-	Ntp            *singbox.Ntp            `json:"ntp" yaml:"ntp"`
+	Ntp            *singbox.Ntp            `json:"ntp,omitempty" yaml:"ntp,omitempty"`
 	Inbounds       []map[string]any        `json:"inbounds" yaml:"inbounds"`
-	OutboundsGroup []singbox.OutboundGroup `json:"outbounds_group" yaml:"outbounds_group"`
+	OutboundsGroup []singbox.OutboundGroup `json:"outbounds_group,omitempty" yaml:"outbounds_group,omitempty"`
 	DNS            *singbox.DNS            `json:"dns" yaml:"dns"`
-	Experiment     *singbox.Experiment     `json:"experiment" yaml:"experiment"`
-	Log            *singbox.Log            `json:"log" yaml:"log"`
+	Experiment     *singbox.Experiment     `json:"experiment,omitempty" yaml:"experiment,omitempty"`
+	Log            *singbox.Log            `json:"log,omitempty" yaml:"log,omitempty"`
 	Route          *singbox.Route          `json:"route" yaml:"route"`
 	Providers      []string                `json:"providers" yaml:"providers"`
 }

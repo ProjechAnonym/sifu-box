@@ -2,79 +2,105 @@ package control
 
 import (
 	"context"
+	"crypto/md5"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sifu-box/ent"
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
+	"sifu-box/ent/template"
 	"sifu-box/model"
-	"sifu-box/singbox"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
 
-func FetchItems(ent_client *ent.Client, logger *zap.Logger) (gin.H, error) {
-	providers, err := ent_client.Provider.Query().Select(provider.FieldID, provider.FieldName, provider.FieldPath, provider.FieldRemote).All(context.Background())
+func FetchItems(ent_client *ent.Client, logger *zap.Logger) []gin.H {
+	res := []gin.H{}
+	providers, err := ent_client.Provider.Query().All(context.Background())
 	if err != nil {
 		logger.Error(fmt.Sprintf("获取机场列表失败: [%s]", err.Error()))
-		return gin.H{"message": fmt.Sprintf("获取机场列表失败: [%s]", err.Error())}, err
+		res = append(res, gin.H{"status": false, "message": fmt.Sprintf("获取机场列表失败: [%s]", err.Error())})
+		return res
 	}
-	rulesets, err := ent_client.Ruleset.Query().Select(ruleset.FieldID, ruleset.FieldName, ruleset.FieldPath, ruleset.FieldRemote, ruleset.FieldUpdateInterval, ruleset.FieldBinary, ruleset.FieldDownloadDetour).All(context.Background())
-	if err != nil {
-		logger.Error(fmt.Sprintf("获取规则集列表失败: [%s]", err.Error()))
-		return gin.H{"message": fmt.Sprintf("获取规则集列表失败: [%s]", err.Error())}, err
-	}
-	items := struct {
-		Providers []struct {
-			ID     int    `json:"id"`
-			Name   string `json:"name"`
-			Path   string `json:"path"`
-			Remote bool   `json:"remote"`
-		} `json:"providers"`
-		Rulesets []struct {
-			ID             int    `json:"id"`
-			Name           string `json:"name"`
-			Path           string `json:"path"`
-			Remote         bool   `json:"remote"`
-			UpdateInterval string `json:"update_interval"`
-			Binary         bool   `json:"binary"`
-			DownloadDetour string `json:"download_detour"`
-		} `json:"rulesets"`
+	provider_list := []struct {
+		ID int `json:"id"`
+		model.Provider
+	}{}
+	ruleset_list := []struct {
+		ID int `json:"id"`
+		model.Ruleset
+	}{}
+	template_list := []struct {
+		ID int `json:"id"`
+		model.Template
 	}{}
 	for _, provider := range providers {
-		items.Providers = append(items.Providers, struct {
-			ID     int    `json:"id"`
-			Name   string `json:"name"`
-			Path   string `json:"path"`
-			Remote bool   `json:"remote"`
+		provider_list = append(provider_list, struct {
+			ID int `json:"id"`
+			model.Provider
 		}{
-			ID:     provider.ID,
-			Name:   provider.Name,
-			Path:   provider.Path,
-			Remote: provider.Remote,
+			ID: provider.ID,
+			Provider: model.Provider{
+				Name:   provider.Name,
+				Path:   provider.Path,
+				Remote: provider.Remote,
+			},
 		})
+	}
+	res = append(res, gin.H{"status": true, "message": provider_list, "type": "provider"})
+	rulesets, err := ent_client.Ruleset.Query().All(context.Background())
+	if err != nil {
+		logger.Error(fmt.Sprintf("获取规则集列表失败: [%s]", err.Error()))
+		res = append(res, gin.H{"status": false, "message": fmt.Sprintf("获取规则集列表失败: [%s]", err.Error())})
+		return res
 	}
 	for _, ruleset := range rulesets {
-		items.Rulesets = append(items.Rulesets, struct {
-			ID             int    `json:"id"`
-			Name           string `json:"name"`
-			Path           string `json:"path"`
-			Remote         bool   `json:"remote"`
-			UpdateInterval string `json:"update_interval"`
-			Binary         bool   `json:"binary"`
-			DownloadDetour string `json:"download_detour"`
+		ruleset_list = append(ruleset_list, struct {
+			ID int `json:"id"`
+			model.Ruleset
 		}{
-			ID:             ruleset.ID,
-			Name:           ruleset.Name,
-			Path:           ruleset.Path,
-			Remote:         ruleset.Remote,
-			UpdateInterval: ruleset.UpdateInterval,
-			Binary:         ruleset.Binary,
-			DownloadDetour: ruleset.DownloadDetour,
+			ID: ruleset.ID,
+			Ruleset: model.Ruleset{
+				Name:           ruleset.Name,
+				Path:           ruleset.Path,
+				Remote:         ruleset.Remote,
+				UpdateInterval: ruleset.UpdateInterval,
+				Binary:         ruleset.Binary,
+				DownloadDetour: ruleset.DownloadDetour,
+			},
 		})
 	}
-	return gin.H{"message": items}, nil
+	res = append(res, gin.H{"status": true, "message": ruleset_list, "type": "ruleset"})
+	templates, err := ent_client.Template.Query().All(context.Background())
+	if err != nil {
+		logger.Error(fmt.Sprintf("获取模板列表失败: [%s]", err.Error()))
+		res = append(res, gin.H{"status": false, "message": fmt.Sprintf("获取模板列表失败: [%s]", err.Error())})
+		return res
+	}
+	for _, template := range templates {
+		template_list = append(template_list, struct {
+			ID int `json:"id"`
+			model.Template
+		}{
+			ID: template.ID,
+			Template: model.Template{
+				Name:           template.Name,
+				Ntp:            &template.Ntp,
+				Inbounds:       template.Inbounds,
+				OutboundsGroup: template.OutboundGroups,
+				Providers:      template.Providers,
+				DNS:            &template.DNS,
+				Experiment:     &template.Experiment,
+				Log:            &template.Log,
+				Route:          &template.Route,
+			},
+		},
+		)
+	}
+	res = append(res, gin.H{"status": true, "message": template_list, "type": "template"})
+	return res
 }
 func AddProvider(providers []model.Provider, ent_client *ent.Client, logger *zap.Logger) []gin.H {
 	res := []gin.H{}
@@ -155,7 +181,7 @@ func DeleteProvider(name []string, ent_client *ent.Client, logger *zap.Logger) [
 func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []gin.H {
 	res := []gin.H{}
 	for _, n := range name {
-		rule_set, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(n)).First(context.Background())
+		rule_set, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(n)).Select(ruleset.FieldPath, ruleset.FieldRemote).First(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf(`查找规则集"%s"失败: [%s]`, n, err.Error()))
 			res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`查找规则集"%s"失败: [%s]`, n, err.Error())})
@@ -177,24 +203,54 @@ func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []
 	return res
 }
 func AddTemplate(template model.Template, ent_client *ent.Client, logger *zap.Logger) error {
-	if template.Log == nil {
-		template.Log = &singbox.Log{}
+	ent_template := ent_client.Template.Create()
+	if template.Log != nil {
+		ent_template.SetLog(*template.Log)
 	}
-	if template.Ntp == nil {
-		template.Ntp = &singbox.Ntp{}
+	if template.Ntp != nil {
+		ent_template.SetNtp(*template.Ntp)
 	}
-	if template.Experiment == nil {
-		template.Experiment = &singbox.Experiment{}
+	if template.Experiment != nil {
+		ent_template.SetExperiment(*template.Experiment)
 	}
-	if template.DNS == nil {
-		template.DNS = &singbox.DNS{}
+	if template.DNS != nil {
+		ent_template.SetDNS(*template.DNS)
 	}
-	if template.Route == nil {
-		template.Route = &singbox.Route{}
+	if template.Route != nil {
+		ent_template.SetRoute(*template.Route)
 	}
-	if err := ent_client.Template.Create().SetUpdated(true).SetName(template.Name).SetDNS(*template.DNS).SetExperiment(*template.Experiment).SetLog(*template.Log).SetRoute(*template.Route).SetProviders(template.Providers).SetInbounds(template.Inbounds).SetOutboundGroups(template.OutboundsGroup).SetNtp(*template.Ntp).Exec(context.Background()); err != nil {
+	if err := ent_template.SetUpdated(true).SetName(template.Name).SetProviders(template.Providers).SetInbounds(template.Inbounds).SetOutboundGroups(template.OutboundsGroup).Exec(context.Background()); err != nil {
 		logger.Error(fmt.Sprintf(`添加模板"%s"失败: [%s]`, template.Name, err.Error()))
 		return fmt.Errorf(`添加模板"%s"失败: [%s]`, template.Name, err.Error())
 	}
 	return nil
+}
+
+func DeleteTemplate(name []string, work_dir string, ent_client *ent.Client, logger *zap.Logger) []gin.H {
+	res := []gin.H{}
+	for _, n := range name {
+		template_msg, err := ent_client.Template.Query().Where(template.NameEQ(n)).Select(template.FieldName).First(context.Background())
+		if err != nil {
+			logger.Error(fmt.Sprintf(`查找模板"%s"失败: [%s]`, n, err.Error()))
+			res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`查找模板"%s"失败: [%s]`, n, err.Error())})
+			continue
+		}
+		if _, err := os.Stat(filepath.Join(work_dir, "sing-box", "config", fmt.Sprintf(`%s.json`, fmt.Sprintf(`%x`, md5.Sum([]byte(template_msg.Name)))))); err == nil {
+			if err := os.Remove(filepath.Join(work_dir, "sing-box", "config", fmt.Sprintf(`%s.json`, fmt.Sprintf(`%x`, md5.Sum([]byte(template_msg.Name)))))); err != nil {
+				logger.Error(fmt.Sprintf(`删除模板"%s"配置文件失败: [%s]`, n, err.Error()))
+				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`删除模板"%s"配置文件失败: [%s]`, n, err.Error())})
+				continue
+			}
+		} else if !os.IsNotExist(err) {
+			logger.Error(fmt.Sprintf(`查找模板"%s"配置文件失败: [%s]`, n, err.Error()))
+			res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`查找模板"%s"配置文件失败: [%s]`, n, err.Error())})
+		}
+
+		if _, err := ent_client.Template.Delete().Where(template.NameEQ(n)).Exec(context.Background()); err != nil {
+			logger.Error(fmt.Sprintf(`删除模板"%s"失败: [%s]`, n, err.Error()))
+			res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`删除模板"%s"失败: [%s]`, n, err.Error())})
+		}
+		res = append(res, gin.H{"status": true, "message": fmt.Sprintf(`删除模板"%s"成功`, n)})
+	}
+	return res
 }

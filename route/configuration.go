@@ -30,13 +30,8 @@ func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_clie
 	configuration := api.Group("/configuration")
 	configuration.Use(middleware.JwtAuth(user.Key, logger))
 	configuration.GET("/fetch", func(ctx *gin.Context) {
-		msg, err := control.FetchItems(ent_client, logger)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, msg)
-			return
-		} else {
-			ctx.JSON(http.StatusOK, msg)
-		}
+		msg := control.FetchItems(ent_client, logger)
+		ctx.JSON(http.StatusMultiStatus, gin.H{"message": msg})
 	})
 	configuration.POST("/add/provider/:remote", middleware.AdminAuth(), func(ctx *gin.Context) {
 		providers := []model.Provider{}
@@ -158,5 +153,10 @@ func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_clie
 			return
 		}
 		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf(`添加模板"%s"成功`, template.Name)})
+	})
+	configuration.DELETE("/delete/template", middleware.AdminAuth(), func(ctx *gin.Context) {
+		name := ctx.PostFormArray("name")
+		res := control.DeleteTemplate(name, work_dir, ent_client, logger)
+		ctx.JSON(http.StatusMultiStatus, res)
 	})
 }
