@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"sifu-box/ent/ruleset"
 	"strings"
@@ -28,7 +29,9 @@ type Ruleset struct {
 	DownloadDetour string `json:"download_detour,omitempty"`
 	// UpdateInterval holds the value of the "update_interval" field.
 	UpdateInterval string `json:"update_interval,omitempty"`
-	selectValues   sql.SelectValues
+	// Templates holds the value of the "templates" field.
+	Templates    []string `json:"templates,omitempty"`
+	selectValues sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -36,6 +39,8 @@ func (*Ruleset) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case ruleset.FieldTemplates:
+			values[i] = new([]byte)
 		case ruleset.FieldRemote, ruleset.FieldBinary:
 			values[i] = new(sql.NullBool)
 		case ruleset.FieldID:
@@ -99,6 +104,14 @@ func (_m *Ruleset) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.UpdateInterval = value.String
 			}
+		case ruleset.FieldTemplates:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field templates", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Templates); err != nil {
+					return fmt.Errorf("unmarshal field templates: %w", err)
+				}
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -152,6 +165,9 @@ func (_m *Ruleset) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("update_interval=")
 	builder.WriteString(_m.UpdateInterval)
+	builder.WriteString(", ")
+	builder.WriteString("templates=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Templates))
 	builder.WriteByte(')')
 	return builder.String()
 }

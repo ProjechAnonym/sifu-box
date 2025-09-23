@@ -71,6 +71,12 @@ func (_c *ProviderCreate) SetNillableUpdated(v *bool) *ProviderCreate {
 	return _c
 }
 
+// SetTemplates sets the "templates" field.
+func (_c *ProviderCreate) SetTemplates(v []string) *ProviderCreate {
+	_c.mutation.SetTemplates(v)
+	return _c
+}
+
 // Mutation returns the ProviderMutation object of the builder.
 func (_c *ProviderCreate) Mutation() *ProviderMutation {
 	return _c.mutation
@@ -178,6 +184,10 @@ func (_c *ProviderCreate) createSpec() (*Provider, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Updated(); ok {
 		_spec.SetField(provider.FieldUpdated, field.TypeBool, value)
 		_node.Updated = value
+	}
+	if value, ok := _c.mutation.Templates(); ok {
+		_spec.SetField(provider.FieldTemplates, field.TypeJSON, value)
+		_node.Templates = value
 	}
 	return _node, _spec
 }

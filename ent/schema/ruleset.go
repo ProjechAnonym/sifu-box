@@ -17,7 +17,7 @@ func (Ruleset) Fields() []ent.Field {
 		field.String("name").NotEmpty().MaxLen(30).Unique(),
 		field.String("path").NotEmpty().MaxLen(1000), field.Bool("remote"),
 		field.Bool("binary"), field.String("download_detour").Optional(),
-		field.String("update_interval").Optional().MaxLen(30),
+		field.String("update_interval").Optional().MaxLen(30), field.Strings("templates").Optional(),
 	}
 }
 

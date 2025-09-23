@@ -17,6 +17,7 @@ var (
 		{Name: "remote", Type: field.TypeBool},
 		{Name: "uuid", Type: field.TypeString, Nullable: true, Size: 32},
 		{Name: "updated", Type: field.TypeBool, Nullable: true},
+		{Name: "templates", Type: field.TypeJSON, Nullable: true},
 	}
 	// ProvidersTable holds the schema information for the "providers" table.
 	ProvidersTable = &schema.Table{
@@ -40,6 +41,7 @@ var (
 		{Name: "binary", Type: field.TypeBool},
 		{Name: "download_detour", Type: field.TypeString, Nullable: true},
 		{Name: "update_interval", Type: field.TypeString, Nullable: true, Size: 30},
+		{Name: "templates", Type: field.TypeJSON, Nullable: true},
 	}
 	// RulesetsTable holds the schema information for the "rulesets" table.
 	RulesetsTable = &schema.Table{

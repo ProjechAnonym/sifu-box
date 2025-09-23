@@ -71,6 +71,12 @@ func (_c *RulesetCreate) SetNillableUpdateInterval(v *string) *RulesetCreate {
 	return _c
 }
 
+// SetTemplates sets the "templates" field.
+func (_c *RulesetCreate) SetTemplates(v []string) *RulesetCreate {
+	_c.mutation.SetTemplates(v)
+	return _c
+}
+
 // Mutation returns the RulesetMutation object of the builder.
 func (_c *RulesetCreate) Mutation() *RulesetMutation {
 	return _c.mutation
@@ -181,6 +187,10 @@ func (_c *RulesetCreate) createSpec() (*Ruleset, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.UpdateInterval(); ok {
 		_spec.SetField(ruleset.FieldUpdateInterval, field.TypeString, value)
 		_node.UpdateInterval = value
+	}
+	if value, ok := _c.mutation.Templates(); ok {
+		_spec.SetField(ruleset.FieldTemplates, field.TypeJSON, value)
+		_node.Templates = value
 	}
 	return _node, _spec
 }

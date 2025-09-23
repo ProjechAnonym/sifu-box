@@ -11,6 +11,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -123,6 +124,24 @@ func (_u *RulesetUpdate) ClearUpdateInterval() *RulesetUpdate {
 	return _u
 }
 
+// SetTemplates sets the "templates" field.
+func (_u *RulesetUpdate) SetTemplates(v []string) *RulesetUpdate {
+	_u.mutation.SetTemplates(v)
+	return _u
+}
+
+// AppendTemplates appends value to the "templates" field.
+func (_u *RulesetUpdate) AppendTemplates(v []string) *RulesetUpdate {
+	_u.mutation.AppendTemplates(v)
+	return _u
+}
+
+// ClearTemplates clears the value of the "templates" field.
+func (_u *RulesetUpdate) ClearTemplates() *RulesetUpdate {
+	_u.mutation.ClearTemplates()
+	return _u
+}
+
 // Mutation returns the RulesetMutation object of the builder.
 func (_u *RulesetUpdate) Mutation() *RulesetMutation {
 	return _u.mutation
@@ -210,6 +229,17 @@ func (_u *RulesetUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.UpdateIntervalCleared() {
 		_spec.ClearField(ruleset.FieldUpdateInterval, field.TypeString)
+	}
+	if value, ok := _u.mutation.Templates(); ok {
+		_spec.SetField(ruleset.FieldTemplates, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedTemplates(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, ruleset.FieldTemplates, value)
+		})
+	}
+	if _u.mutation.TemplatesCleared() {
+		_spec.ClearField(ruleset.FieldTemplates, field.TypeJSON)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -324,6 +354,24 @@ func (_u *RulesetUpdateOne) SetNillableUpdateInterval(v *string) *RulesetUpdateO
 // ClearUpdateInterval clears the value of the "update_interval" field.
 func (_u *RulesetUpdateOne) ClearUpdateInterval() *RulesetUpdateOne {
 	_u.mutation.ClearUpdateInterval()
+	return _u
+}
+
+// SetTemplates sets the "templates" field.
+func (_u *RulesetUpdateOne) SetTemplates(v []string) *RulesetUpdateOne {
+	_u.mutation.SetTemplates(v)
+	return _u
+}
+
+// AppendTemplates appends value to the "templates" field.
+func (_u *RulesetUpdateOne) AppendTemplates(v []string) *RulesetUpdateOne {
+	_u.mutation.AppendTemplates(v)
+	return _u
+}
+
+// ClearTemplates clears the value of the "templates" field.
+func (_u *RulesetUpdateOne) ClearTemplates() *RulesetUpdateOne {
+	_u.mutation.ClearTemplates()
 	return _u
 }
 
@@ -444,6 +492,17 @@ func (_u *RulesetUpdateOne) sqlSave(ctx context.Context) (_node *Ruleset, err er
 	}
 	if _u.mutation.UpdateIntervalCleared() {
 		_spec.ClearField(ruleset.FieldUpdateInterval, field.TypeString)
+	}
+	if value, ok := _u.mutation.Templates(); ok {
+		_spec.SetField(ruleset.FieldTemplates, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedTemplates(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, ruleset.FieldTemplates, value)
+		})
+	}
+	if _u.mutation.TemplatesCleared() {
+		_spec.ClearField(ruleset.FieldTemplates, field.TypeJSON)
 	}
 	_node = &Ruleset{config: _u.config}
 	_spec.Assign = _node.assignValues

@@ -323,6 +323,16 @@ func UpdatedNotNil() predicate.Provider {
 	return predicate.Provider(sql.FieldNotNull(FieldUpdated))
 }
 
+// TemplatesIsNil applies the IsNil predicate on the "templates" field.
+func TemplatesIsNil() predicate.Provider {
+	return predicate.Provider(sql.FieldIsNull(FieldTemplates))
+}
+
+// TemplatesNotNil applies the NotNil predicate on the "templates" field.
+func TemplatesNotNil() predicate.Provider {
+	return predicate.Provider(sql.FieldNotNull(FieldTemplates))
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Provider) predicate.Provider {
 	return predicate.Provider(sql.AndPredicates(predicates...))

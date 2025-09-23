@@ -18,6 +18,7 @@ func (Provider) Fields() []ent.Field {
 		field.String("path").NotEmpty().MaxLen(1000),
 		field.JSON("nodes", []map[string]any{}).Optional(), field.Bool("remote"),
 		field.String("uuid").MaxLen(32).Optional(), field.Bool("updated").Optional(),
+		field.Strings("templates").Optional(),
 	}
 }
 

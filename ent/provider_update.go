@@ -128,6 +128,24 @@ func (_u *ProviderUpdate) ClearUpdated() *ProviderUpdate {
 	return _u
 }
 
+// SetTemplates sets the "templates" field.
+func (_u *ProviderUpdate) SetTemplates(v []string) *ProviderUpdate {
+	_u.mutation.SetTemplates(v)
+	return _u
+}
+
+// AppendTemplates appends value to the "templates" field.
+func (_u *ProviderUpdate) AppendTemplates(v []string) *ProviderUpdate {
+	_u.mutation.AppendTemplates(v)
+	return _u
+}
+
+// ClearTemplates clears the value of the "templates" field.
+func (_u *ProviderUpdate) ClearTemplates() *ProviderUpdate {
+	_u.mutation.ClearTemplates()
+	return _u
+}
+
 // Mutation returns the ProviderMutation object of the builder.
 func (_u *ProviderUpdate) Mutation() *ProviderMutation {
 	return _u.mutation
@@ -223,6 +241,17 @@ func (_u *ProviderUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.UpdatedCleared() {
 		_spec.ClearField(provider.FieldUpdated, field.TypeBool)
+	}
+	if value, ok := _u.mutation.Templates(); ok {
+		_spec.SetField(provider.FieldTemplates, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedTemplates(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, provider.FieldTemplates, value)
+		})
+	}
+	if _u.mutation.TemplatesCleared() {
+		_spec.ClearField(provider.FieldTemplates, field.TypeJSON)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -341,6 +370,24 @@ func (_u *ProviderUpdateOne) SetNillableUpdated(v *bool) *ProviderUpdateOne {
 // ClearUpdated clears the value of the "updated" field.
 func (_u *ProviderUpdateOne) ClearUpdated() *ProviderUpdateOne {
 	_u.mutation.ClearUpdated()
+	return _u
+}
+
+// SetTemplates sets the "templates" field.
+func (_u *ProviderUpdateOne) SetTemplates(v []string) *ProviderUpdateOne {
+	_u.mutation.SetTemplates(v)
+	return _u
+}
+
+// AppendTemplates appends value to the "templates" field.
+func (_u *ProviderUpdateOne) AppendTemplates(v []string) *ProviderUpdateOne {
+	_u.mutation.AppendTemplates(v)
+	return _u
+}
+
+// ClearTemplates clears the value of the "templates" field.
+func (_u *ProviderUpdateOne) ClearTemplates() *ProviderUpdateOne {
+	_u.mutation.ClearTemplates()
 	return _u
 }
 
@@ -469,6 +516,17 @@ func (_u *ProviderUpdateOne) sqlSave(ctx context.Context) (_node *Provider, err 
 	}
 	if _u.mutation.UpdatedCleared() {
 		_spec.ClearField(provider.FieldUpdated, field.TypeBool)
+	}
+	if value, ok := _u.mutation.Templates(); ok {
+		_spec.SetField(provider.FieldTemplates, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedTemplates(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, provider.FieldTemplates, value)
+		})
+	}
+	if _u.mutation.TemplatesCleared() {
+		_spec.ClearField(provider.FieldTemplates, field.TypeJSON)
 	}
 	_node = &Provider{config: _u.config}
 	_spec.Assign = _node.assignValues

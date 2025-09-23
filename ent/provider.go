@@ -28,7 +28,9 @@ type Provider struct {
 	// UUID holds the value of the "uuid" field.
 	UUID string `json:"uuid,omitempty"`
 	// Updated holds the value of the "updated" field.
-	Updated      bool `json:"updated,omitempty"`
+	Updated bool `json:"updated,omitempty"`
+	// Templates holds the value of the "templates" field.
+	Templates    []string `json:"templates,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -37,7 +39,7 @@ func (*Provider) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case provider.FieldNodes:
+		case provider.FieldNodes, provider.FieldTemplates:
 			values[i] = new([]byte)
 		case provider.FieldRemote, provider.FieldUpdated:
 			values[i] = new(sql.NullBool)
@@ -104,6 +106,14 @@ func (_m *Provider) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Updated = value.Bool
 			}
+		case provider.FieldTemplates:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field templates", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Templates); err != nil {
+					return fmt.Errorf("unmarshal field templates: %w", err)
+				}
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -157,6 +167,9 @@ func (_m *Provider) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Updated))
+	builder.WriteString(", ")
+	builder.WriteString("templates=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Templates))
 	builder.WriteByte(')')
 	return builder.String()
 }

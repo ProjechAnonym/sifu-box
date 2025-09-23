@@ -383,6 +383,16 @@ func UpdateIntervalContainsFold(v string) predicate.Ruleset {
 	return predicate.Ruleset(sql.FieldContainsFold(FieldUpdateInterval, v))
 }
 
+// TemplatesIsNil applies the IsNil predicate on the "templates" field.
+func TemplatesIsNil() predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldIsNull(FieldTemplates))
+}
+
+// TemplatesNotNil applies the NotNil predicate on the "templates" field.
+func TemplatesNotNil() predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNotNull(FieldTemplates))
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Ruleset) predicate.Ruleset {
 	return predicate.Ruleset(sql.AndPredicates(predicates...))

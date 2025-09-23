@@ -23,6 +23,8 @@ const (
 	FieldDownloadDetour = "download_detour"
 	// FieldUpdateInterval holds the string denoting the update_interval field in the database.
 	FieldUpdateInterval = "update_interval"
+	// FieldTemplates holds the string denoting the templates field in the database.
+	FieldTemplates = "templates"
 	// Table holds the table name of the ruleset in the database.
 	Table = "rulesets"
 )
@@ -36,6 +38,7 @@ var Columns = []string{
 	FieldBinary,
 	FieldDownloadDetour,
 	FieldUpdateInterval,
+	FieldTemplates,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

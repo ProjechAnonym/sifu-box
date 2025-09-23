@@ -23,6 +23,8 @@ const (
 	FieldUUID = "uuid"
 	// FieldUpdated holds the string denoting the updated field in the database.
 	FieldUpdated = "updated"
+	// FieldTemplates holds the string denoting the templates field in the database.
+	FieldTemplates = "templates"
 	// Table holds the table name of the provider in the database.
 	Table = "providers"
 )
@@ -36,6 +38,7 @@ var Columns = []string{
 	FieldRemote,
 	FieldUUID,
 	FieldUpdated,
+	FieldTemplates,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
