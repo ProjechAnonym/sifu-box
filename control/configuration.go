@@ -204,20 +204,14 @@ func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []
 }
 func AddTemplate(template model.Template, ent_client *ent.Client, logger *zap.Logger) error {
 	ent_template := ent_client.Template.Create()
-	if template.Log != nil {
-		ent_template.SetLog(*template.Log)
+	template.FillFields(ent_template)
+	if err := template.LinkProvidersTable(ent_client); err != nil {
+		logger.Error(fmt.Sprintf(`关联模板"%s"与机场失败: [%s]`, template.Name, err.Error()))
+		return fmt.Errorf(`关联模板"%s"与机场失败: [%s]`, template.Name, err.Error())
 	}
-	if template.Ntp != nil {
-		ent_template.SetNtp(*template.Ntp)
-	}
-	if template.Experiment != nil {
-		ent_template.SetExperiment(*template.Experiment)
-	}
-	if template.DNS != nil {
-		ent_template.SetDNS(*template.DNS)
-	}
-	if template.Route != nil {
-		ent_template.SetRoute(*template.Route)
+	if err := template.LinkRulesetsTable(ent_client); err != nil {
+		logger.Error(fmt.Sprintf(`关联模板"%s"与规则集失败: [%s]`, template.Name, err.Error()))
+		return fmt.Errorf(`关联模板"%s"与规则集失败: [%s]`, template.Name, err.Error())
 	}
 	if err := ent_template.SetUpdated(true).SetName(template.Name).SetProviders(template.Providers).SetInbounds(template.Inbounds).SetOutboundGroups(template.OutboundsGroup).Exec(context.Background()); err != nil {
 		logger.Error(fmt.Sprintf(`添加模板"%s"失败: [%s]`, template.Name, err.Error()))

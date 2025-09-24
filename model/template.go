@@ -1,7 +1,11 @@
 package model
 
 import (
+	"context"
 	"fmt"
+	"sifu-box/ent"
+	"sifu-box/ent/provider"
+	"sifu-box/ent/ruleset"
 	"sifu-box/singbox"
 )
 
@@ -38,6 +42,65 @@ func (t *Template) CheckField() error {
 	}
 	if t.Providers == nil {
 		return fmt.Errorf(`"providers"字段为空, 机场不能为空`)
+	}
+	return nil
+}
+func (t *Template) FillFields(template *ent.TemplateCreate) {
+	if t.Log != nil {
+		template.SetLog(*t.Log)
+	}
+	if t.Ntp != nil {
+		template.SetNtp(*t.Ntp)
+	}
+	if t.Experiment != nil {
+		template.SetExperiment(*t.Experiment)
+	}
+	if t.DNS != nil {
+		template.SetDNS(*t.DNS)
+	}
+	if t.Route != nil {
+		template.SetRoute(*t.Route)
+	}
+}
+func (t *Template) LinkProvidersTable(ent_client *ent.Client) error {
+	for _, name := range t.Providers {
+		provider_msg, err := ent_client.Provider.Query().Where(provider.NameEQ(name)).Select(provider.FieldTemplates).First(context.Background())
+		if err != nil {
+			return fmt.Errorf(`查询机场"%s"失败: %s`, name, err.Error())
+		}
+		provider_msg.Templates = append(provider_msg.Templates, t.Name)
+		template_map := make(map[string]bool)
+		template_list := []string{}
+		for _, v := range provider_msg.Templates {
+			template_map[v] = true
+		}
+		for k := range template_map {
+			template_list = append(template_list, k)
+		}
+		if _, err := ent_client.Provider.UpdateOne(provider_msg).SetTemplates(template_list).Save(context.Background()); err != nil {
+			return fmt.Errorf(`更新机场"%s"失败: %s`, name, err.Error())
+		}
+	}
+	return nil
+}
+func (t *Template) LinkRulesetsTable(ent_client *ent.Client) error {
+	for _, rule_set := range t.Route.Rule_sets {
+		ruleset_msg, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(rule_set.Tag)).Select(ruleset.FieldTemplates).First(context.Background())
+		if err != nil {
+			return fmt.Errorf(`查询规则集"%s"模板失败: %s`, rule_set.Tag, err.Error())
+		}
+		ruleset_msg.Templates = append(ruleset_msg.Templates, t.Name)
+		template_list := []string{}
+		template_map := make(map[string]bool)
+		for _, v := range ruleset_msg.Templates {
+			template_map[v] = true
+		}
+		for k := range template_map {
+			template_list = append(template_list, k)
+		}
+		if _, err := ent_client.Ruleset.UpdateOne(ruleset_msg).SetTemplates(template_list).Save(context.Background()); err != nil {
+			return fmt.Errorf(`更新规则集"%s"模板失败: %s`, rule_set.Tag, err.Error())
+		}
 	}
 	return nil
 }
