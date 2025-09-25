@@ -91,16 +91,16 @@ func main() {
 		task_logger.Error(fmt.Sprintf("添加定时任务失败: [%s]", err.Error()))
 	}
 	fmt.Println(job_id)
-	// p, _ := ent_client.Provider.Query().All(context.Background())
-	// for _, v := range p {
-	// 	fmt.Println(v.Name)
-	// 	fmt.Println(v.Templates)
-	// }
-	// r, _ := ent_client.Ruleset.Query().All(context.Background())
-	// for _, v := range r {
-	// 	fmt.Println(v.Name)
-	// 	fmt.Println(v.Templates)
-	// }
+	p, _ := ent_client.Provider.Query().All(context.Background())
+	for _, v := range p {
+		fmt.Println(v.Name)
+		fmt.Println(v.Templates)
+	}
+	r, _ := ent_client.Ruleset.Query().All(context.Background())
+	for _, v := range r {
+		fmt.Println(v.Name)
+		fmt.Println(v.Templates)
+	}
 	application.Process(work_dir, ent_client, task_logger)
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()

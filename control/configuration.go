@@ -223,7 +223,7 @@ func AddTemplate(template model.Template, ent_client *ent.Client, logger *zap.Lo
 func DeleteTemplate(name []string, work_dir string, ent_client *ent.Client, logger *zap.Logger) []gin.H {
 	res := []gin.H{}
 	for _, n := range name {
-		template_msg, err := ent_client.Template.Query().Where(template.NameEQ(n)).Select(template.FieldName).First(context.Background())
+		template_msg, err := ent_client.Template.Query().Where(template.NameEQ(n)).Select(template.FieldName, template.FieldProviders, template.FieldRoute).First(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf(`查找模板"%s"失败: [%s]`, n, err.Error()))
 			res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`查找模板"%s"失败: [%s]`, n, err.Error())})
