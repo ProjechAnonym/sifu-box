@@ -261,9 +261,10 @@ func DeleteTemplate(name []string, work_dir string, ent_client *ent.Client, logg
 }
 func EditTemplate(template_msg model.Template, ent_client *ent.Client, logger *zap.Logger) error {
 	template_instance := ent_client.Template.Update()
-	if err := template_msg.EditProviders(ent_client); err != nil {
+	if err := template_msg.EditProviders(); err != nil {
 		return err
 	}
+	template_msg.EditRulesets()
 	template_msg.UpdateFillFields(template_instance)
 	if err := template_instance.Where(template.NameEQ(template_msg.Name)).SetUpdated(true).Exec(context.Background()); err != nil {
 		logger.Error(fmt.Sprintf(`修改模板"%s"失败: [%s]`, template_msg.Name, err.Error()))

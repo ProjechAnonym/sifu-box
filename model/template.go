@@ -157,17 +157,17 @@ func (t *Template) UnLinkRulesetsTable(ent_client *ent.Client) error {
 	}
 	return nil
 }
-func (t *Template) EditProviders(ent_client *ent.Client) error {
+func (t *Template) EditProviders() error {
 	if t.Providers == nil {
 		return fmt.Errorf(`模板"%s"中"providers"字段为空, 机场不能为空`, t.Name)
 	}
+	providers_map := make(map[string]bool)
 	outbound_group_list := []singbox.OutboundGroup{}
+	for _, name := range t.Providers {
+		providers_map[name] = true
+	}
 	for _, outbound_group := range t.OutboundsGroup {
-		providers_map := make(map[string]bool)
 		providers_list := []string{}
-		for _, name := range t.Providers {
-			providers_map[name] = true
-		}
 		for _, provider := range outbound_group.Providers {
 			if _, exists := providers_map[provider]; exists {
 				providers_list = append(providers_list, provider)
@@ -178,4 +178,41 @@ func (t *Template) EditProviders(ent_client *ent.Client) error {
 	}
 	t.OutboundsGroup = outbound_group_list
 	return nil
+}
+func (t *Template) EditRulesets() {
+	route_rules := []map[string]any{}
+	dns_rules := []map[string]any{}
+	ruleset_map := map[string]bool{}
+	for _, rule_set := range t.Route.Rule_sets {
+		ruleset_map[rule_set.Tag] = true
+	}
+	for _, rule := range t.Route.Rules {
+		filter_tags := []string{}
+		if _, ok := rule[RULE_SET].([]string); !ok {
+			continue
+		}
+		for _, tag := range rule[RULE_SET].([]string) {
+			if _, exists := ruleset_map[tag]; exists {
+				filter_tags = append(filter_tags, tag)
+			}
+		}
+		rule[RULE_SET] = filter_tags
+		route_rules = append(route_rules, rule)
+	}
+	for _, rule := range t.DNS.Rules {
+		filter_tags := []string{}
+		if _, ok := rule[RULE_SET].([]string); !ok {
+			continue
+		}
+		for _, tag := range rule[RULE_SET].([]string) {
+			if _, exists := ruleset_map[tag]; exists {
+				filter_tags = append(filter_tags, tag)
+			}
+		}
+		rule[RULE_SET] = filter_tags
+		dns_rules = append(dns_rules, rule)
+	}
+	t.Route.Rules = route_rules
+	t.DNS.Rules = dns_rules
+
 }
