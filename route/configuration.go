@@ -159,4 +159,11 @@ func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_clie
 		res := control.DeleteTemplate(name, work_dir, ent_client, logger)
 		ctx.JSON(http.StatusMultiStatus, res)
 	})
+	configuration.PUT("/edit/template", middleware.AdminAuth(), func(ctx *gin.Context) {
+		template := model.Template{}
+		if err := ctx.BindJSON(&template); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
+			return
+		}
+	})
 }
