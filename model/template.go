@@ -104,3 +104,39 @@ func (t *Template) LinkRulesetsTable(ent_client *ent.Client) error {
 	}
 	return nil
 }
+func (t *Template) UnLinkProvidersTable(ent_client *ent.Client) error {
+	for _, name := range t.Providers {
+		provider_msg, err := ent_client.Provider.Query().Where(provider.NameEQ(name)).Select(provider.FieldTemplates).First(context.Background())
+		if err != nil {
+			return fmt.Errorf(`查询机场"%s"失败: %s`, name, err.Error())
+		}
+		template_list := []string{}
+		for _, v := range provider_msg.Templates {
+			if v != t.Name {
+				template_list = append(template_list, v)
+			}
+		}
+		if _, err := ent_client.Provider.UpdateOne(provider_msg).SetTemplates(template_list).Save(context.Background()); err != nil {
+			return fmt.Errorf(`更新机场"%s"失败: %s`, name, err.Error())
+		}
+	}
+	return nil
+}
+func (t *Template) UnLinkRulesetsTable(ent_client *ent.Client) error {
+	for _, rule_set := range t.Route.Rule_sets {
+		ruleset_msg, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(rule_set.Tag)).Select(ruleset.FieldTemplates).First(context.Background())
+		if err != nil {
+			return fmt.Errorf(`查询规则集"%s"模板失败: %s`, rule_set.Tag, err.Error())
+		}
+		template_list := []string{}
+		for _, v := range ruleset_msg.Templates {
+			if v != t.Name {
+				template_list = append(template_list, v)
+			}
+		}
+		if _, err := ent_client.Ruleset.UpdateOne(ruleset_msg).SetTemplates(template_list).Save(context.Background()); err != nil {
+			return fmt.Errorf(`更新规则集"%s"模板失败: %s`, rule_set.Tag, err.Error())
+		}
+	}
+	return nil
+}

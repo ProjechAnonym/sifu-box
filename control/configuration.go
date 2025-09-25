@@ -229,6 +229,17 @@ func DeleteTemplate(name []string, work_dir string, ent_client *ent.Client, logg
 			res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`查找模板"%s"失败: [%s]`, n, err.Error())})
 			continue
 		}
+		template_model := model.Template{Route: &template_msg.Route, Providers: template_msg.Providers, Name: template_msg.Name}
+		if err := template_model.UnLinkProvidersTable(ent_client); err != nil {
+			logger.Error(fmt.Sprintf(`取消模板"%s"关联的机场失败: [%s]`, n, err.Error()))
+			res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`取消模板"%s"关联的机场失败: [%s]`, n, err.Error())})
+			continue
+		}
+		if err := template_model.UnLinkRulesetsTable(ent_client); err != nil {
+			logger.Error(fmt.Sprintf(`取消模板"%s"关联的规则集失败: [%s]`, n, err.Error()))
+			res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`取消模板"%s"关联的规则集失败: [%s]`, n, err.Error())})
+			continue
+		}
 		if _, err := os.Stat(filepath.Join(work_dir, "sing-box", "config", fmt.Sprintf(`%s.json`, fmt.Sprintf(`%x`, md5.Sum([]byte(template_msg.Name)))))); err == nil {
 			if err := os.Remove(filepath.Join(work_dir, "sing-box", "config", fmt.Sprintf(`%s.json`, fmt.Sprintf(`%x`, md5.Sum([]byte(template_msg.Name)))))); err != nil {
 				logger.Error(fmt.Sprintf(`删除模板"%s"配置文件失败: [%s]`, n, err.Error()))
