@@ -165,5 +165,10 @@ func SettingConfiguration(api *gin.RouterGroup, bunt_client *buntdb.DB, ent_clie
 			ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
 			return
 		}
+		if err := control.EditTemplate(template, ent_client, logger); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf(`修改模板"%s"成功`, template.Name)})
 	})
 }

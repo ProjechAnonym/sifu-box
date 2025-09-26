@@ -182,32 +182,49 @@ func (t *Template) EditProviders() error {
 func (t *Template) EditRulesets() {
 	route_rules := []map[string]any{}
 	dns_rules := []map[string]any{}
-	ruleset_map := map[string]bool{}
+	ruleset_map := make(map[string]bool)
 	for _, rule_set := range t.Route.Rule_sets {
 		ruleset_map[rule_set.Tag] = true
 	}
+
 	for _, rule := range t.Route.Rules {
 		filter_tags := []string{}
-		if _, ok := rule[RULE_SET].([]string); !ok {
+		ruleset_tags, ok := rule[RULE_SET]
+		if !ok {
+			route_rules = append(route_rules, rule)
 			continue
 		}
-		for _, tag := range rule[RULE_SET].([]string) {
-			if _, exists := ruleset_map[tag]; exists {
-				filter_tags = append(filter_tags, tag)
+		for _, ruleset_tag := range ruleset_tags.([]any) {
+			if _, ok := ruleset_tag.(string); ok {
+				if _, exists := ruleset_map[ruleset_tag.(string)]; exists {
+					filter_tags = append(filter_tags, ruleset_tag.(string))
+				}
 			}
+
+		}
+		if len(filter_tags) == 0 {
+			continue
 		}
 		rule[RULE_SET] = filter_tags
 		route_rules = append(route_rules, rule)
 	}
 	for _, rule := range t.DNS.Rules {
 		filter_tags := []string{}
-		if _, ok := rule[RULE_SET].([]string); !ok {
+		ruleset_tags, ok := rule[RULE_SET]
+		if !ok {
+			dns_rules = append(dns_rules, rule)
 			continue
 		}
-		for _, tag := range rule[RULE_SET].([]string) {
-			if _, exists := ruleset_map[tag]; exists {
-				filter_tags = append(filter_tags, tag)
+		for _, ruleset_tag := range ruleset_tags.([]any) {
+			if _, ok := ruleset_tag.(string); ok {
+				if _, exists := ruleset_map[ruleset_tag.(string)]; exists {
+					filter_tags = append(filter_tags, ruleset_tag.(string))
+				}
 			}
+
+		}
+		if len(filter_tags) == 0 {
+			continue
 		}
 		rule[RULE_SET] = filter_tags
 		dns_rules = append(dns_rules, rule)

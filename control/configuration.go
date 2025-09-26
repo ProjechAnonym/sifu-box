@@ -213,6 +213,10 @@ func AddTemplate(template model.Template, ent_client *ent.Client, logger *zap.Lo
 		logger.Error(err.Error())
 		return err
 	}
+	if err := template.EditProviders(); err != nil {
+		return err
+	}
+	template.EditRulesets()
 	if err := ent_template.SetUpdated(true).SetName(template.Name).SetProviders(template.Providers).SetInbounds(template.Inbounds).SetOutboundGroups(template.OutboundsGroup).Exec(context.Background()); err != nil {
 		logger.Error(err.Error())
 		return err
@@ -266,7 +270,7 @@ func EditTemplate(template_msg model.Template, ent_client *ent.Client, logger *z
 	}
 	template_msg.EditRulesets()
 	template_msg.UpdateFillFields(template_instance)
-	if err := template_instance.Where(template.NameEQ(template_msg.Name)).SetUpdated(true).Exec(context.Background()); err != nil {
+	if err := template_instance.Where(template.NameEQ(template_msg.Name)).SetUpdated(true).SetInbounds(template_msg.Inbounds).SetOutboundGroups(template_msg.OutboundsGroup).SetProviders(template_msg.Providers).Exec(context.Background()); err != nil {
 		logger.Error(fmt.Sprintf(`修改模板"%s"失败: [%s]`, template_msg.Name, err.Error()))
 		return fmt.Errorf(`修改模板"%s"失败: [%s]`, template_msg.Name, err.Error())
 	}
