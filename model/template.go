@@ -221,7 +221,6 @@ func (t *Template) EditRulesets() {
 					filter_tags = append(filter_tags, ruleset_tag.(string))
 				}
 			}
-
 		}
 		if len(filter_tags) == 0 {
 			continue
