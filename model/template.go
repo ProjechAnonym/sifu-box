@@ -12,13 +12,13 @@ import (
 type Template struct {
 	Name           string                  `json:"name" yaml:"name"`
 	Ntp            *singbox.Ntp            `json:"ntp,omitempty" yaml:"ntp,omitempty"`
-	Inbounds       []map[string]any        `json:"inbounds" yaml:"inbounds"`
+	Inbounds       []map[string]any        `json:"inbounds,omitempty" yaml:"inbounds,omitempty"`
 	OutboundsGroup []singbox.OutboundGroup `json:"outbounds_group,omitempty" yaml:"outbounds_group,omitempty"`
-	DNS            *singbox.DNS            `json:"dns" yaml:"dns"`
+	DNS            *singbox.DNS            `json:"dns,omitempty" yaml:"dns,omitempty"`
 	Experiment     *singbox.Experiment     `json:"experiment,omitempty" yaml:"experiment,omitempty"`
 	Log            *singbox.Log            `json:"log,omitempty" yaml:"log,omitempty"`
-	Route          *singbox.Route          `json:"route" yaml:"route"`
-	Providers      []string                `json:"providers" yaml:"providers"`
+	Route          *singbox.Route          `json:"route,omitempty" yaml:"route,omitempty"`
+	Providers      []string                `json:"providers,omitempty" yaml:"providers,omitempty"`
 }
 
 func (t *Template) CheckField() error {

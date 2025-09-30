@@ -108,6 +108,7 @@ func main() {
 	api := server.Group("/api")
 	route.SettingLogin(api, bunt_client, operation_logger)
 	route.SettingConfiguration(api, bunt_client, ent_client, work_dir, operation_logger)
+	route.SettingMigrate(api, ent_client, bunt_client, operation_logger)
 	server.Run(listen)
 
 }
