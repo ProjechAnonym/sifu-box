@@ -100,21 +100,36 @@ func (t *Template) LinkProvidersTable(ent_client *ent.Client) error {
 	}
 	return nil
 }
+
+// LinkRulesetsTable 将模板与规则集进行关联，将当前模板名称添加到对应规则集的模板列表中
+// 参数:
+//   - ent_client: ent数据库客户端，用于执行数据库查询和更新操作
+//
+// 返回值:
+//   - error: 操作过程中出现的错误信息，如果操作成功则返回nil
 func (t *Template) LinkRulesetsTable(ent_client *ent.Client) error {
+	// 遍历模板中的所有规则集
 	for _, rule_set := range t.Route.Rule_sets {
+		// 查询指定名称的规则集，获取其模板列表
 		ruleset_msg, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(rule_set.Tag)).Select(ruleset.FieldTemplates).First(context.Background())
 		if err != nil {
 			return fmt.Errorf(`模板"%s"查询规则集"%s"模板失败: %s`, t.Name, rule_set.Tag, err.Error())
 		}
+
+		// 将当前模板名称添加到规则集的模板列表中，并去重
 		ruleset_msg.Templates = append(ruleset_msg.Templates, t.Name)
 		template_list := []string{}
 		template_map := make(map[string]bool)
+		// 同一个模板只能作为map的一个键值, 以此实现去重
 		for _, v := range ruleset_msg.Templates {
 			template_map[v] = true
 		}
+		// 将去重后的模板名称转换为列表
 		for k := range template_map {
 			template_list = append(template_list, k)
 		}
+
+		// 更新规则集的模板列表
 		if _, err := ent_client.Ruleset.UpdateOne(ruleset_msg).SetTemplates(template_list).Save(context.Background()); err != nil {
 			return fmt.Errorf(`模板"%s"更新规则集"%s"模板失败: %s`, t.Name, rule_set.Tag, err.Error())
 		}

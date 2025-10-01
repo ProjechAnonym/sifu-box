@@ -269,6 +269,93 @@ func EditTemplate(template_msg model.Template, ent_client *ent.Client, logger *z
 		return err
 	}
 	template_msg.EditRulesets()
+	template_data, err := ent_client.Template.Query().Where(template.NameEQ(template_msg.Name)).First(context.Background())
+	if err != nil {
+		logger.Error(fmt.Sprintf(`查找模板"%s"失败: [%s]`, template_msg.Name, err.Error()))
+		return fmt.Errorf(`查找模板"%s"失败: [%s]`, template_msg.Name, err.Error())
+	}
+	providers_origin_map := make(map[string]bool)
+	providers_update_map := make(map[string]bool)
+	ruleset_orgin_map := make(map[string]bool)
+	ruleset_update_map := make(map[string]bool)
+	for _, r := range template_data.Route.Rule_sets {
+		ruleset_orgin_map[r.Tag] = true
+	}
+	for _, r := range template_msg.Route.Rule_sets {
+		ruleset_update_map[r.Tag] = true
+	}
+	for _, n := range template_data.Providers {
+		providers_origin_map[n] = true
+	}
+	for _, n := range template_msg.Providers {
+		providers_update_map[n] = true
+	}
+	for k := range providers_origin_map {
+		if _, exist := providers_update_map[k]; !exist {
+			provider_data, err := ent_client.Provider.Query().Where(provider.NameEQ(k)).First(context.Background())
+			if err != nil {
+				logger.Error(fmt.Sprintf(`查找模板"%s"的机场"%s"失败: [%s]`, template_msg.Name, k, err.Error()))
+				return fmt.Errorf(`查找模板"%s"的机场"%s"失败: [%s]`, template_msg.Name, k, err.Error())
+			}
+			template_list := []string{}
+			for _, v := range provider_data.Templates {
+				if v != template_msg.Name {
+					template_list = append(template_list, v)
+				}
+			}
+			if _, err := ent_client.Provider.Update().Where(provider.NameEQ(k)).SetTemplates(template_list).Save(context.Background()); err != nil {
+				logger.Error(fmt.Sprintf(`机场"%s"关联模板"%s"失败: [%s]`, k, template_msg.Name, err.Error()))
+				return fmt.Errorf(`机场"%s"关联模板"%s"失败: [%s]`, k, template_msg.Name, err.Error())
+			}
+		}
+	}
+	for k := range providers_update_map {
+		if _, exist := providers_origin_map[k]; !exist {
+			provider_data, err := ent_client.Provider.Query().Where(provider.NameEQ(k)).First(context.Background())
+			if err != nil {
+				logger.Error(fmt.Sprintf(`查找模板"%s"的机场"%s"失败: [%s]`, template_msg.Name, k, err.Error()))
+				return fmt.Errorf(`查找模板"%s"的机场"%s"失败: [%s]`, template_msg.Name, k, err.Error())
+			}
+			template_list := append(provider_data.Templates, template_msg.Name)
+			if _, err := ent_client.Provider.Update().Where(provider.NameEQ(k)).SetTemplates(template_list).Save(context.Background()); err != nil {
+				logger.Error(fmt.Sprintf(`机场"%s"关联模板"%s"失败: [%s]`, k, template_msg.Name, err.Error()))
+				return fmt.Errorf(`机场"%s"关联模板"%s"失败: [%s]`, k, template_msg.Name, err.Error())
+			}
+		}
+	}
+	for k := range ruleset_orgin_map {
+		if _, exist := ruleset_update_map[k]; !exist {
+			ruleset_data, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(k)).First(context.Background())
+			if err != nil {
+				logger.Error(fmt.Sprintf(`查找模板"%s"的规则集"%s"失败: [%s]`, template_msg.Name, k, err.Error()))
+				return fmt.Errorf(`查找模板"%s"的规则集"%s"失败: [%s]`, template_msg.Name, k, err.Error())
+			}
+			template_list := []string{}
+			for _, v := range ruleset_data.Templates {
+				if v != template_msg.Name {
+					template_list = append(template_list, v)
+				}
+			}
+			if _, err := ent_client.Ruleset.Update().Where(ruleset.NameEQ(k)).SetTemplates(template_list).Save(context.Background()); err != nil {
+				logger.Error(fmt.Sprintf(`规则集"%s"关联模板"%s"失败: [%s]`, k, template_msg.Name, err.Error()))
+				return fmt.Errorf(`规则集"%s"关联模板"%s"失败: [%s]`, k, template_msg.Name, err.Error())
+			}
+		}
+	}
+	for k := range ruleset_update_map {
+		if _, exist := ruleset_orgin_map[k]; !exist {
+			ruleset_data, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(k)).First(context.Background())
+			if err != nil {
+				logger.Error(fmt.Sprintf(`查找模板"%s"的规则集"%s"失败: [%s]`, template_msg.Name, k, err.Error()))
+				return fmt.Errorf(`查找模板"%s"的规则集"%s"失败: [%s]`, template_msg.Name, k, err.Error())
+			}
+			template_list := append(ruleset_data.Templates, template_msg.Name)
+			if _, err := ent_client.Ruleset.Update().Where(ruleset.NameEQ(k)).SetTemplates(template_list).Save(context.Background()); err != nil {
+				logger.Error(fmt.Sprintf(`规则集"%s"关联模板"%s"失败: [%s]`, k, template_msg.Name, err.Error()))
+				return fmt.Errorf(`规则集"%s"关联模板"%s"失败: [%s]`, k, template_msg.Name, err.Error())
+			}
+		}
+	}
 	template_msg.UpdateFillFields(template_instance)
 	if err := template_instance.Where(template.NameEQ(template_msg.Name)).SetUpdated(true).SetInbounds(template_msg.Inbounds).SetOutboundGroups(template_msg.OutboundsGroup).SetProviders(template_msg.Providers).Exec(context.Background()); err != nil {
 		logger.Error(fmt.Sprintf(`修改模板"%s"失败: [%s]`, template_msg.Name, err.Error()))
