@@ -1,16 +1,13 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"sifu-box/application"
 	"sifu-box/cmd"
 	"sifu-box/ent"
-	"sifu-box/ent/template"
 	"sifu-box/initial"
 	"sifu-box/middleware"
 	"sifu-box/route"
-	"sifu-box/singbox"
 	"sifu-box/utils"
 	"sync"
 	"time"
@@ -91,16 +88,7 @@ func main() {
 		task_logger.Error(fmt.Sprintf("添加定时任务失败: [%s]", err.Error()))
 	}
 	fmt.Println(job_id)
-	p, _ := ent_client.Provider.Query().All(context.Background())
-	for _, v := range p {
-		fmt.Println(v.Name)
-		fmt.Println(v.Templates)
-	}
-	r, _ := ent_client.Ruleset.Query().All(context.Background())
-	for _, v := range r {
-		fmt.Println(v.Name)
-		fmt.Println(v.Templates)
-	}
+
 	application.Process(work_dir, ent_client, task_logger)
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
@@ -109,29 +97,8 @@ func main() {
 	route.SettingLogin(api, bunt_client, operation_logger)
 	route.SettingConfiguration(api, bunt_client, ent_client, work_dir, operation_logger)
 	route.SettingMigrate(api, ent_client, bunt_client, operation_logger)
+	route.SettingExecute(api, bunt_client, ent_client, work_dir, operation_logger)
+	route.SettingHosting(api, bunt_client, ent_client, work_dir, operation_logger)
 	server.Run(listen)
 
-}
-func test(ent_client *ent.Client) {
-	log := singbox.Log{Disabled: true}
-	experiment := singbox.Experiment{Clash_api: singbox.Clash_api{External_controller: "127.0.0.1:9090", External_ui: "/ui", Secret: "123456"}}
-	dns := singbox.DNS{
-		Servers: []map[string]any{
-			{"tag": "google", "type": "tls", "server": "8.8.8.8", "server_port": 853},
-			{"tag": "cloudflare", "type": "tls", "server": "1.1.1.1", "server_port": 853},
-		},
-		Final:    "google",
-		Strategy: "prefer_ipv4",
-	}
-	outbounds := []singbox.OutboundGroup{{Type: "direct", Tag: "direct"}, {Type: "selector", Tag: "selector", Providers: []string{"M78"}}, {Type: "urltest", Tag: "auto", Providers: []string{"M78"}}}
-	inbounds := []map[string]any{{"tag": "tun_in", "type": "tun", "interface_name": "tun0", "mtu": 1500, "stack": "mixed", "auto_route": true, "strict_route": true, "address": []string{"172.18.0.1/30", "fdfe:dcba:9876::1/126"}}}
-	route := singbox.Route{
-		Default_domain_resolver: map[string]any{"server": "google"},
-		Final:                   "direct",
-		Rules:                   []map[string]any{{"user": []string{"bind"}, "action": "route", "outbound": "direct"}, {"port": []int{53}, "action": "hijack-dns"}, {"protocol": []string{"dns"}, "action": "hijack-dns"}, {"ip_is_private": true, "action": "route", "outbound": "direct"}, {"protocol": []string{"quic"}, "action": "reject"}},
-		Rule_sets:               []singbox.Rule_set{{Type: "remote", Tag: "china-ip", Format: "binary", URL: "https://github.com/MetaCubeX/meta-rules-dat/raw/bd4354ba7f11a22883b919ac9fb9f7034fb51b31/geo/geoip/cn.srs", Download_detour: "direct", Update_interval: "1d"}},
-	}
-	if err := ent_client.Template.Update().Where(template.NameEQ("default")).SetDNS(dns).SetExperiment(experiment).SetInbounds(inbounds).SetRoute(route).SetOutboundGroups(outbounds).SetProviders([]string{"M78"}).SetUpdated(true).SetLog(log).Exec(context.Background()); err != nil {
-		fmt.Println(err)
-	}
 }
