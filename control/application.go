@@ -30,7 +30,18 @@ func SetTemplate(name string, bunt_client *buntdb.DB, signal_chan *chan applicat
 	if err := utils.SetValue(bunt_client, initial.ACTIVE_TEMPLATE, name, logger); err != nil {
 		return fmt.Errorf("设置模板失败: [%s]", err.Error())
 	}
-	*signal_chan <- application.Signal{Cron: false, Operation: application.RELOAD_SERVICE}
+	*signal_chan <- application.Signal{Cron: false, Operation: application.CHECK_SERVICE}
+	select {
+	case res := <-*web_chan:
+		if res {
+			*signal_chan <- application.Signal{Cron: false, Operation: application.RELOAD_SERVICE}
+		} else {
+			*signal_chan <- application.Signal{Cron: false, Operation: application.BOOT_SERVICE}
+		}
+	case <-time.After(time.Second * 10):
+		logger.Error(`接收操作结果超时`)
+		return fmt.Errorf(`接收操作结果超时`)
+	}
 	select {
 	case res := <-*web_chan:
 		if res {
