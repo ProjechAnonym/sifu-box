@@ -6,28 +6,15 @@ import (
 	"net/http"
 	"sifu-box/control"
 	"sifu-box/ent"
-	"sifu-box/initial"
 	"sifu-box/middleware"
 	"sifu-box/model"
-	"sifu-box/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v3"
 )
 
-func SettingMigrate(api *gin.RouterGroup, ent_client *ent.Client, bunt_client *buntdb.DB, logger *zap.Logger) {
-	content, err := utils.GetValue(bunt_client, initial.USER, logger)
-	if err != nil {
-		logger.Error(fmt.Sprintf("获取用户配置信息失败: [%s]", err.Error()))
-		panic(fmt.Sprintf("获取用户配置信息失败: [%s]", err.Error()))
-	}
-	user := model.User{}
-	if err := yaml.Unmarshal([]byte(content), &user); err != nil {
-		logger.Error(fmt.Sprintf("序列化用户配置信息失败: [%s]", err.Error()))
-		panic(fmt.Sprintf("序列化用户配置信息失败: [%s]", err.Error()))
-	}
+func SettingMigrate(api *gin.RouterGroup, user *model.User, ent_client *ent.Client, bunt_client *buntdb.DB, logger *zap.Logger) {
 	migrate := api.Group("/migrate")
 	migrate.Use(middleware.JwtAuth(user.Key, logger))
 	migrate.GET("/export", middleware.AdminAuth(), func(c *gin.Context) {

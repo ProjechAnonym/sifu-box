@@ -7,6 +7,7 @@ import (
 	"sifu-box/ent"
 	"sifu-box/initial"
 	"sifu-box/middleware"
+	"sifu-box/model"
 	"sifu-box/route"
 	"sifu-box/utils"
 	"sync"
@@ -16,6 +17,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/robfig/cron/v3"
 	"github.com/tidwall/buntdb"
+	"gopkg.in/yaml.v3"
 )
 
 var listen string
@@ -72,7 +74,7 @@ func main() {
 			task_logger.Error("未设置激活模板")
 			return
 		}
-		signal_chan <- application.Signal{Cron: false, Operation: application.RELOAD_SERVICE}
+		signal_chan <- application.Signal{Cron: true, Operation: application.RELOAD_SERVICE}
 		select {
 		case res := <-cron_chan:
 			if res {
@@ -94,11 +96,23 @@ func main() {
 	server := gin.Default()
 	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger))
 	api := server.Group("/api")
-	route.SettingLogin(api, bunt_client, operation_logger)
-	route.SettingConfiguration(api, bunt_client, ent_client, work_dir, operation_logger)
-	route.SettingMigrate(api, ent_client, bunt_client, operation_logger)
-	route.SettingExecute(api, bunt_client, ent_client, work_dir, operation_logger)
-	route.SettingHosting(api, bunt_client, ent_client, work_dir, operation_logger)
+
+	content, err := utils.GetValue(bunt_client, initial.USER, operation_logger)
+	if err != nil {
+		operation_logger.Error(fmt.Sprintf("获取用户配置信息失败: [%s]", err.Error()))
+		panic(fmt.Sprintf("获取用户配置信息失败: [%s]", err.Error()))
+	}
+	user := model.User{}
+	if err := yaml.Unmarshal([]byte(content), &user); err != nil {
+		operation_logger.Error(fmt.Sprintf("序列化用户配置信息失败: [%s]", err.Error()))
+		panic(fmt.Sprintf("序列化用户配置信息失败: [%s]", err.Error()))
+	}
+	route.SettingLogin(api, &user, bunt_client, operation_logger)
+	route.SettingConfiguration(api, &user, bunt_client, ent_client, work_dir, operation_logger)
+	route.SettingMigrate(api, &user, ent_client, bunt_client, operation_logger)
+	route.SettingExecute(api, &user, bunt_client, ent_client, work_dir, operation_logger)
+	route.SettingHosting(api, &user, bunt_client, ent_client, work_dir, operation_logger)
+	route.SettingApplication(api, &user, bunt_client, &signal_chan, &web_chan, operation_logger)
 	server.Run(listen)
 
 }

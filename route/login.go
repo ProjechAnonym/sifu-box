@@ -1,30 +1,17 @@
 package route
 
 import (
-	"fmt"
 	"net/http"
 	"sifu-box/control"
-	"sifu-box/initial"
 	"sifu-box/model"
-	"sifu-box/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v3"
 )
 
-func SettingLogin(api *gin.RouterGroup, bunt_client *buntdb.DB, logger *zap.Logger) {
-	content, err := utils.GetValue(bunt_client, initial.USER, logger)
-	if err != nil {
-		logger.Error(fmt.Sprintf("获取用户配置信息失败: [%s]", err.Error()))
-		panic(fmt.Sprintf("获取用户配置信息失败: [%s]", err.Error()))
-	}
-	user := model.User{}
-	if err := yaml.Unmarshal([]byte(content), &user); err != nil {
-		logger.Error(fmt.Sprintf("序列化用户配置信息失败: [%s]", err.Error()))
-		panic(fmt.Sprintf("序列化用户配置信息失败: [%s]", err.Error()))
-	}
+func SettingLogin(api *gin.RouterGroup, user *model.User, bunt_client *buntdb.DB, logger *zap.Logger) {
+
 	api.POST("/login/:user", func(ctx *gin.Context) {
 		switch ctx.Param("user") {
 		case "visitor":
