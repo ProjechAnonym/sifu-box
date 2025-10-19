@@ -437,7 +437,7 @@ func DeleteTemplate(name []string, work_dir string, ent_client *ent.Client, logg
 
 	// 遍历所有要删除的模板名称
 	for _, n := range name {
-		// 查询模板信息（名称、提供商、路由）
+		// 查询模板信息(名称、机场、路由)
 		template_msg, err := ent_client.Template.Query().Where(template.NameEQ(n)).Select(template.FieldName, template.FieldProviders, template.FieldRoute).First(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf(`查找模板"%s"失败: [%s]`, n, err.Error()))

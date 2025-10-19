@@ -89,6 +89,9 @@ func RefreshFile(work_dir string, ent_client *ent.Client, bunt_client *buntdb.DB
 		result = append(result, gin.H{"message": fmt.Sprintf("获取激活模板失败: [%s]", err.Error())})
 		return result
 	} else if name == "" {
+		if len(result) == 0 {
+			return nil
+		}
 		return result
 	}
 
