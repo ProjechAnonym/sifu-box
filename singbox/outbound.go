@@ -5,8 +5,8 @@ import "fmt"
 type OutboundGroup struct {
 	Type       string   `json:"type" yaml:"type"`
 	Tag        string   `json:"tag" yaml:"tag"`
-	Providers  []string `json:"providers" yaml:"providers"`
-	Tag_Groups []string `json:"tag_groups" yaml:"tag_groups"`
+	Providers  []string `json:"providers,omitempty" yaml:"providers,omitempty"`
+	Tag_Groups []string `json:"tag_groups,omitempty" yaml:"tag_groups,omitempty"`
 }
 
 // NewOutboundGroup 根据提供的出站配置创建一个新的出站组

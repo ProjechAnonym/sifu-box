@@ -11,6 +11,7 @@ import (
 	"sifu-box/ent/ruleset"
 	"sifu-box/ent/template"
 	"sifu-box/model"
+	"sifu-box/singbox"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -226,24 +227,64 @@ func EditRuleset(name, path, update_interval, download_detour string, remote, bi
 	return nil
 }
 
-// DeleteProvider 删除指定名称的机场提供商
+// DeleteProvider 删除指定名称的机场提供商, 并更新相关模板中的引用
 // 参数:
 //   - name: 要删除的机场提供商名称列表
-//   - ent_client: 数据库客户端实例, 用于查询和删除操作
-//   - logger: 日志记录器, 用于记录操作过程中的错误和信息
+//   - ent_client: 数据库客户端实例, 用于查询和操作数据
+//   - logger: 日志记录器, 用于输出错误日志
 //
 // 返回值:
-//   - []gin.H: 操作结果列表, 每个元素包含状态和消息信息
+//   - []gin.H: 每个元素表示一个操作结果, 包含状态和消息
 func DeleteProvider(name []string, ent_client *ent.Client, logger *zap.Logger) []gin.H {
 	res := []gin.H{}
+	delete_providers_map := map[string]bool{}
+	for _, n := range name {
+		delete_providers_map[n] = true
+	}
 
 	// 遍历所有要删除的机场名称
 	for _, n := range name {
 		// 查询要删除的机场提供商信息
-		provider_msg, err := ent_client.Provider.Query().Where(provider.NameEQ(n)).First(context.Background())
+		provider_msg, err := ent_client.Provider.Query().Where(provider.NameEQ(n)).Select(provider.FieldName, provider.FieldPath, provider.FieldRemote, provider.FieldTemplates).First(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf(`查找机场"%s"失败: [%s]`, n, err.Error()))
 			res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`查找机场"%s"失败: [%s]`, n, err.Error())})
+			continue
+		}
+
+		exit_status := false
+
+		// 处理与该机场关联的所有模板, 移除对该机场的引用
+		for _, template_name := range provider_msg.Templates {
+			template_instance, err := ent_client.Template.Query().Where(template.NameEQ(template_name)).Select(template.FieldProviders, template.FieldOutboundGroups).First(context.Background())
+			if err != nil {
+				logger.Error(fmt.Sprintf(`查找模板"%s"失败: [%s]`, template_name, err.Error()))
+				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`查找模板"%s"失败: [%s]`, template_name, err.Error())})
+				exit_status = true
+				break
+			}
+			template_msg := model.Template{OutboundsGroup: template_instance.OutboundGroups, Providers: template_instance.Providers}
+			provider_list := []string{}
+			for _, provider_name := range template_msg.Providers {
+				if !delete_providers_map[provider_name] {
+					provider_list = append(provider_list, provider_name)
+				}
+			}
+			template_msg.Providers = provider_list
+			if err := template_msg.EditProviders(); err != nil {
+				logger.Error(fmt.Sprintf(`修改模板"%s"失败: [%s]`, template_name, err.Error()))
+				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`修改模板"%s"失败: [%s]`, template_name, err.Error())})
+				exit_status = true
+				break
+			}
+			if err := ent_client.Template.Update().Where(template.NameEQ(template_name)).SetProviders(template_msg.Providers).SetOutboundGroups(template_msg.OutboundsGroup).Exec(context.Background()); err != nil {
+				logger.Error(fmt.Sprintf(`修改模板"%s"机场列表失败: [%s]`, template_name, err.Error()))
+				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`修改模板"%s"机场列表失败: [%s]`, template_name, err.Error())})
+				exit_status = true
+				break
+			}
+		}
+		if exit_status {
 			continue
 		}
 
@@ -269,19 +310,61 @@ func DeleteProvider(name []string, ent_client *ent.Client, logger *zap.Logger) [
 	return res
 }
 
-// DeleteRuleset 删除指定名称的规则集
-// name: 要删除的规则集名称列表
-// ent_client: 数据库客户端实例
-// logger: 日志记录器实例
-// 返回值: 包含每个规则集删除结果的响应信息切片
+// DeleteRuleset 用于删除指定名称的规则集, 并更新引用该规则集的模板配置
+// 同时会根据规则集是否为本地文件决定是否删除对应文件, 并从数据库中移除规则集记录
+//
+// 参数:
+//   - name: 要删除的规则集名称列表
+//   - ent_client: 数据库客户端实例, 用于查询和操作规则集、模板等数据
+//   - logger: 日志记录器, 用于记录错误日志
+//
+// 返回值:
+//   - []gin.H: 每个元素表示一个规则集的删除结果, 包含状态和消息
 func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []gin.H {
 	res := []gin.H{}
+	delete_rulesets_map := map[string]bool{}
+	for _, n := range name {
+		delete_rulesets_map[n] = true
+	}
+
+	// 遍历所有要删除的规则集名称
 	for _, n := range name {
 		// 查询要删除的规则集信息
-		rule_set, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(n)).Select(ruleset.FieldPath, ruleset.FieldRemote).First(context.Background())
+		rule_set, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(n)).Select(ruleset.FieldPath, ruleset.FieldRemote, ruleset.FieldTemplates).First(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf(`查找规则集"%s"失败: [%s]`, n, err.Error()))
 			res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`查找规则集"%s"失败: [%s]`, n, err.Error())})
+			continue
+		}
+
+		exit_status := false
+
+		// 更新引用当前规则集的所有模板中的规则集列表
+		for _, template_name := range rule_set.Templates {
+			template_instance, err := ent_client.Template.Query().Where(template.NameEQ(template_name)).Select(template.FieldRoute, template.FieldDNS).First(context.Background())
+			if err != nil {
+				logger.Error(fmt.Sprintf(`查找模板"%s"失败: [%s]`, template_name, err.Error()))
+				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`查找模板"%s"失败: [%s]`, template_name, err.Error())})
+				exit_status = true
+				break
+			}
+			template_msg := model.Template{Route: &template_instance.Route, DNS: &template_instance.DNS}
+			rule_set_list := []singbox.Rule_set{}
+			for _, rule_set_msg := range template_msg.Route.Rule_sets {
+				if !delete_rulesets_map[rule_set_msg.Tag] {
+					rule_set_list = append(rule_set_list, rule_set_msg)
+				}
+			}
+			template_msg.Route.Rule_sets = rule_set_list
+			template_msg.EditRulesets()
+			if err := ent_client.Template.Update().Where(template.NameEQ(template_name)).SetRoute(*template_msg.Route).SetDNS(*template_msg.DNS).Exec(context.Background()); err != nil {
+				logger.Error(fmt.Sprintf(`修改模板"%s"机场列表失败: [%s]`, template_name, err.Error()))
+				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`修改模板"%s"机场列表失败: [%s]`, template_name, err.Error())})
+				exit_status = true
+				break
+			}
+		}
+		if exit_status {
 			continue
 		}
 		// 如果是本地规则集, 删除对应的文件
