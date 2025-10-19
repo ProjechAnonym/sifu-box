@@ -7,13 +7,14 @@ import (
 	"sifu-box/ent"
 	"sifu-box/middleware"
 	"sifu-box/model"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
 )
 
-func SettingExecute(api *gin.RouterGroup, user *model.User, bunt_client *buntdb.DB, ent_client *ent.Client, work_dir string, signal_chan *chan application.Signal, web_chan *chan bool, logger *zap.Logger) {
+func SettingExecute(api *gin.RouterGroup, user *model.User, bunt_client *buntdb.DB, ent_client *ent.Client, work_dir string, signal_chan *chan application.Signal, web_chan *chan application.ResSignal, exec_lock *sync.Mutex, logger *zap.Logger) {
 	execute := api.Group("/execute")
 	execute.Use(middleware.JwtAuth(user.Key, logger))
 	execute.GET("/:operation", middleware.AdminAuth(), func(ctx *gin.Context) {
@@ -25,5 +26,12 @@ func SettingExecute(api *gin.RouterGroup, user *model.User, bunt_client *buntdb.
 		}
 		ctx.JSON(http.StatusOK, gin.H{"message": res})
 	})
-	execute.GET("/refresh", func(ctx *gin.Context) {})
+	execute.GET("/refresh", middleware.AdminAuth(), func(ctx *gin.Context) {
+		res := control.RefreshFile(work_dir, ent_client, bunt_client, signal_chan, web_chan, exec_lock, logger)
+		if res != nil {
+			ctx.JSON(http.StatusMultiStatus, gin.H{"message": res})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "刷新成功"})
+	})
 }

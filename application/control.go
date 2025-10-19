@@ -85,6 +85,7 @@ func ServiceControl(operation *chan Signal, logger *zap.Logger, work_dir string,
 		switch signal.Operation {
 		case BOOT_SERVICE:
 			if !exit {
+				*hook_chan <- SignalHook{Cron: signal.Cron, PID: singbox_pid}
 				continue
 			}
 			exit = false

@@ -15,7 +15,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func SettingApplication(api *gin.RouterGroup, work_dir string, user *model.User, ent_client *ent.Client, bunt_client *buntdb.DB, signal_chan *chan application.Signal, web_chan *chan bool, cron_chan *chan bool, exec_lock *sync.Mutex, scheduler *cron.Cron, job_id *cron.EntryID, task_logger *zap.Logger, logger *zap.Logger) {
+func SettingApplication(api *gin.RouterGroup, work_dir string, user *model.User, ent_client *ent.Client, bunt_client *buntdb.DB, signal_chan *chan application.Signal, web_chan *chan application.ResSignal, cron_chan *chan application.ResSignal, exec_lock *sync.Mutex, scheduler *cron.Cron, job_id *cron.EntryID, task_logger *zap.Logger, logger *zap.Logger) {
 
 	application := api.Group("/application")
 	application.Use(middleware.JwtAuth(user.Key, logger))
