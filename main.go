@@ -110,9 +110,8 @@ func main() {
 	route.SettingLogin(api, &user, bunt_client, operation_logger)
 	route.SettingConfiguration(api, &user, bunt_client, ent_client, work_dir, operation_logger)
 	route.SettingMigrate(api, &user, ent_client, bunt_client, operation_logger)
-	route.SettingExecute(api, &user, bunt_client, ent_client, work_dir, operation_logger)
+	route.SettingExecute(api, &user, bunt_client, ent_client, work_dir, &signal_chan, &web_chan, operation_logger)
 	route.SettingHosting(api, &user, bunt_client, ent_client, work_dir, operation_logger)
-	route.SettingApplication(api, &user, bunt_client, &signal_chan, &web_chan, operation_logger)
+	route.SettingApplication(api, work_dir, &user, ent_client, bunt_client, &signal_chan, &web_chan, &cron_chan, &exec_lock, scheduler, &job_id, task_logger, operation_logger)
 	server.Run(listen)
-
 }

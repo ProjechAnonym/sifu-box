@@ -463,9 +463,9 @@ func DeleteTemplate(name []string, work_dir string, ent_client *ent.Client, logg
 		}
 
 		// 删除模板对应的配置文件（如果存在）
-		configFilePath := filepath.Join(work_dir, "sing-box", "config", fmt.Sprintf(`%s.json`, fmt.Sprintf(`%x`, md5.Sum([]byte(template_msg.Name)))))
-		if _, err := os.Stat(configFilePath); err == nil {
-			if err := os.Remove(configFilePath); err != nil {
+		config_file_path := filepath.Join(work_dir, "sing-box", "config", fmt.Sprintf(`%s.json`, fmt.Sprintf(`%x`, md5.Sum([]byte(template_msg.Name)))))
+		if _, err := os.Stat(config_file_path); err == nil {
+			if err := os.Remove(config_file_path); err != nil {
 				logger.Error(fmt.Sprintf(`删除模板"%s"配置文件失败: [%s]`, n, err.Error()))
 				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`删除模板"%s"配置文件失败: [%s]`, n, err.Error())})
 				continue
