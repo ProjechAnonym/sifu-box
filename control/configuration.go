@@ -277,7 +277,7 @@ func DeleteProvider(name []string, ent_client *ent.Client, logger *zap.Logger) [
 				exit_status = true
 				break
 			}
-			if err := ent_client.Template.Update().Where(template.NameEQ(template_name)).SetProviders(template_msg.Providers).SetOutboundGroups(template_msg.OutboundsGroup).Exec(context.Background()); err != nil {
+			if err := ent_client.Template.Update().Where(template.NameEQ(template_name)).SetProviders(template_msg.Providers).SetOutboundGroups(template_msg.OutboundsGroup).SetUpdated(true).Exec(context.Background()); err != nil {
 				logger.Error(fmt.Sprintf(`修改模板"%s"机场列表失败: [%s]`, template_name, err.Error()))
 				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`修改模板"%s"机场列表失败: [%s]`, template_name, err.Error())})
 				exit_status = true
@@ -357,9 +357,9 @@ func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []
 			}
 			template_msg.Route.Rule_sets = rule_set_list
 			template_msg.EditRulesets()
-			if err := ent_client.Template.Update().Where(template.NameEQ(template_name)).SetRoute(*template_msg.Route).SetDNS(*template_msg.DNS).Exec(context.Background()); err != nil {
+			if err := ent_client.Template.Update().Where(template.NameEQ(template_name)).SetRoute(*template_msg.Route).SetDNS(*template_msg.DNS).SetUpdated(true).Exec(context.Background()); err != nil {
 				logger.Error(fmt.Sprintf(`修改模板"%s"机场列表失败: [%s]`, template_name, err.Error()))
-				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`修改模板"%s"机场列表失败: [%s]`, template_name, err.Error())})
+				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`修改模板"%s"规则集列表失败: [%s]`, template_name, err.Error())})
 				exit_status = true
 				break
 			}
