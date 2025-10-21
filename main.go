@@ -13,6 +13,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/robfig/cron/v3"
@@ -101,7 +102,7 @@ func main() {
 	application.Process(work_dir, ent_client, task_logger)
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
-	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger))
+	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger), cors.New(middleware.Cors()))
 	api := server.Group("/api")
 
 	content, err := utils.GetValue(bunt_client, initial.USER, operation_logger)
