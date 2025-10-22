@@ -19,14 +19,7 @@ func SettingApplication(api *gin.RouterGroup, work_dir string, user *model.User,
 
 	application := api.Group("/application")
 	application.Use(middleware.JwtAuth(user.Key, logger))
-	application.GET("/yacd", func(ctx *gin.Context) {
-		yacd, err := control.FetchYacd(ent_client, bunt_client, logger)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-			return
-		}
-		ctx.JSON(http.StatusOK, gin.H{"message": yacd})
-	})
+
 	application.POST("/template", middleware.AdminAuth(), func(ctx *gin.Context) {
 		name := ctx.PostForm("name")
 		if err := control.SetTemplate(name, bunt_client, signal_chan, web_chan, logger); err != nil {

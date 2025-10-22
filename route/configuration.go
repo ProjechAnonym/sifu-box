@@ -20,6 +20,14 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 		msg := control.FetchItems(ent_client, logger)
 		ctx.JSON(http.StatusMultiStatus, gin.H{"message": msg})
 	})
+	configuration.GET("/yacd", func(ctx *gin.Context) {
+		yacd, err := control.FetchYacd(ent_client, bunt_client, logger)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": yacd})
+	})
 	configuration.POST("/add/provider/:remote", middleware.AdminAuth(), func(ctx *gin.Context) {
 		providers := []model.Provider{}
 		res := []gin.H{}
@@ -158,4 +166,5 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 		}
 		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf(`修改模板"%s"成功`, template.Name)})
 	})
+
 }

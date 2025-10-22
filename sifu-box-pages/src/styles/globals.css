@@ -3,3 +3,27 @@
 @source "../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
 @custom-variant dark (&:is(.dark *));
 /* @config "../../tailwind.config.js" */
+@theme {
+    --animate-expand-open: expand-open-scale 1s ease;
+    --animate-expand-close: expand-close-scale 0.5s ease;
+    @keyframes expand-open-scale {
+        0% { 
+            transform: translateY(-50%); 
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    @keyframes expand-close-scale {
+        0% { 
+            transform: translateY(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-50%);
+            opacity: 0;
+        }
+    }
+}

@@ -7,7 +7,7 @@ export default heroui(
         addCommonColors: true,
         themes: {
             sifulight: {
-            extend: "light",
+            extend: "light", 
             layout: {}, // light theme layout tokens
             colors: {
                default: {
@@ -15,7 +15,7 @@ export default heroui(
                     100: "#FEFEFF",
                     200: "#EDEDEF",
                     300: "#C3F4FD",
-                    400: "#A5EEFD",
+                    400: "#338EF7",
                     500: "#7EE7FC",
                     600: "#06B7DB",
                     700: "#09AACD",
@@ -23,10 +23,10 @@ export default heroui(
                     900: "#053B48",
                     DEFAULT:"#E6FAFE"
                 },
-                background: "#FDFEFF",
+                background: "#EFFFFF",
                 foreground: "#001731",
-                content1: "#FEFDFF",
-                content2: "#27272a",
+                content1: "#F9FFFF",
+                content2: "#C3F4FD",
                 content3: "#3f3f46",
                 content4: "#52525b",
             }, // light theme colors

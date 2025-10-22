@@ -10,11 +10,15 @@ import (
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
 	"sifu-box/ent/template"
+	"sifu-box/initial"
 	"sifu-box/model"
 	"sifu-box/singbox"
+	"sifu-box/utils"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 )
 
 // FetchItems 用于从数据库中获取 Provider、Ruleset 和 Template 的列表, 并将结果封装为 []gin.H 返回
@@ -618,4 +622,53 @@ func EditTemplate(template_msg model.Template, ent_client *ent.Client, logger *z
 	}
 
 	return nil
+}
+
+// FetchYacd 从数据库中获取Yacd配置信息
+// 参数:
+//   - ent_client: ent数据库客户端, 用于查询模板信息
+//   - bunt_client: buntdb数据库客户端, 用于获取配置信息
+//   - logger: zap日志记录器, 用于记录错误日志
+//
+// 返回值:
+//   - *model.Yacd: Yacd配置信息结构体指针
+//   - error: 错误信息, 如果获取或序列化失败则返回错误
+func FetchYacd(ent_client *ent.Client, bunt_client *buntdb.DB, logger *zap.Logger) (*model.Yacd, error) {
+	// 从buntdb中获取Yacd配置信息
+	content, err := utils.GetValue(bunt_client, initial.YACD, logger)
+	if err != nil {
+		logger.Error(fmt.Sprintf("获取用户配置信息失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("获取用户配置信息失败: [%s]", err.Error())
+	}
+
+	// 将获取到的YAML格式配置信息反序列化为Yacd结构体
+	yacd := model.Yacd{}
+	if err := yaml.Unmarshal([]byte(content), &yacd); err != nil {
+		logger.Error(fmt.Sprintf("序列化用户配置信息失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("序列化用户配置信息失败: [%s]", err.Error())
+	}
+
+	// 获取当前激活的模板名称
+	template_name, err := utils.GetValue(bunt_client, initial.ACTIVE_TEMPLATE, logger)
+	if err != nil {
+		logger.Error(fmt.Sprintf("获取默认模板信息失败: [%s]", err.Error()))
+		return &yacd, fmt.Errorf("获取默认模板信息失败: [%s]", err.Error())
+	}
+
+	// 如果没有设置模板, 则直接返回Yacd配置
+	if template_name == "" {
+		return &yacd, nil
+	}
+
+	// 从ent数据库中查询模板的详细信息, 获取日志配置
+	template_instance, err := ent_client.Template.Query().Where(template.NameEQ(template_name)).Select(template.FieldLog).First(context.Background())
+	if err != nil {
+		logger.Error(fmt.Sprintf("获取模板信息失败: [%s]", err.Error()))
+		return &yacd, fmt.Errorf("获取模板信息失败: [%s]", err.Error())
+	}
+
+	// 设置Yacd配置中的模板名称和日志开关状态
+	yacd.Template = template_name
+	yacd.Log = !template_instance.Log.Disabled
+	return &yacd, nil
 }

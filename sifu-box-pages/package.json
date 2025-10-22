@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@heroui/accordion": "^2.2.24",
+    "@heroui/badge": "^2.2.17",
     "@heroui/button": "2.2.27",
     "@heroui/card": "^2.2.25",
     "@heroui/code": "2.2.21",
@@ -19,6 +21,7 @@
     "@heroui/kbd": "2.2.22",
     "@heroui/link": "2.2.23",
     "@heroui/navbar": "2.2.25",
+    "@heroui/scroll-shadow": "^2.3.18",
     "@heroui/snippet": "2.2.28",
     "@heroui/switch": "2.2.24",
     "@heroui/system": "2.4.23",
@@ -33,6 +36,7 @@
     "bootstrap-icons": "^1.13.1",
     "clsx": "2.1.1",
     "framer-motion": "11.18.2",
+    "lodash": "^4.17.21",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-hot-toast": "^2.6.0",
@@ -45,6 +49,7 @@
     "@eslint/compat": "1.2.8",
     "@eslint/eslintrc": "3.3.1",
     "@eslint/js": "9.25.1",
+    "@types/lodash": "^4.17.20",
     "@types/node": "20.5.7",
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.0",

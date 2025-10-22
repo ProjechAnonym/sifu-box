@@ -103,9 +103,6 @@ export default function LoginPage() {
                 {admin ? "管理员" : "访客"}
               </span>
             </Switch>
-            {/* <Link href="/reset" isBlock>
-              忘记密码
-            </Link> */}
             <div className="flex flex-row gap-2">
               <Button size="sm" variant="shadow" type="reset" color="danger">
                 <span className="text-lg font-black">清空</span>
