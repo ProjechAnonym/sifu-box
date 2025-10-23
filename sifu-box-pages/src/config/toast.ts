@@ -1,7 +1,7 @@
 export const toast_config = {
               // Define default options
               className: "",
-              duration: 5000,
+              duration: 10000,
               style: {
                 background: "#F0E8EE",
                 color: "#4C4C4C",

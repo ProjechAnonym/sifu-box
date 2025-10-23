@@ -1,4 +1,4 @@
-import { useState,useEffect,useMemo } from "react";
+import { useState,useEffect,useMemo,useCallback } from "react";
 import { Accordion, AccordionItem } from "@heroui/accordion";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 import { Button } from "@heroui/button";
@@ -7,6 +7,7 @@ import { Spinner } from "@heroui/spinner";
 import NavBar from "@/components/navbar";
 import toast from "react-hot-toast";
 import { cloneDeep } from "lodash";
+import { GroupDelay } from "@/utils/outbound/delay";
 import { FetchOutbounds } from "@/utils/outbound/fetch";
 import { Outbound,OutboundGroup } from "@/types/outbound";
 export default function OutboundsTable(props: {
@@ -16,13 +17,13 @@ export default function OutboundsTable(props: {
   theme: string;
 }){
     const { listen, secret, height, theme } = props;
-    const [updateOutbounds, setUpdateOutbounds] = useState(true);
+    const [update_outbounds, setUpdateOutbounds] = useState(true);
     const [outbounds, setOutbounds] = useState<{[key: string]: OutboundGroup | Outbound;} | null>(null);
     const [groups, setGroups] = useState<Array<string> | null>(null);
     const [test_groups, setTestGroups] = useState<Array<string>>([]);
     const [test_servers, setTestServers] = useState<Array<string>>([]);
     useEffect(() => {
-      updateOutbounds && listen !== "" && secret !== "" && FetchOutbounds(listen, secret).then((res) => {
+      update_outbounds && listen !== "" && secret !== "" && FetchOutbounds(listen, secret).then((res) => {
         setUpdateOutbounds(false);
         res ? setOutbounds(res.proxies) : toast.error("获取代理失败");
       })
@@ -30,7 +31,7 @@ export default function OutboundsTable(props: {
         setUpdateOutbounds(false);
         toast.error(e.code === "ERR_NETWORK" ? "请检查网络连接" : e.message);
       });
-    }, [listen, secret, updateOutbounds]);
+    }, [listen, secret, update_outbounds]);
     useMemo(() => {
       outbounds &&
         setGroups(
@@ -40,6 +41,8 @@ export default function OutboundsTable(props: {
             .reverse()
         );
     }, [outbounds]);
+   
+   
     return (
     <div className="p-2" style={{ height: `calc(100% - ${height}px)` }}>
       {groups && groups.length > 0 && <NavBar groups={groups} />}
@@ -58,30 +61,24 @@ export default function OutboundsTable(props: {
                 <div className="flex flex-row gap-2">
                   <span className="text-xl font-black select-none">测试延迟</span>
                     <Button
-                      isLoading={test_groups?.includes(group)}
+                      isLoading={test_groups && test_groups.includes(group)}
                       onPress={() => {
-                        const newTestGroup = cloneDeep(test_groups);
-                        newTestGroup.push(group);
-                        setTestGroups(newTestGroup);
+                        const new_test_group = cloneDeep(test_groups);
+                        new_test_group.push(group);
+                        setTestGroups(new_test_group);
                         // toast.promise(
                         //   GroupDelay(group, listen, secret, outbounds!),
                         //   {
                         //     loading: "loading",
                         //     success: (res) => {
-                        //       const newTestGroups = cloneDeep(testGroups);
-                        //       newTestGroups
-                        //         .filter((item) => item !== group)
-                        //         .map((item) => item);
-                        //       setTestGroups(newTestGroups);
+                        //       const new_test_groups = cloneDeep(test_groups);
+                        //       setTestGroups(new_test_groups.filter((item) => item !== group).map((item) => item));
                         //       setOutbounds(res);
                         //       return `测试${group}完成`;
                         //     },
                         //     error: () => {
-                        //       const newTestGroups = cloneDeep(testGroups);
-                        //       newTestGroups
-                        //         .filter((item) => item !== group)
-                        //         .map((item) => item);
-                        //       setTestGroups(newTestGroups);
+                        //       const new_test_groups = cloneDeep(test_groups);
+                        //       setTestGroups(new_test_groups.filter((item) => item !== group).map((item) => item));
                         //       return `测试${group}失败`;
                         //     },
                         //   }
