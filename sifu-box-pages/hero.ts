@@ -51,7 +51,7 @@ export default heroui(
                 background: "#18181B",
                 foreground: "#E6F1FE",
                 content1: "#26262a",
-                content2: "#27272a",
+                content2: "#58a06d",
                 content3: "#3f3f46",
                 content4: "#52525b",
             }, // dark theme colors
