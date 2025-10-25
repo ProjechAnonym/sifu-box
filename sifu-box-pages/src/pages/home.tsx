@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import DefaultLayout from "@/layouts/default";
-import OutboundsTable from "@/layouts/table/outbound";
+import MonitorHead from "@/layouts/home/monitorHead";
+import OutboundsTable from "@/layouts/home/outboundTable";
 // import SingBox from "@/components/singbox";
 // import { HomeDashBoard } from "@/components/dashboard";
 // import Status from "@/components/status";
@@ -49,24 +50,10 @@ export default function HomePage() {
             return;
           }
         });
-    header_container.current && setHeight(header_container.current.clientHeight);
-  }, [
-    admin,
-    token,
-    header_container.current && header_container.current.clientHeight,
-  ]);
+  }, [admin,token]);
   return (
     <DefaultLayout>
-      <header className="flex flex-wrap gap-2" ref={header_container}>
-        {/* <HomeDashBoard
-          provider={provider}
-          template={template}
-          admin={admin}
-          token={token}
-          theme={theme}
-        />
-        <Status listen={listen} secret={secret} log={log} theme={theme} /> */}
-      </header>
+      <MonitorHead template={template} theme={theme} admin={admin} token={token} listen={listen} secret={secret} log={log} fetchHeight={setHeight} />
       <OutboundsTable listen={listen} secret={secret} height={height} theme={theme} />
     </DefaultLayout>
   );
