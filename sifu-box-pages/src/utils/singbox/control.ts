@@ -7,7 +7,8 @@ try {
         Authorization: token,
       },
     });
-    return res.status === 200 ? {message: res.data.message, status: res.data.message,} : {message: res.data.message, status: false};
+    console.log(res.data.message);
+    return res.status === 200 ? {message: res.data.message, status: res.data.message} : {message: res.data.message, status: false};
   } catch (e) {
     console.error(e);
     throw e;

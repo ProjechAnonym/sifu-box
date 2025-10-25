@@ -23,8 +23,23 @@ export default function ControlPanel(props: {admin: boolean, token: string, them
         {
             loading: "loading",
             success: (res) => {
-                setCheck(true)
-                return res.message;
+                switch (action) {
+                  case "check":
+                    setStatus(res.status);
+                    return `检查操作完成`;
+                  case "boot":
+                    setCheck(true);
+                    return `启动操作完成`;
+                  case "reload":
+                    setCheck(true);
+                    return `重载操作完成`;
+                  case "stop":
+                    setStatus(!res.status);
+                    return `关闭操作完成`;
+                  default:
+                    break;
+                }
+                return `操作完成`;
             },
             error: (e) => {
                 setCheck(true);
