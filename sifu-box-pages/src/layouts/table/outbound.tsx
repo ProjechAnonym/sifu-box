@@ -40,7 +40,6 @@ export default function OutboundsTable(props: {
         );
     }, [outbounds]);
     const switchOutbound = useCallback((tag: string, group: string) => {
-      console.log(tag, group);
       outbounds && SwitchOutbound(group, tag, listen, secret, outbounds).then((res) => setOutbounds(res)).
         catch((e) => toast.error(
           e.code === "ERR_NETWORK"
