@@ -7,7 +7,7 @@ import NavBar from "@/components/navbar";
 import toast from "react-hot-toast";
 import { GroupDelay, OutboundDelay } from "@/utils/outbound/delay";
 import { FetchOutbounds } from "@/utils/outbound/fetch";
-import { Outbound,OutboundGroup } from "@/types/outbound";
+import { Outbound,OutboundGroup } from "@/types/singbox/outbound";
 import { SwitchOutbound } from "@/utils/outbound/switch";
 export default function OutboundsTable(props: {
   listen: string;

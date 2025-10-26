@@ -1,6 +1,6 @@
 import axios from "axios";
 import { cloneDeep } from "lodash";
-import { Outbound, OutboundGroup } from "@/types/outbound";
+import { Outbound, OutboundGroup } from "@/types/singbox/outbound";
 export async function GroupDelay(
   group: string,
   url: string,

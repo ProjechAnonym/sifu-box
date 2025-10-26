@@ -1,6 +1,6 @@
 import { Badge } from "@heroui/badge";
 import { Spinner } from "@heroui/spinner";
-import { Outbound } from "@/types/outbound";
+import { Outbound } from "@/types/singbox/outbound";
 
 export default function OutboundsCard(props: { theme: string, tag: string, group: string, outbound_msg: Outbound, select: boolean, load: boolean, switchOutbound: (tag:string, group:string) => void, testDelay: (tag: string) => void}) {
     const {theme, tag, group ,outbound_msg, select, switchOutbound, testDelay, load} = props;
