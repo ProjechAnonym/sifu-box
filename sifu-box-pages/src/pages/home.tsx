@@ -4,9 +4,6 @@ import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import DefaultLayout from "@/layouts/default";
 import MonitorHead from "@/layouts/home/monitorHead";
 import OutboundsTable from "@/layouts/home/outboundTable";
-// import SingBox from "@/components/singbox";
-// import { HomeDashBoard } from "@/components/dashboard";
-// import Status from "@/components/status";
 import { toast } from "react-hot-toast";
 import { Verify } from "@/utils/auth";
 import { FetchYacd } from "@/utils/configuration/fetch";
@@ -19,7 +16,6 @@ export default function HomePage() {
   const navigate = useNavigate();
   const token = useAppSelector((state) => state.auth.jwt);
   const dispatch = useAppDispatch();
-  const header_container = useRef<HTMLHeadElement>(null);
   const [height, setHeight] = useState(0);
   const [secret, setSecret] = useState("");
   const [listen, setListen] = useState("");

@@ -55,7 +55,7 @@ export default function MonitorHead(props: {template: string, theme: string, adm
             <TrafficSocket secret={secret} listen={listen} receiver={trafficReceiver}/>
             <MonitorBar memory={memory} statistics={statistics} network={network}/>
             <ControlPanel admin={admin} token={token} theme={theme}/>
-            <DataBoard theme={theme} rules={rules} logs={logs} connection={connetcions} disconnection={disConnetcions} log={log}/>
+            <DataBoard theme={theme} rules={rules} logs={logs} connection={connetcions} disconnection={disConnetcions} log={log} listen={listen} secret={secret} />
             <div className="flex flex-col px-2 bg-default rounded-md select-none" >
                 <span className="text-sm font-black p-0">当前模板</span>
                 <span className="text-xs font-black p-0">{template? template : "无" }</span>

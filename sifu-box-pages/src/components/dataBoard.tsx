@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@heroui/dropdown";
 import {
   Modal,
@@ -12,13 +12,27 @@ import { Button } from "@heroui/button";
 import Rules from "./table/rule";
 import Logs from "./table/logs";
 import Connections from "./table/connection";
+import toast from "react-hot-toast";
+import { ClearFakeip } from "@/utils/singbox/control";
 import { ruleColumns } from "@/types/singbox/rules";
 import { logsColumns } from "@/types/singbox/log";
 import { ConnectionColumns } from "@/types/singbox/connection";
-export default function DataBoard(props: {theme: string, rules: Array<ruleColumns>, logs: Array<logsColumns>, connection: Array<ConnectionColumns>, disconnection:Array<ConnectionColumns>,log: boolean}) {
-    const { theme, rules, logs, connection, disconnection, log} = props;
+export default function DataBoard(props: {theme: string, listen: string, secret: string, rules: Array<ruleColumns>, logs: Array<logsColumns>, connection: Array<ConnectionColumns>, disconnection:Array<ConnectionColumns>,log: boolean}) {
+    const { theme, rules, logs, connection, disconnection, log, listen, secret} = props;
     const [data, setData] = useState("")
     const { isOpen, onClose, onOpen } = useDisclosure();
+    useEffect(() => {
+        data === "clear" &&  toast.promise(ClearFakeip(listen, secret), {
+              loading: "清空FakeIP中...",
+              success: "清除FakeIP完成",
+              error: (e) =>
+                e.code === "ERR_NETWORK"
+                  ? "请检查网络连接"
+                  : e.response.data.message
+                    ? e.response.data.message
+                    : e.response.data,
+            })
+    }, [data]);
     return (
         <div>
             <Modal
@@ -58,8 +72,8 @@ export default function DataBoard(props: {theme: string, rules: Array<ruleColumn
             <DropdownMenu aria-label="Databoard Panel" onAction={(key) => {setData(key as string);key !== "clear" && onOpen()}} variant="shadow" disabledKeys={log? [] : ["logs"]}>
                 <DropdownItem key="clear" description="清空DNS缓存"><span className="font-black">清空</span></DropdownItem>
                 <DropdownItem key="rules" description="查看规则"><span className="font-black">规则</span></DropdownItem>
-                <DropdownItem key="logs" description="查看日志"><span className="font-black">日志</span></DropdownItem>
                 <DropdownItem key="connections" description="查看连接"><span className="font-black">连接</span></DropdownItem>
+                <DropdownItem key="logs" description="查看日志"><span className="font-black">日志</span></DropdownItem>
             </DropdownMenu>
             </Dropdown>
     </div>
