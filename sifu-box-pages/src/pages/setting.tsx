@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import toast from "react-hot-toast";
 import DefaultLayout from "@/layouts/default";
+import SettingHead from "@/layouts/setting/settingHead";
 import { FetchConfiguration } from "@/utils/configuration/fetch";
 import { Verify } from "@/utils/auth";
 export default function SettingPage() {
@@ -27,7 +28,6 @@ export default function SettingPage() {
       FetchConfiguration(token)
         .then((res) => {
           setUpdate(false);
-          console.log(res);
         })
         .catch((e) => {
           setUpdate(false);
@@ -48,7 +48,12 @@ export default function SettingPage() {
   return (
     <DefaultLayout>
       
-      1
+      <SettingHead
+        token={token}
+        admin={admin}
+        theme={theme}
+        setUpdate={setUpdateCurrentApplication}
+      />
       
     </DefaultLayout>
   );

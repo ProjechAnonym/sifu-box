@@ -39,6 +39,6 @@ func SettingApplication(api *gin.RouterGroup, work_dir string, user *model.User,
 			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+		ctx.JSON(http.StatusOK, gin.H{"message": "重设定时任务成功"})
 	})
 }
