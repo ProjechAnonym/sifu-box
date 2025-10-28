@@ -88,7 +88,7 @@ export default function Interval(props: { theme: string; token: string }) {
             <Select
               size="sm"
               onSelectionChange={(e) => e.currentKey && setDay(e.currentKey)}
-              label={"日期"}
+              label={<span className="font-black text-foreground">日期</span>}
               value={day}
               variant="underlined"
               className="w-20"
@@ -104,7 +104,7 @@ export default function Interval(props: { theme: string; token: string }) {
               ))}
             </Select>
             <TimeInput
-              label="Interval"
+              label={<span className="font-black text-foreground">时间</span>}
               size="sm"
               variant="underlined"
               hourCycle={24}
