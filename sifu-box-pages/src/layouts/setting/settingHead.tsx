@@ -1,8 +1,10 @@
 import { useRef } from "react";
+import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Button,ButtonGroup } from "@heroui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
 import Interval from "@/components/card/interval";
 import toast from "react-hot-toast";
+import copy from "copy-to-clipboard";
 import { Refresh } from "@/utils/configuration/refresh";
 import { Export } from "@/utils/migrate/export";
 import { Import } from "@/utils/migrate/import";
@@ -10,10 +12,12 @@ export default function SettingHead(props: {
   token: string;
   admin: boolean;
   theme: string;
+  files: Array<{label: string, path: string}>;
   setUpdate: (update: boolean) => void;
 }) {
-    const { token, admin, theme, setUpdate } = props;
+    const { token, admin, theme, files ,setUpdate } = props;
     const file_input = useRef<HTMLInputElement>(null);
+    console.log(files)
     const refresh = () => toast.promise(Refresh(token), {
             loading: "更新配置文件中...",
             success: (res) => {          
@@ -129,6 +133,29 @@ export default function SettingHead(props: {
                 })
                 }
             />
+            {files && (
+                <Autocomplete
+                    variant="underlined"
+                    label={<span className="text-xs font-black">文件链接</span>}
+                    size="sm"
+                    classNames={{
+                        popoverContent: `${theme} bg-content1 text-foreground`,
+                    }}
+                    onSelectionChange={(key) => {
+                        copy(key as string);
+                        toast.success("下载链接已复制到剪切板");
+                    }}
+                    className="w-32"
+                >
+                {
+                    files.map((file) => (
+                        <AutocompleteItem key={file.path}>
+                            {file.label}
+                        </AutocompleteItem>
+                    ))
+                }
+                </Autocomplete>
+            )}
         </header>
     )
 }

@@ -7,6 +7,7 @@ import SettingHead from "@/layouts/setting/settingHead";
 import { FetchFile } from "@/utils/hosting/fetch";
 import { FetchConfiguration } from "@/utils/configuration/fetch";
 import { Verify } from "@/utils/auth";
+import { FileData } from "@/types/hosting/file";
 export default function SettingPage() {
   const admin = useAppSelector((state) => state.auth.admin);
   const auto = useAppSelector((state) => state.auth.auto);
@@ -16,6 +17,7 @@ export default function SettingPage() {
   const token = useAppSelector((state) => state.auth.jwt);
   const dispatch = useAppDispatch();
   const [current_template, setCurrentTemplate] = useState("");
+  const [files, setFiles] = useState<Array<{label:string, path:string}>>([])
   const [updateCurrentApplication, setUpdateCurrentApplication] =
     useState(true);
   
@@ -38,20 +40,20 @@ export default function SettingPage() {
               : toast.error(e.response.data);
         });
     token !== "" && update && FetchFile(token)
-      .then((res) => {
-        // if (typeof res === "object" && Array.isArray(res)) {
-        //   const file_list = res.map(item => item)
-        //   console.log(file_list);
-        // }
-        
-        
-      }).catch((e) => {
-        setUpdate(false);
-        return e.code === "ERR_NETWORK"
-          ? toast.error("请检查网络连接")
-          : e.response.data.message
-            ? toast.error(e.response.data.message)
-            : toast.error(e.response.data);
+      .then((res) => setFiles(typeof res === "object" && "message" in res && Array.isArray(res.message) && res.message.map(
+        (item:FileData) => {
+          return {
+            label:item.name, 
+            path:`${window.location.origin}/api/files/download/${item.name}/${item.expire_time}/${item.signature}/${item.path}`
+          }
+        }))
+        ).catch((e) => {
+          setUpdate(false);
+          return e.code === "ERR_NETWORK"
+            ? toast.error("请检查网络连接")
+            : e.response.data.message
+              ? toast.error(e.response.data.message)
+              : toast.error(e.response.data);
       });
     }, [
     admin,
@@ -68,6 +70,7 @@ export default function SettingPage() {
         admin={admin}
         theme={theme}
         setUpdate={setUpdate}
+        files={files}
       />
       
     </DefaultLayout>
