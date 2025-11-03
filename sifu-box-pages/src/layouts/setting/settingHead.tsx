@@ -17,7 +17,6 @@ export default function SettingHead(props: {
 }) {
     const { token, admin, theme, files ,setUpdate } = props;
     const file_input = useRef<HTMLInputElement>(null);
-    console.log(files)
     const refresh = () => toast.promise(Refresh(token), {
             loading: "更新配置文件中...",
             success: (res) => {          
