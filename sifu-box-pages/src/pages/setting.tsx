@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import toast from "react-hot-toast";
 import DefaultLayout from "@/layouts/default";
 import SettingHead from "@/layouts/setting/settingHead";
+import { FetchFile } from "@/utils/hosting/fetch";
 import { FetchConfiguration } from "@/utils/configuration/fetch";
 import { Verify } from "@/utils/auth";
 export default function SettingPage() {
@@ -23,8 +24,7 @@ export default function SettingPage() {
     !admin && navigate("/");
     !auto && !status && navigate("/");
     auto && dispatch(Verify({}));
-    token !== "" &&
-      update &&
+    token !== "" && update &&
       FetchConfiguration(token)
         .then((res) => {
           setUpdate(false);
@@ -37,6 +37,22 @@ export default function SettingPage() {
               ? toast.error(e.response.data.message)
               : toast.error(e.response.data);
         });
+    token !== "" && update && FetchFile(token)
+      .then((res) => {
+        // if (typeof res === "object" && Array.isArray(res)) {
+        //   const file_list = res.map(item => item)
+        //   console.log(file_list);
+        // }
+        
+        
+      }).catch((e) => {
+        setUpdate(false);
+        return e.code === "ERR_NETWORK"
+          ? toast.error("请检查网络连接")
+          : e.response.data.message
+            ? toast.error(e.response.data.message)
+            : toast.error(e.response.data);
+      });
     }, [
     admin,
     auto,
@@ -47,12 +63,11 @@ export default function SettingPage() {
   ]);
   return (
     <DefaultLayout>
-      
       <SettingHead
         token={token}
         admin={admin}
         theme={theme}
-        setUpdate={setUpdateCurrentApplication}
+        setUpdate={setUpdate}
       />
       
     </DefaultLayout>

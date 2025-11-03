@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <NavProvider>
           <Toaster
-            gutter={8}
+            gutter={10}
             toastOptions={toast_config}
           >
             {(t) => (

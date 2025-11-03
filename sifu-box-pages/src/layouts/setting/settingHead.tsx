@@ -1,15 +1,41 @@
+import { useRef } from "react";
 import { Button,ButtonGroup } from "@heroui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
 import Interval from "@/components/card/interval";
 import toast from "react-hot-toast";
+import { Refresh } from "@/utils/configuration/refresh";
 import { Export } from "@/utils/migrate/export";
+import { Import } from "@/utils/migrate/import";
 export default function SettingHead(props: {
   token: string;
   admin: boolean;
   theme: string;
   setUpdate: (update: boolean) => void;
 }) {
-    const { token, admin, theme } = props;
+    const { token, admin, theme, setUpdate } = props;
+    const file_input = useRef<HTMLInputElement>(null);
+    const refresh = () => toast.promise(Refresh(token), {
+            loading: "更新配置文件中...",
+            success: (res) => {          
+                Array.isArray(res) && res.every(item => typeof item === 'object') && res.forEach(item => 'message' in item && typeof item.message === 'string' ? toast.error(item.message) : toast.error("未知错误"))
+                return "更新配置文件完成"
+            },
+            error: (e) => {
+            if (e.code === "ERR_NETWORK") {
+                return "请检查网络连接";
+            }
+            if (e.response.data.message) {
+                if (typeof e.response.data.message === "string") {
+                    return e.response.data.message;
+                }
+                (e.response.data.message as Array<string>).map((m) =>
+                    toast.error(m)
+                );
+                return "";
+            }
+            return e.response.data;
+            },
+        })
     return (
         <header className="flex flex-wrap gap-1 p-1"> 
             <ButtonGroup>
@@ -17,7 +43,7 @@ export default function SettingHead(props: {
                     variant="shadow"
                     color="primary"
                     size="sm"
-                    
+                    onPress = {refresh}
                     isDisabled={!admin}
                 >
                     <span className="font-black text-lg">刷新</span>
@@ -65,11 +91,44 @@ export default function SettingHead(props: {
                     color="primary"
                     size="sm"
                     isDisabled={!admin}
-                    // onPress={() => fileInput.current && fileInput.current.click()}
+                    onPress={() => file_input.current && file_input.current.click()}
                     >
                     <span className="font-black text-lg">导入</span>
                 </Button>
             </ButtonGroup>
+             <input
+                className="hidden"
+                type="file"
+                ref={file_input}
+                onChange={(e) =>
+                e.target.files &&
+                toast.promise(Import(token, e.target.files[0]), {
+                    loading: "恢复配置中...",
+                    success: (res) => {
+                        setUpdate(true);
+                        Array.isArray(res) && 
+                        res.every(item => typeof item === 'object') && 
+                        res.forEach(
+                            item => 
+                                'message' in item && 
+                                "status" in item && 
+                                typeof item.message === 'string' && 
+                                typeof item.status === "boolean" ? 
+                                (item.status ? toast.success(item.message) : toast.error(item.message)) : toast.error("未知错误"))
+                        return "导入配置完成";
+                    },
+                    error: (e) => {
+                    file_input.current && (file_input.current.value = "");
+                    setUpdate(true);
+                    return e.code === "ERR_NETWORK"
+                        ? "请检查网络连接"
+                        : e.response.data.message
+                        ? e.response.data.message
+                        : e.response.data;
+                    },
+                })
+                }
+            />
         </header>
     )
 }
