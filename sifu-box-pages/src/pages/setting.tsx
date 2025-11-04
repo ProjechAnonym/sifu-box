@@ -17,7 +17,7 @@ export default function SettingPage() {
   const token = useAppSelector((state) => state.auth.jwt);
   const dispatch = useAppDispatch();
   const [current_template, setCurrentTemplate] = useState("");
-  const [files, setFiles] = useState<Array<{label:string, path:string}>>([])
+  const [files, setFiles] = useState<Array<FileData>>([])
   const [updateCurrentApplication, setUpdateCurrentApplication] =
     useState(true);
   
@@ -40,14 +40,7 @@ export default function SettingPage() {
               : toast.error(e.response.data);
         });
     token !== "" && update && FetchFile(token)
-      .then((res) => setFiles(typeof res === "object" && "message" in res && Array.isArray(res.message) && res.message.map(
-        (item:FileData) => {
-          return {
-            label:item.name, 
-            path:`${window.location.origin}/api/files/download/${item.name}/${item.expire_time}/${item.signature}/${item.path}`
-          }
-        }))
-        ).catch((e) => {
+      .then((res) => res ? setFiles(res.message.map(item=>item)) : toast.error("获取模板文件失败")).catch((e) => {
           setUpdate(false);
           return e.code === "ERR_NETWORK"
             ? toast.error("请检查网络连接")
@@ -55,14 +48,7 @@ export default function SettingPage() {
               ? toast.error(e.response.data.message)
               : toast.error(e.response.data);
       });
-    }, [
-    admin,
-    auto,
-    status,
-    token,
-    update,
-    updateCurrentApplication,
-  ]);
+    }, [admin, auto, status, token, update, updateCurrentApplication]);
   return (
     <DefaultLayout>
       <SettingHead

@@ -8,19 +8,20 @@ import copy from "copy-to-clipboard";
 import { Refresh } from "@/utils/configuration/refresh";
 import { Export } from "@/utils/migrate/export";
 import { Import } from "@/utils/migrate/import";
+import { FileData } from "@/types/hosting/file";
 export default function SettingHead(props: {
   token: string;
   admin: boolean;
   theme: string;
-  files: Array<{label: string, path: string}>;
+  files: Array<FileData>;
   setUpdate: (update: boolean) => void;
 }) {
     const { token, admin, theme, files ,setUpdate } = props;
     const file_input = useRef<HTMLInputElement>(null);
     const refresh = () => toast.promise(Refresh(token), {
             loading: "更新配置文件中...",
-            success: (res) => {          
-                Array.isArray(res) && res.every(item => typeof item === 'object') && res.forEach(item => 'message' in item && typeof item.message === 'string' ? toast.error(item.message) : toast.error("未知错误"))
+            success: (res) => {
+                res !== true && res !== false ? res.message.map(item=>toast.error(item.message)) : toast.error("未知错误");
                 return "更新配置文件完成"
             },
             error: (e) => {
@@ -31,9 +32,6 @@ export default function SettingHead(props: {
                 if (typeof e.response.data.message === "string") {
                     return e.response.data.message;
                 }
-                (e.response.data.message as Array<string>).map((m) =>
-                    toast.error(m)
-                );
                 return "";
             }
             return e.response.data;
@@ -109,25 +107,17 @@ export default function SettingHead(props: {
                     loading: "恢复配置中...",
                     success: (res) => {
                         setUpdate(true);
-                        Array.isArray(res) && 
-                        res.every(item => typeof item === 'object') && 
-                        res.forEach(
-                            item => 
-                                'message' in item && 
-                                "status" in item && 
-                                typeof item.message === 'string' && 
-                                typeof item.status === "boolean" ? 
-                                (item.status ? toast.success(item.message) : toast.error(item.message)) : toast.error("未知错误"))
+                        res !== true && res !== false ? res.map(item => !item.status && toast.error(item.message)) : toast.error("未知错误")
                         return "导入配置完成";
                     },
                     error: (e) => {
-                    file_input.current && (file_input.current.value = "");
-                    setUpdate(true);
-                    return e.code === "ERR_NETWORK"
-                        ? "请检查网络连接"
-                        : e.response.data.message
-                        ? e.response.data.message
-                        : e.response.data;
+                        file_input.current && (file_input.current.value = "");
+                        setUpdate(true);
+                        return e.code === "ERR_NETWORK"
+                            ? "请检查网络连接"
+                            : e.response.data.message
+                            ? e.response.data.message
+                            : e.response.data;
                     },
                 })
                 }
@@ -137,22 +127,20 @@ export default function SettingHead(props: {
                     variant="underlined"
                     label={<span className="text-xs font-black">文件链接</span>}
                     size="sm"
-                    classNames={{
-                        popoverContent: `${theme} bg-content1 text-foreground`,
-                    }}
+                    classNames={{ popoverContent: `${theme} bg-content1 text-foreground` }}
                     onSelectionChange={(key) => {
                         copy(key as string);
                         toast.success("下载链接已复制到剪切板");
                     }}
                     className="w-32"
                 >
-                {
-                    files.map((file) => (
-                        <AutocompleteItem key={file.path}>
-                            {file.label}
-                        </AutocompleteItem>
-                    ))
-                }
+                    {
+                        files.map((file) => (
+                            <AutocompleteItem key={`${window.location.origin}/api/files/download/${file.name}/${file.expire_time}/${file.signature}/${file.path}`}>
+                                {file.name}
+                            </AutocompleteItem>
+                        ))
+                    }
                 </Autocomplete>
             )}
         </header>
