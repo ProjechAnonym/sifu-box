@@ -14,9 +14,11 @@ export default function SettingHead(props: {
   admin: boolean;
   theme: string;
   files: Array<FileData>;
+  
   setUpdate: (update: boolean) => void;
+
 }) {
-    const { token, admin, theme, files ,setUpdate } = props;
+    const { token, admin, theme, files, setUpdate } = props;
     const file_input = useRef<HTMLInputElement>(null);
     const refresh = () => toast.promise(Refresh(token), {
             loading: "更新配置文件中...",
@@ -38,7 +40,7 @@ export default function SettingHead(props: {
             },
         })
     return (
-        <header className="flex flex-wrap gap-1 p-1"> 
+        <header className="flex flex-wrap gap-2 p-2"> 
             <ButtonGroup>
                 <Button
                     variant="shadow"
@@ -96,8 +98,15 @@ export default function SettingHead(props: {
                     >
                     <span className="font-black text-lg">导入</span>
                 </Button>
+                {/* <Button
+                    variant="shadow"
+                    color="primary"
+                    size="sm"
+                    onPress={() => setMode(!mode)}>
+                    <span className="font-black text-lg">{mode ? `模板` : `` }</span>
+                </Button> */}
             </ButtonGroup>
-             <input
+            <input
                 className="hidden"
                 type="file"
                 ref={file_input}
