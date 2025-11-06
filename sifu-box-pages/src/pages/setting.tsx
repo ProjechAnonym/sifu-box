@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import toast from "react-hot-toast";
 import DefaultLayout from "@/layouts/default";
 import SettingHead from "@/layouts/setting/settingHead";
+import ProviderLayout from "@/layouts/setting/provider";
 import { FetchFile } from "@/utils/hosting/fetch";
 import { FetchConfiguration } from "@/utils/configuration/fetch";
 import { Verify } from "@/utils/auth";
@@ -21,8 +22,8 @@ export default function SettingPage() {
   const [files, setFiles] = useState<Array<FileData>>([])
   const [providers, setProviders] = useState<Array<Provider>>([]);
   const [rulesets, setRulesets] = useState<Array<RuleSet>>([]);
-  
-  
+  const [height, setHeight] = useState(0);
+  const [template_mode, setTemplateMode] = useState(false);
   const [update, setUpdate] = useState(true);
   useEffect(() => {
     !admin && navigate("/");
@@ -70,17 +71,22 @@ export default function SettingPage() {
               ? toast.error(e.response.data.message)
               : toast.error(e.response.data);
       });
-      console.log(rulesets) 
     }, [admin, auto, status, token, update]);
   return (
     <DefaultLayout>
       <SettingHead
+        template_mode={template_mode}
+        setTemplateMode={setTemplateMode}
         token={token}
         admin={admin}
         theme={theme}
-        setUpdate={setUpdate}
         files={files}
+        setUpdate={setUpdate}
+        setHeight={setHeight}
       />
+      <div style={{height: `calc(100% - ${height}px)`}}>
+        {template_mode ? <>1</>: <ProviderLayout providers={providers} />}
+      </div>
       
     </DefaultLayout>
   );

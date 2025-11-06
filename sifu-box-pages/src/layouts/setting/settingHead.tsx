@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Autocomplete, AutocompleteItem } from "@heroui/autocomplete";
 import { Button,ButtonGroup } from "@heroui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@heroui/popover";
@@ -14,12 +14,18 @@ export default function SettingHead(props: {
   admin: boolean;
   theme: string;
   files: Array<FileData>;
-  
+  template_mode: boolean
+  setTemplateMode: (mode: boolean) => void
+  setHeight: (height: number) => void;
   setUpdate: (update: boolean) => void;
 
 }) {
-    const { token, admin, theme, files, setUpdate } = props;
+    const { token, admin, theme, template_mode, files, setUpdate, setHeight, setTemplateMode } = props;
     const file_input = useRef<HTMLInputElement>(null);
+    const header_element = useRef<HTMLHeadElement>(null);
+    useEffect(() => {
+        header_element.current && setHeight(header_element.current.clientHeight);
+    }, [header_element.current && header_element.current.clientHeight]);
     const refresh = () => toast.promise(Refresh(token), {
             loading: "更新配置文件中...",
             success: (res) => {
@@ -40,7 +46,7 @@ export default function SettingHead(props: {
             },
         })
     return (
-        <header className="flex flex-wrap gap-2 p-2"> 
+        <header className="flex flex-wrap gap-2 p-2" ref={header_element}> 
             <ButtonGroup>
                 <Button
                     variant="shadow"
@@ -98,13 +104,13 @@ export default function SettingHead(props: {
                     >
                     <span className="font-black text-lg">导入</span>
                 </Button>
-                {/* <Button
+                <Button
                     variant="shadow"
                     color="primary"
                     size="sm"
-                    onPress={() => setMode(!mode)}>
-                    <span className="font-black text-lg">{mode ? `模板` : `` }</span>
-                </Button> */}
+                    onPress={() => setTemplateMode(!template_mode)}>
+                    <span className="font-black text-lg">{template_mode ? `机场` : `模板` }</span>
+                </Button>
             </ButtonGroup>
             <input
                 className="hidden"
