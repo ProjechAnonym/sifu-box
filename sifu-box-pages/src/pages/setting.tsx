@@ -85,9 +85,8 @@ export default function SettingPage() {
         setHeight={setHeight}
       />
       <div style={{height: `calc(100% - ${height}px)`}}>
-        {template_mode ? <>1</>: <ProviderLayout providers={providers} />}
+        {template_mode ? <>1</> : <ProviderLayout providers={providers} theme={theme} token={token} setUpdate={setUpdate}/>}
       </div>
-      
     </DefaultLayout>
   );
 }

@@ -61,7 +61,7 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 			return
 		}
 		res = append(res, control.AddProvider(providers, ent_client, logger)...)
-		ctx.JSON(http.StatusMultiStatus, gin.H{"message": res})
+		ctx.JSON(http.StatusMultiStatus, res)
 	})
 	configuration.PATCH("/edit/provider", middleware.AdminAuth(), func(ctx *gin.Context) {
 		name := ctx.PostForm("name")
@@ -111,7 +111,7 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 			return
 		}
 		res = append(res, control.AddRuleset(rulesets, ent_client, logger)...)
-		ctx.JSON(http.StatusMultiStatus, gin.H{"message": res})
+		ctx.JSON(http.StatusMultiStatus, res)
 	})
 	configuration.PATCH("/edit/ruleset", middleware.AdminAuth(), func(ctx *gin.Context) {
 		name := ctx.PostForm("name")

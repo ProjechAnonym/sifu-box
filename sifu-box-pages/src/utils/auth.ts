@@ -21,7 +21,6 @@ export const Login: AsyncThunk<
       `http://192.168.10.6:9090/api/login/${admin ? "admin" : "visitor"}`,
       data
     );
-    console.log(res.data);
     return res.status === 200
       ? {
           status: true,
