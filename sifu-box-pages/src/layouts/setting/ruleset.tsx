@@ -7,28 +7,28 @@ import { Input } from "@heroui/input";
 import { useDisclosure } from "@heroui/modal";
 import toast from "react-hot-toast";
 import AddProviders from "@/components/card/provider";
-import { DeleteProvider, AddProviderFiles } from "@/utils/configuration/provider";
-import { Provider, DEFAULT_PROVIDER } from "@/types/setting/provider";
-export default function ProviderLayout(props: {providers: Array<Provider>, theme: string, token: string, setUpdate: (update: boolean) => void}) {
-    const { providers, theme, token, setUpdate } = props;
+import { DeleteRuleset, AddRulesetFiles } from "@/utils/configuration/ruleset";
+import { RuleSet, DEFAULT_RULESET } from "@/types/setting/ruleset";
+export default function RulesetLayout(props: {rulesets: Array<RuleSet>, theme: string, token: string, setUpdate: (update: boolean) => void}) {
+    const { rulesets, theme, token, setUpdate } = props;
     const { isOpen, onOpen, onClose } = useDisclosure();
     const file_input = useRef<HTMLInputElement>(null);
-    const [filtered_providers, setFilteredProviders] = useState(providers);
+    const [filtered_rulesets, setFilteredRulesets] = useState(rulesets);
     const [checked, setChecked] = useState<Array<string>>([]);
     const [search, setSearch] = useState("");
     const [edit, setEdit] = useState(false);
-    const [edit_value, setEditValue] = useState<{name: string, path: string, remote: boolean}>(DEFAULT_PROVIDER);
+    const [edit_value, setEditValue] = useState<{name: string, path: string, remote: boolean, binary: boolean, download_detour: string, update_interval: string}>(DEFAULT_RULESET);
     const [files, setFiles] = useState<FileList | null>(null);
     useMemo(() => {
-        providers &&
+        rulesets &&
         search &&
-        setFilteredProviders(
-            providers.filter((provider) => provider.name.includes(search))
+        setFilteredRulesets(
+            rulesets.filter((ruleset) => ruleset.name.includes(search))
         );
-        providers && search === "" && setFilteredProviders(providers);
-    }, [search, providers]);
-    const deleteItem = (value: Array<string>) => toast.promise(DeleteProvider(token, value), {
-        loading: "正在删除所选机场...",
+        rulesets && search === "" && setFilteredRulesets(rulesets);
+    }, [search, rulesets]);
+    const deleteItem = (value: Array<string>) => toast.promise(DeleteRuleset(token, value), {
+        loading: "正在删除所选规则集...",
         success: (res) => {
             res !== false ? res.map(
                 item => item.status ? toast.success(item.message) : toast.error(item.message)) : 
@@ -43,8 +43,8 @@ export default function ProviderLayout(props: {providers: Array<Provider>, theme
             return e.code === "ERR_NETWORK" ? "请检查网络连接" : 
                 e.response.data.message ? e.response.data.message : e.response.data},
     });
-    const addFiles = (files: FileList) => toast.promise(AddProviderFiles(token, files), {
-        loading: "正在添加所选机场...",
+    const addFiles = (files: FileList) => toast.promise(AddRulesetFiles(token, files), {
+        loading: "正在添加所选规则集...",
         success: (res) => {
             res ? res.map(item => item.status ? toast.success(item.message) : toast.error(item.message)) : toast.error("添加失败, 未知错误")
             setFiles(null)
@@ -59,9 +59,9 @@ export default function ProviderLayout(props: {providers: Array<Provider>, theme
             return e.code === "ERR_NETWORK" ? "请检查网络连接" : 
                 e.response.data.message ? e.response.data.message : e.response.data}
     })
-    const openModal = (provider: {name: string, path: string, remote: boolean}, edit: boolean) => {
+    const openModal = (ruleset: {name: string, path: string, remote: boolean, binary: boolean, download_detour: string, update_interval: string}, edit: boolean) => {
         setEdit(edit); 
-        setEditValue(provider);
+        setEditValue(ruleset);
         onOpen()
     }
     return (
@@ -70,7 +70,7 @@ export default function ProviderLayout(props: {providers: Array<Provider>, theme
             <header className="flex flex-wrap gap-1 p-1 items-center">
                 <Input
                     size="sm"
-                    label={<span className="text-md font-black">机场</span>}
+                    label={<span className="text-md font-black">规则集</span>}
                     variant="underlined"
                     value={search}
                     onValueChange={setSearch}
@@ -79,7 +79,7 @@ export default function ProviderLayout(props: {providers: Array<Provider>, theme
                 <Button color="danger" size="sm" variant="shadow" onPress={() => deleteItem(checked)}>
                     <span className="text-xl font-black">删除</span>
                 </Button>
-                <Button color="primary" size="sm" variant="shadow" onPress={() => openModal(DEFAULT_PROVIDER, false)}>
+                <Button color="primary" size="sm" variant="shadow" onPress={() => openModal(DEFAULT_RULESET, false)}>
                     <span className="text-xl font-black">添加</span>
                 </Button>
                 <form className="flex flex-row gap-1" 
@@ -89,13 +89,13 @@ export default function ProviderLayout(props: {providers: Array<Provider>, theme
                     }}
                 >
                     <Badge content={files ? files.length : 0} color="success" placement="bottom-right">
-                        <label htmlFor="file-upload-provider" className="px-2 bg-primary h-8 rounded-md hover:cursor-pointer hover:bg-opacity-85 transition-all text-white">
-                            <i className="bi bi-filetype-yml text-2xl" />
+                        <label htmlFor="file-upload-ruleset" className="px-2 bg-primary h-8 rounded-md hover:cursor-pointer hover:bg-opacity-85 transition-all text-white">
+                            <i className="bi bi-filetype-raw text-2xl" />
                         </label>
                     </Badge>
                     <input
                         type="file"
-                        id="file-upload-provider"
+                        id="file-upload-ruleset"
                         className="hidden"
                         onChange={(e) => setFiles(e.target.files)}
                         multiple
@@ -108,23 +108,23 @@ export default function ProviderLayout(props: {providers: Array<Provider>, theme
             </header>
             <CheckboxGroup value={checked} onValueChange={setChecked}>
                 <div className={`p-2 flex flex-wrap gap-2`}>
-                    {filtered_providers && filtered_providers.map((provider) => (
-                        <div key={provider.name} className="flex flex-row justify-center h-fit gap-1">
+                    {filtered_rulesets && filtered_rulesets.map((ruleset) => (
+                        <div key={ruleset.name} className="flex flex-row justify-center h-fit gap-1">
                             <Badge
                                 content={<i className="bi bi-trash-fill" />}
                                 placement="bottom-left"
                                 color="danger"
                                 shape="rectangle"
                                 className="hover:cursor-pointer"
-                                onClick={() => deleteItem([provider.name])}
+                                onClick={() => deleteItem([ruleset.name])}
                             >
-                                <Button onPress={() => openModal(provider, true)}>
+                                <Button onPress={()=>{setEdit(true); onOpen()}}>
                                     <span className={`text-md w-28 text-wrap font-black select-none`}>
-                                        {provider.name}
+                                        {ruleset.name}
                                     </span>
                                 </Button>
                             </Badge>
-                            <Checkbox value={provider.name} />
+                            <Checkbox value={ruleset.name} />
                         </div>
                     ))}
                 </div>

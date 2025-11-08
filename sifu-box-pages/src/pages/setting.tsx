@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import DefaultLayout from "@/layouts/default";
 import SettingHead from "@/layouts/setting/settingHead";
 import ProviderLayout from "@/layouts/setting/provider";
+import RulesetLayout from "@/layouts/setting/ruleset";
 import { FetchFile } from "@/utils/hosting/fetch";
 import { FetchConfiguration } from "@/utils/configuration/fetch";
 import { Verify } from "@/utils/auth";
@@ -85,7 +86,12 @@ export default function SettingPage() {
         setHeight={setHeight}
       />
       <div style={{height: `calc(100% - ${height}px)`}}>
-        {template_mode ? <>1</> : <ProviderLayout providers={providers} theme={theme} token={token} setUpdate={setUpdate}/>}
+        {template_mode ? <>1</> : 
+          <div className="flex flex-col gap-2 w-full h-full">
+            <ProviderLayout providers={providers} theme={theme} token={token} setUpdate={setUpdate}/>
+            <RulesetLayout rulesets={rulesets} theme={theme} token={token} setUpdate={setUpdate}/>
+          </div>
+        }
       </div>
     </DefaultLayout>
   );

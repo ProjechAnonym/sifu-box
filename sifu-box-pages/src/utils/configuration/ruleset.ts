@@ -1,9 +1,9 @@
 import axios from "axios";
-export async function DeleteProvider(token: string, value: Array<string>) {
+export async function DeleteRuleset(token: string, value: Array<string>) {
   const data = new FormData();
   value.forEach((item) => data.append("name", item));
   try {
-    const res = await axios.delete("http://192.168.10.6:9090/api/configuration/delete/provider",
+    const res = await axios.delete("http://192.168.10.6:9090/api/configuration/delete/ruleset",
         { data: data, headers: { Authorization: token } }
     );
     return res.status === 207
@@ -14,13 +14,13 @@ export async function DeleteProvider(token: string, value: Array<string>) {
     throw e;
   }
 }
-export async function AddProviderFiles(token: string, files: FileList) {
+export async function AddRulesetFiles(token: string, files: FileList) {
   const formData = new FormData();
   for (let i = 0; i < files.length; i++) {
     files.item(i) && formData.append("file", files.item(i)!, files.item(i)!.name);
   }
   try {
-    const res = await axios.post("http://192.168.10.6:9090/api/configuration/add/provider/local",
+    const res = await axios.post("http://192.168.10.6:9090/api/configuration/add/ruleset/local",
         formData,
         { headers: { Authorization: token } }
     );
@@ -33,7 +33,7 @@ export async function AddProviderFiles(token: string, files: FileList) {
   }
 }
 
-export async function AddProviderMsg(token: string, providers: Array<{name: string, path: string, remote: boolean}>) {
+export async function AddRulesetMsg(token: string, providers: Array<{name: string, path: string, remote: boolean}>) {
   try {
     const res = await axios.post("http://192.168.10.6:9090/api/configuration/add/provider/remote",
         providers,
@@ -48,7 +48,7 @@ export async function AddProviderMsg(token: string, providers: Array<{name: stri
   }
 }
 
-export async function EditProvider(token: string, provider: {name: string, path: string, remote: boolean}) {
+export async function EditRuleset(token: string, provider: {name: string, path: string, remote: boolean}) {
   const data = new FormData();
   data.append("name", provider.name);
   data.append("path", provider.path);

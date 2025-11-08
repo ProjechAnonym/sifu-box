@@ -7,3 +7,12 @@ export interface RuleSet {
     binary: boolean,
     download_detour: string
 }
+
+export const DEFAULT_RULESET = {
+    name: '',
+    path: '',
+    remote: false,
+    update_interval: '',
+    binary: false,
+    download_detour: ''
+}

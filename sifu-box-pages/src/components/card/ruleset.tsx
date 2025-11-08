@@ -6,42 +6,42 @@ import { Switch } from "@heroui/switch";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 import { Divider } from "@heroui/divider";
 import toast from "react-hot-toast";
-import { AddProviderMsg, EditProvider } from "@/utils/configuration/provider";
+import { AddRulesetMsg, EditRuleset } from "@/utils/configuration/ruleset";
 import { cloneDeep } from "lodash";
-export default function AddProviders(props: {edit:boolean; isOpen: boolean; onClose: () => void; theme: string; token: string; setUpdate: (update: boolean) => void; initial_value: {name: string, path: string, remote: boolean}}) {
+export default function AddRuleset(props: {edit:boolean; isOpen: boolean; onClose: () => void; theme: string; token: string; setUpdate: (update: boolean) => void; initial_value: {name: string, path: string, remote: boolean}}) {
   const { isOpen, onClose, theme, token, setUpdate, initial_value, edit } = props;
-  const [providers, setProviders] = useState<Array<{name: string, path: string, remote: boolean}>>([initial_value])
+  const [rulesets, setRulesets] = useState<Array<{name: string, path: string, remote: boolean}>>([initial_value])
   useEffect(() => {
-    setProviders([initial_value]);
+    setRulesets([initial_value]);
   }, [initial_value]);
-  const addItems = () => toast.promise(
-    AddProviderMsg(token, providers),
-    {
-      loading: "正在添加...",
-      success: (res) => {
-        res ? res.map(item => item.status ? toast.success(item.message) : toast.error(item.message)) : toast.error("添加失败, 未知错误")
-        setUpdate(true);
-        onClose();
-        return "添加操作完成";
-      },
-      error:(e) => e.code === "ERR_NETWORK" ? "请检查网络连接" : 
-                e.response.data.message ? e.response.data.message : e.response.data
-    }
-  );
-  const editItems = () => toast.promise(
-    EditProvider(token, providers[0]),
-    {
-      loading: "正在修改...",
-      success: (res) => {
-        res ? res.message ? toast.success(res.message) : toast.error("未知错误") : toast.error("修改失败, 未知错误")
-        setUpdate(true);
-        onClose();
-        return "修改操作完成";
-      },
-      error:(e) => e.code === "ERR_NETWORK" ? "请检查网络连接" : 
-                e.response.data.message ? e.response.data.message : e.response.data
-    }
-  )
+  // const addItems = () => toast.promise(
+  //   AddProviderMsg(token, edit, providers),
+  //   {
+  //     loading: "正在添加...",
+  //     success: (res) => {
+  //       res ? res.map(item => item.status ? toast.success(item.message) : toast.error(item.message)) : toast.error("添加失败, 未知错误")
+  //       setUpdate(true);
+  //       onClose();
+  //       return "添加操作完成";
+  //     },
+  //     error:(e) => e.code === "ERR_NETWORK" ? "请检查网络连接" : 
+  //               e.response.data.message ? e.response.data.message : e.response.data
+  //   }
+  // );
+  // const editItems = () => toast.promise(
+  //   EditProvider(token, providers[0]),
+  //   {
+  //     loading: "正在修改...",
+  //     success: (res) => {
+  //       res ? res.message ? toast.success(res.message) : toast.error("未知错误") : toast.error("修改失败, 未知错误")
+  //       setUpdate(true);
+  //       onClose();
+  //       return "修改操作完成";
+  //     },
+  //     error:(e) => e.code === "ERR_NETWORK" ? "请检查网络连接" : 
+  //               e.response.data.message ? e.response.data.message : e.response.data
+  //   }
+  // )
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop="blur" size="xl" classNames={{ base: `${theme} bg-content1 text-foreground` }}>
       <ModalContent>
@@ -49,7 +49,7 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              edit ? editItems() : addItems();
+              // edit ? editItems() : addItems();
             }}
           >
             <ModalHeader className="gap-2 items-center">
@@ -58,25 +58,25 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
               <div className="flex flex-row gap-1">
                 <Button size="sm" isIconOnly 
                   onPress={() => {
-                    if (providers.length == 1) {
+                    if (rulesets.length == 1) {
                       toast.error("无法继续删除");
                       return;
                     }
-                    const tempProviders = cloneDeep(providers);
-                    tempProviders.pop();
-                    setProviders(tempProviders);
+                    const tempRulesets = cloneDeep(rulesets);
+                    tempRulesets.pop();
+                    setRulesets(tempRulesets);
                 }}>
                   <i className="bi bi-dash text-3xl" />
                 </Button>
                 <Button size="sm" isIconOnly 
                   onPress={() => {
-                  const tempProviders = cloneDeep(providers);
-                    tempProviders.push({
+                  const tempRulesets = cloneDeep(rulesets);
+                    tempRulesets.push({
                       name: "",
                       remote: false,
                       path: "",
                     });
-                    setProviders(tempProviders);
+                    setRulesets(tempRulesets);
                   }}
                 >
                   <i className="bi bi-plus text-3xl" />
@@ -85,8 +85,8 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
             </ModalHeader>
             <ModalBody>
               <ScrollShadow className="flex flex-col gap-4 h-96">
-                {providers &&
-                  providers.map((provider, i) => (
+                {rulesets &&
+                  rulesets.map((provider, i) => (
                     <div key={`provider-${i}`} className="flex flex-col gap-2">
                       <Input
                         variant="flat"
@@ -97,9 +97,9 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
                         isClearable
                         value={provider.path}
                         onValueChange={(value) => {
-                          const tempProviders = cloneDeep(providers);
-                          tempProviders[i].path = value;
-                          setProviders(tempProviders);
+                          const tempRulesets  = cloneDeep(rulesets);
+                          tempRulesets [i].path = value;
+                          setRulesets (tempRulesets);
                         }}
                       />
                       <div className="flex flex-row gap-2 items-center">
@@ -114,17 +114,29 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
                           isClearable
                           value={provider.name}
                           onValueChange={(value) => {
-                            const tempProviders = cloneDeep(providers);
-                            tempProviders[i].name = value;
-                            setProviders(tempProviders);
+                            const tempRulesets = cloneDeep(rulesets);
+                            tempRulesets[i].name = value;
+                            setRulesets(tempRulesets);
                           }}
                         />
                         <Switch
                           isSelected={provider.remote}
                           onValueChange={(value) => {
-                            const tempProviders = cloneDeep(providers);
-                            tempProviders[i].remote = value;
-                            setProviders(tempProviders);
+                            const tempRulesets = cloneDeep(rulesets);
+                            tempRulesets[i].remote = value;
+                            setRulesets(tempRulesets);
+                          }}
+                        >
+                          <span className="text-xl font-black">
+                            {provider.remote ? "远程" : "本地"}
+                          </span>
+                        </Switch>
+                        <Switch
+                          isSelected={provider.remote}
+                          onValueChange={(value) => {
+                            const tempRulesets = cloneDeep(rulesets);
+                            tempRulesets[i].remote = value;
+                            setRulesets(tempRulesets);
                           }}
                         >
                           <span className="text-xl font-black">
@@ -138,7 +150,7 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
               </ScrollShadow>
             </ModalBody>
             <ModalFooter>
-              <Button size="sm" variant="shadow" color="danger" onPress={()=>{setProviders([initial_value]); onClose()}} type="button">
+              <Button size="sm" variant="shadow" color="danger" onPress={()=>{setRulesets([initial_value]); onClose()}} type="button">
                 <span className="text-lg font-black">关闭</span>
               </Button>
               <Button size="sm" variant="shadow" color="primary" type="submit">

@@ -4,3 +4,9 @@ export interface Provider {
     path: string;
     remote: boolean;
 }
+
+export const DEFAULT_PROVIDER = {
+    name: "",
+    path: "",
+    remote: false
+}
