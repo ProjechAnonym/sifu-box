@@ -6,7 +6,7 @@ import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 import { Input } from "@heroui/input";
 import { useDisclosure } from "@heroui/modal";
 import toast from "react-hot-toast";
-import AddProviders from "@/components/card/provider";
+import AddRuleset from "@/components/card/ruleset";
 import { DeleteRuleset, AddRulesetFiles } from "@/utils/configuration/ruleset";
 import { RuleSet, DEFAULT_RULESET } from "@/types/setting/ruleset";
 export default function RulesetLayout(props: {rulesets: Array<RuleSet>, theme: string, token: string, setUpdate: (update: boolean) => void}) {
@@ -66,7 +66,7 @@ export default function RulesetLayout(props: {rulesets: Array<RuleSet>, theme: s
     }
     return (
         <ScrollShadow className="w-full h-1/2">
-            <AddProviders edit={edit} isOpen={isOpen} onClose={onClose} theme={theme} token={token} setUpdate={setUpdate} initial_value={edit_value} />
+            <AddRuleset edit={edit} isOpen={isOpen} onClose={onClose} theme={theme} token={token} setUpdate={setUpdate} initial_value={edit_value} />
             <header className="flex flex-wrap gap-1 p-1 items-center">
                 <Input
                     size="sm"
@@ -118,7 +118,7 @@ export default function RulesetLayout(props: {rulesets: Array<RuleSet>, theme: s
                                 className="hover:cursor-pointer"
                                 onClick={() => deleteItem([ruleset.name])}
                             >
-                                <Button onPress={()=>{setEdit(true); onOpen()}}>
+                                <Button onPress={()=>openModal(ruleset, true)} isDisabled={!ruleset.remote}>
                                     <span className={`text-md w-28 text-wrap font-black select-none`}>
                                         {ruleset.name}
                                     </span>

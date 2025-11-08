@@ -118,7 +118,7 @@ export default function ProviderLayout(props: {providers: Array<Provider>, theme
                                 className="hover:cursor-pointer"
                                 onClick={() => deleteItem([provider.name])}
                             >
-                                <Button onPress={() => openModal(provider, true)}>
+                                <Button onPress={() => openModal(provider, true)} isDisabled={!provider.remote}>
                                     <span className={`text-md w-28 text-wrap font-black select-none`}>
                                         {provider.name}
                                     </span>

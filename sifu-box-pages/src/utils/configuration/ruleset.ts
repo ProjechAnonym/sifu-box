@@ -35,7 +35,7 @@ export async function AddRulesetFiles(token: string, files: FileList) {
 
 export async function AddRulesetMsg(token: string, providers: Array<{name: string, path: string, remote: boolean}>) {
   try {
-    const res = await axios.post("http://192.168.10.6:9090/api/configuration/add/provider/remote",
+    const res = await axios.post("http://192.168.10.6:9090/api/configuration/add/ruleset/remote",
         providers,
         { headers: { Authorization: token } }
     );
@@ -54,7 +54,7 @@ export async function EditRuleset(token: string, provider: {name: string, path: 
   data.append("path", provider.path);
   data.append("remote", provider.remote.toString());
   try {
-    const res = await axios.patch("http://192.168.10.6:9090/api/configuration/edit/provider",
+    const res = await axios.patch("http://192.168.10.6:9090/api/configuration/edit/ruleset",
         data,
         { headers: { Authorization: token } }
     );
