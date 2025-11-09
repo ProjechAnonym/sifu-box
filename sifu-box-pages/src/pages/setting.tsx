@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import toast from "react-hot-toast";
@@ -6,6 +6,7 @@ import DefaultLayout from "@/layouts/default";
 import SettingHead from "@/layouts/setting/settingHead";
 import ProviderLayout from "@/layouts/setting/provider";
 import RulesetLayout from "@/layouts/setting/ruleset";
+import TemplateLayout from "@/layouts/setting/template";
 import { FetchFile } from "@/utils/hosting/fetch";
 import { FetchConfiguration } from "@/utils/configuration/fetch";
 import { Verify } from "@/utils/auth";
@@ -23,6 +24,7 @@ export default function SettingPage() {
   const [files, setFiles] = useState<Array<FileData>>([])
   const [providers, setProviders] = useState<Array<Provider>>([]);
   const [rulesets, setRulesets] = useState<Array<RuleSet>>([]);
+  const [template, setTemplate] = useState<Array<{name: string; [key: string]: any;}>>([])
   const [height, setHeight] = useState(0);
   const [template_mode, setTemplateMode] = useState(false);
   const [update, setUpdate] = useState(true);
@@ -47,6 +49,12 @@ export default function SettingPage() {
                     typeof ruleset === "object" && "id" in ruleset && "name" in ruleset && "path" in ruleset && "remote" in ruleset && "binary" in ruleset &&
                     typeof ruleset.id === "number" && typeof ruleset.name === "string" && typeof ruleset.path === "string" && typeof ruleset.remote === "boolean" && typeof ruleset.binary === "boolean") &&  
                     setRulesets(item.message)
+                break
+              case "template":
+                item.message.every(
+                  (template: any): template is {name: string; [key: string]: any;} => 
+                    typeof template === "object") &&  
+                    setTemplate(item.message)
                 break
               default:
                 break;
@@ -86,7 +94,7 @@ export default function SettingPage() {
         setHeight={setHeight}
       />
       <div style={{height: `calc(100% - ${height}px)`}}>
-        {template_mode ? <>1</> : 
+        {template_mode ? <div className="w-full h-full"><TemplateLayout templates={template} setUpdate={setUpdate} token={token} theme={theme}/></div>: 
           <div className="flex flex-col gap-2 w-full h-full">
             <ProviderLayout providers={providers} theme={theme} token={token} setUpdate={setUpdate}/>
             <RulesetLayout rulesets={rulesets} theme={theme} token={token} setUpdate={setUpdate}/>

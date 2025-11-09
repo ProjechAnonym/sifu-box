@@ -6,7 +6,7 @@ import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 import { Input } from "@heroui/input";
 import { useDisclosure } from "@heroui/modal";
 import toast from "react-hot-toast";
-import AddProviders from "@/components/card/provider";
+import AddProviders from "@/components/modal/provider";
 import { DeleteProvider, AddProviderFiles } from "@/utils/configuration/provider";
 import { Provider, DEFAULT_PROVIDER } from "@/types/setting/provider";
 export default function ProviderLayout(props: {providers: Array<Provider>, theme: string, token: string, setUpdate: (update: boolean) => void}) {
