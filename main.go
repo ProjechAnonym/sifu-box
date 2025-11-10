@@ -103,6 +103,8 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
 	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger), cors.New(middleware.Cors()))
+	route.SettingPages(server, work_dir)
+
 	api := server.Group("/api")
 
 	content, err := utils.GetValue(bunt_client, initial.USER, operation_logger)
