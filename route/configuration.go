@@ -157,7 +157,7 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 	configuration.PATCH("/edit/template", middleware.AdminAuth(), func(ctx *gin.Context) {
 		template := model.Template{}
 		if err := ctx.BindJSON(&template); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
 		if err := control.EditTemplate(template, ent_client, logger); err != nil {
