@@ -14,7 +14,7 @@ export default function Interval(props: { theme: string; token: string }) {
   const [cancel, setCancel] = useState(false);
   const [cron, setCron] = useState(false);
   const [day, setDay] = useState<string>("");
-  const handleSubmit = () => {
+  const HandleSubmit = () => {
         if (cancel) {
           toast.promise(SetInterval(token, ""), {
             loading: "取消自动更新中...",
@@ -71,7 +71,7 @@ export default function Interval(props: { theme: string; token: string }) {
       className="w-full flex flex-col gap-2"
       onSubmit={(e) => {
         e.preventDefault();
-        handleSubmit();
+        HandleSubmit();
       }}
     >
       <div className="flex flex-row gap-2 items-center">

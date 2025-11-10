@@ -15,7 +15,7 @@ export default function AddRuleset(props: {edit:boolean; isOpen: boolean; onClos
   useEffect(() => {
     setRulesets([initial_value]);
   }, [initial_value]);
-  const addItems = () => toast.promise(
+  const AddItems = () => toast.promise(
     AddRulesetMsg(token, rulesets),
     {
       loading: "正在添加...",
@@ -29,7 +29,7 @@ export default function AddRuleset(props: {edit:boolean; isOpen: boolean; onClos
                 e.response.data.message ? e.response.data.message : e.response.data
     }
   );
-  const editItems = () => toast.promise(
+  const EditItems = () => toast.promise(
     EditRuleset(token, rulesets[0]),
     {
       loading: "正在修改...",
@@ -50,7 +50,7 @@ export default function AddRuleset(props: {edit:boolean; isOpen: boolean; onClos
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              edit ? editItems() : addItems();
+              edit ? EditItems() : AddItems();
             }}
           >
             <ModalHeader className="gap-2 items-center">
@@ -63,17 +63,17 @@ export default function AddRuleset(props: {edit:boolean; isOpen: boolean; onClos
                       toast.error("无法继续删除");
                       return;
                     }
-                    const tempRulesets = cloneDeep(rulesets);
-                    tempRulesets.pop();
-                    setRulesets(tempRulesets);
+                    const temp_rulesets = cloneDeep(rulesets);
+                    temp_rulesets.pop();
+                    setRulesets(temp_rulesets);
                 }}>
                   <i className="bi bi-dash text-3xl" />
                 </Button>
                 <Button size="sm" isIconOnly 
                   onPress={() => {
-                  const tempRulesets = cloneDeep(rulesets);
-                    tempRulesets.push(DEFAULT_RULESET);
-                    setRulesets(tempRulesets);
+                  const temp_rulesets = cloneDeep(rulesets);
+                    temp_rulesets.push(DEFAULT_RULESET);
+                    setRulesets(temp_rulesets);
                   }}
                 >
                   <i className="bi bi-plus text-3xl" />
@@ -94,9 +94,9 @@ export default function AddRuleset(props: {edit:boolean; isOpen: boolean; onClos
                         isClearable
                         value={ruleset.path}
                         onValueChange={(value) => {
-                          const tempRulesets  = cloneDeep(rulesets);
-                          tempRulesets [i].path = value;
-                          setRulesets (tempRulesets);
+                          const temp_rulesets = cloneDeep(rulesets);
+                          temp_rulesets[i].path = value;
+                          setRulesets(temp_rulesets);
                         }}
                       />
                       {ruleset.remote &&
@@ -110,9 +110,9 @@ export default function AddRuleset(props: {edit:boolean; isOpen: boolean; onClos
                             isClearable
                             value={ruleset.download_detour}
                             onValueChange={(value) => {
-                              const tempRulesets = cloneDeep(rulesets);
-                              tempRulesets[i].download_detour = value;
-                              setRulesets(tempRulesets);
+                              const temp_rulesets = cloneDeep(rulesets);
+                              temp_rulesets[i].download_detour = value;
+                              setRulesets(temp_rulesets);
                             }}
                           />
                           <Input
@@ -124,9 +124,9 @@ export default function AddRuleset(props: {edit:boolean; isOpen: boolean; onClos
                             isClearable
                             value={ruleset.update_interval}
                             onValueChange={(value) => {
-                              const tempRulesets  = cloneDeep(rulesets);
-                              tempRulesets[i].update_interval = value;
-                              setRulesets(tempRulesets);
+                              const temp_rulesets  = cloneDeep(rulesets);
+                              temp_rulesets[i].update_interval = value;
+                              setRulesets(temp_rulesets);
                             }}
                           />
                         </div>
@@ -143,17 +143,17 @@ export default function AddRuleset(props: {edit:boolean; isOpen: boolean; onClos
                           isClearable
                           value={ruleset.name}
                           onValueChange={(value) => {
-                            const tempRulesets = cloneDeep(rulesets);
-                            tempRulesets[i].name = value;
-                            setRulesets(tempRulesets);
+                            const temp_rulesets = cloneDeep(rulesets);
+                            temp_rulesets[i].name = value;
+                            setRulesets(temp_rulesets);
                           }}
                         />
                         <Switch
                           isSelected={ruleset.remote}
                           onValueChange={(value) => {
-                            const tempRulesets = cloneDeep(rulesets);
-                            tempRulesets[i].remote = value;
-                            setRulesets(tempRulesets);
+                            const temp_rulesets = cloneDeep(rulesets);
+                            temp_rulesets[i].remote = value;
+                            setRulesets(temp_rulesets);
                           }}
                           size="sm"
                         >
@@ -164,9 +164,9 @@ export default function AddRuleset(props: {edit:boolean; isOpen: boolean; onClos
                         <Switch
                           isSelected={!ruleset.binary}
                           onValueChange={(value) => {
-                            const tempRulesets = cloneDeep(rulesets);
-                            tempRulesets[i].binary = !value;
-                            setRulesets(tempRulesets);
+                            const temp_rulesets = cloneDeep(rulesets);
+                            temp_rulesets[i].binary = !value;
+                            setRulesets(temp_rulesets);
                           }}
                           size="sm"
                         >

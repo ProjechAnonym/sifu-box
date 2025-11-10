@@ -20,7 +20,7 @@ export default function AddTemplate(props: {
   useMemo(() => {
     template && setContent(JSON.stringify(template, null, 4));
   }, [template]);
-  const addItem = (content: string, name: string) => {
+  const AddItem = (content: string, name: string) => {
     try {
       const template_msg = JSON.parse(content);
       template_msg.name = name
@@ -41,7 +41,7 @@ export default function AddTemplate(props: {
       toast.error("模板格式错误");
     }
   }
-  const editItem = (content: string, name: string) => {
+  const EditItem = (content: string, name: string) => {
     try {
       const template_msg = JSON.parse(content);
       template_msg.name = name
@@ -117,7 +117,7 @@ export default function AddTemplate(props: {
                 size="sm"
                 color="primary"
                 variant="shadow"
-                onPress={() => edit ? editItem(content, template.name): addItem(content, name)}
+                onPress={() => edit ? EditItem(content, template.name): AddItem(content, name)}
               >
                 <span className="font-black text-xl">提交</span>
               </Button>

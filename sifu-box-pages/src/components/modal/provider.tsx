@@ -14,7 +14,7 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
   useEffect(() => {
     setProviders([initial_value]);
   }, [initial_value]);
-  const addItems = () => toast.promise(
+  const AddItems = () => toast.promise(
     AddProviderMsg(token, providers),
     {
       loading: "正在添加...",
@@ -28,7 +28,7 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
                 e.response.data.message ? e.response.data.message : e.response.data
     }
   );
-  const editItems = () => toast.promise(
+  const EditItems = () => toast.promise(
     EditProvider(token, providers[0]),
     {
       loading: "正在修改...",
@@ -49,7 +49,7 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              edit ? editItems() : addItems();
+              edit ? EditItems() :AddItems();
             }}
           >
             <ModalHeader className="gap-2 items-center">
@@ -62,21 +62,21 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
                       toast.error("无法继续删除");
                       return;
                     }
-                    const tempProviders = cloneDeep(providers);
-                    tempProviders.pop();
-                    setProviders(tempProviders);
+                    const temp_providers = cloneDeep(providers);
+                    temp_providers.pop();
+                    setProviders(temp_providers);
                 }}>
                   <i className="bi bi-dash text-3xl" />
                 </Button>
                 <Button size="sm" isIconOnly 
                   onPress={() => {
-                  const tempProviders = cloneDeep(providers);
-                    tempProviders.push({
+                  const temp_providers = cloneDeep(providers);
+                    temp_providers.push({
                       name: "",
                       remote: false,
                       path: "",
                     });
-                    setProviders(tempProviders);
+                    setProviders(temp_providers);
                   }}
                 >
                   <i className="bi bi-plus text-3xl" />
@@ -97,9 +97,9 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
                         isClearable
                         value={provider.path}
                         onValueChange={(value) => {
-                          const tempProviders = cloneDeep(providers);
-                          tempProviders[i].path = value;
-                          setProviders(tempProviders);
+                          const temp_providers = cloneDeep(providers);
+                          temp_providers[i].path = value;
+                          setProviders(temp_providers);
                         }}
                       />
                       <div className="flex flex-row gap-2 items-center">
@@ -114,17 +114,17 @@ export default function AddProviders(props: {edit:boolean; isOpen: boolean; onCl
                           isClearable
                           value={provider.name}
                           onValueChange={(value) => {
-                            const tempProviders = cloneDeep(providers);
-                            tempProviders[i].name = value;
-                            setProviders(tempProviders);
+                            const temp_providers = cloneDeep(providers);
+                            temp_providers[i].name = value;
+                            setProviders(temp_providers);
                           }}
                         />
                         <Switch
                           isSelected={provider.remote}
                           onValueChange={(value) => {
-                            const tempProviders = cloneDeep(providers);
-                            tempProviders[i].remote = value;
-                            setProviders(tempProviders);
+                            const temp_providers = cloneDeep(providers);
+                            temp_providers[i].remote = value;
+                            setProviders(temp_providers);
                           }}
                         >
                           <span className="text-xl font-black">

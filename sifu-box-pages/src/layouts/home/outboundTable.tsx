@@ -104,7 +104,7 @@ export default function OutboundsTable(props: {
                 </div>
               )}
               <ScrollShadow className="flex flex-wrap gap-x-3 gap-y-2 max-h-56 py-2">
-                {(outbounds![group] as OutboundGroup).all.map((tag: string, j: number)=><OutboundsCard load={test_servers && test_servers.includes(tag)} theme={theme} group={group} tag={tag} outbound_msg={outbounds![tag] as Outbound} key={`${group}-${tag}-${j}`} select={tag === (outbounds![group] as OutboundGroup).now} switchOutbound={switchOutbound} testDelay={testOutboundDelay}/>)}
+                {(outbounds![group] as OutboundGroup).all.map((tag: string, j: number)=><OutboundsCard load={test_servers && test_servers.includes(tag)} theme={theme} group={group} tag={tag} outbound_msg={outbounds![tag] as Outbound} key={`${group}-${tag}-${j}`} select={tag === (outbounds![group] as OutboundGroup).now} SwitchOutbound={switchOutbound} TestDelay={testOutboundDelay}/>)}
               </ScrollShadow>
             </AccordionItem>
             ))
