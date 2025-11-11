@@ -66,7 +66,7 @@ func main() {
 
 	scheduler := cron.New()
 	scheduler.Start()
-	job_id, err := scheduler.AddFunc("* * * * *", func() {
+	job_id, err := scheduler.AddFunc("0 3 * * 1", func() {
 		for {
 			if exec_lock.TryLock() {
 				break

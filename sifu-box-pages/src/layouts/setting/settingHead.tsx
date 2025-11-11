@@ -29,7 +29,8 @@ export default function SettingHead(props: {
     const refresh = () => toast.promise(Refresh(token), {
             loading: "更新配置文件中...",
             success: (res) => {
-                res !== true && res !== false ? res.message.map(item=>toast.error(item.message)) : toast.error("未知错误");
+                res !== true && res === false ? toast.error("未知错误") : 
+                    res !== true && res.message.map(item=>toast.error(item.message));
                 return "更新配置文件完成"
             },
             error: (e) => {

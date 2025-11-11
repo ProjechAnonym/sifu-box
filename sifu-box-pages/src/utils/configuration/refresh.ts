@@ -6,7 +6,7 @@ export async function Refresh(token: string) {
         Authorization: token,
       },
     });
-    return res.status === 200 ? true : isRefreshRes(res.data) ? res.data : false;
+    return res.status === 200 ? true : (isRefreshRes(res.data) ? res.data : false);
   } catch (e) {
     console.error(e);
     throw e;
