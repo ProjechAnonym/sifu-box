@@ -28,6 +28,14 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 		}
 		ctx.JSON(http.StatusOK, gin.H{"message": yacd})
 	})
+	configuration.GET("/default/template", middleware.AdminAuth(), func(ctx *gin.Context) {
+		template, err := control.FetchDefaultTemplate(bunt_client, logger)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": template})
+	})
 	configuration.POST("/add/provider/:remote", middleware.AdminAuth(), func(ctx *gin.Context) {
 		providers := []model.Provider{}
 		res := []gin.H{}

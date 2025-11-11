@@ -19,6 +19,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 )
 
 // FetchItems 用于从数据库中获取 Provider、Ruleset 和 Template 的列表, 并将结果封装为 []gin.H 返回
@@ -645,4 +646,18 @@ func FetchYacd(ent_client *ent.Client, bunt_client *buntdb.DB, logger *zap.Logge
 	yacd.Secret = template_msg.Experiment.Clash_api.Secret
 	yacd.Log = !template_msg.Log.Disabled
 	return &yacd, nil
+}
+
+func FetchDefaultTemplate(bunt_client *buntdb.DB, logger *zap.Logger) (*model.Template, error) {
+	content, err := utils.GetValue(bunt_client, initial.TEMPLATE, logger)
+	if err != nil {
+		logger.Error(fmt.Sprintf("查找默认模板信息失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("查找默认模板信息失败: [%s]", err.Error())
+	}
+	template := model.Template{}
+	if err = yaml.Unmarshal([]byte(content), &template); err != nil {
+		logger.Error(fmt.Sprintf("解析默认模板信息失败: [%s]", err.Error()))
+		return nil, fmt.Errorf("解析默认模板信息失败: [%s]", err.Error())
+	}
+	return &template, nil
 }

@@ -21,9 +21,9 @@ func LoadSetting(config_path string, buntdb_client *buntdb.DB, logger *zap.Logge
 		panic(fmt.Sprintf(`读取配置文件失败: [%s]`, err.Error()))
 	}
 	setting := struct {
-		Smtp model.Smtp `json:"smtp" yaml:"smtp"`
-		User model.User `json:"user" yaml:"user"`
-		Yacd model.Yacd `json:"yacd" yaml:"yacd"`
+		Smtp     model.Smtp     `json:"smtp" yaml:"smtp"`
+		User     model.User     `json:"user" yaml:"user"`
+		Template model.Template `json:"template" yaml:"template"`
 	}{}
 	if err := yaml.Unmarshal(content, &setting); err != nil {
 		panic(fmt.Sprintf(`序列化配置文件失败: [%s]`, err.Error()))
@@ -42,11 +42,11 @@ func LoadSetting(config_path string, buntdb_client *buntdb.DB, logger *zap.Logge
 	if err := utils.SetValue(buntdb_client, USER, string(user_content), logger); err != nil {
 		panic(fmt.Sprintf(`保存SMTP配置失败: [%s]`, err.Error()))
 	}
-	yacd_content, err := yaml.Marshal(setting.Yacd)
+	template_content, err := yaml.Marshal(setting.Template)
 	if err != nil {
-		panic(fmt.Sprintf(`序列化Yacd配置失败: [%s]`, err.Error()))
+		panic(fmt.Sprintf(`序列化Template配置失败: [%s]`, err.Error()))
 	}
-	if err := utils.SetValue(buntdb_client, YACD, string(yacd_content), logger); err != nil {
+	if err := utils.SetValue(buntdb_client, TEMPLATE, string(template_content), logger); err != nil {
 		panic(fmt.Sprintf(`保存Yacd配置失败: [%s]`, err.Error()))
 	}
 }
