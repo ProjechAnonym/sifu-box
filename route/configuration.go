@@ -147,8 +147,8 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 			return
 		}
 		if err := template.CheckField(); err != nil {
-			logger.Error(fmt.Sprintf(`模板字段"%s"出错: [%s]`, template.Name, err.Error()))
-			ctx.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf(`模板字段"%s"出错: [%s]`, template.Name, err.Error())})
+			logger.Error(fmt.Sprintf(`模板字段出错: [%s]`, err.Error()))
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf(`模板字段出错: [%s]`, err.Error())})
 			return
 		}
 		if err := control.AddTemplate(template, ent_client, logger); err != nil {

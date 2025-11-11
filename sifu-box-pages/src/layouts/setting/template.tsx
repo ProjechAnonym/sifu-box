@@ -9,11 +9,11 @@ import TemplateCard from "@/components/card/template";
 import AddTemplate from "@/components/modal/template";
 import { DeleteTemplate } from "@/utils/configuration/template";
 import { SetTemplate } from "@/utils/select";
-export default function TemplateLayout(props: { templates: Array<{name: string; [key: string]: any;}>; setUpdate: (update: boolean) => void; token: string; theme: string;}) {
-  const { templates, setUpdate, token, theme } = props;
+export default function TemplateLayout(props: { templates: Array<{name: string; [key: string]: any;}>; setUpdate: (update: boolean) => void; token: string; theme: string; default_template: {name: string; [key: string]: any;}}) {
+  const { templates, setUpdate, token, theme, default_template } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [edit, setEdit] = useState(false);
-  const [edit_template, setEditTemplate] = useState<{name: string; [key: string]: any;}>({name: ""});
+  const [edit_template, setEditTemplate] = useState<{name: string; [key: string]: any;}>(default_template);
   const [selected, setSelected] = useState<Array<string>>([]);
   const [search, setSearch] = useState<string>("");
   const [display_templates, setDisplayTemplate] = useState<Array<{name: string; [key: string]: any;}>>([]);
@@ -42,7 +42,7 @@ export default function TemplateLayout(props: { templates: Array<{name: string; 
                   e.response.data.message ? e.response.data.message : e.response.data},
   }), []);
   const setItem = useCallback((value: string) => toast.promise(SetTemplate(token, value), {
-          loading: "正在删除所选机场...",
+          loading: "正在设置所选模板...",
           success: (res) => res,
           error: (e) => e.code === "ERR_NETWORK" ? "请检查网络连接" : 
                   e.response.data.message ? e.response.data.message : e.response.data
@@ -70,7 +70,7 @@ export default function TemplateLayout(props: { templates: Array<{name: string; 
           size="sm"
           color="primary"
           variant="shadow"
-          onPress={() => editItem({name: "111"}, false)}
+          onPress={() => editItem(default_template, false)}
         >
           <span className="font-black text-xl">添加</span>
         </Button>
@@ -78,15 +78,19 @@ export default function TemplateLayout(props: { templates: Array<{name: string; 
           <span className="font-black text-xl">删除</span>
         </Button>
       </header>
-      <CheckboxGroup value={selected} onValueChange={setSelected}>
-        <ScrollShadow style={{height: `calc(100% - 3rem)`}} className="w-full flex flex-wrap gap-2">
-          {display_templates && display_templates.map((template) => (
-            <div className="w-72" key={template.name}>
-              <TemplateCard template={template} theme={theme} token={token} setDelete={deleteItem} setTemplate={setItem} editTemplate={() => editItem(template, true)}/>
-            </div>
-          ))}
-        </ScrollShadow>
-      </CheckboxGroup>
+      
+      <ScrollShadow style={{height: `calc(100% - 3rem)`}}>
+        <CheckboxGroup value={selected} onValueChange={setSelected}>
+          <div className="flex flex-wrap w-full gap-2"> 
+            {display_templates && display_templates.map((template) => (
+              <div className="w-72" key={template.name}>
+                <TemplateCard template={template} theme={theme} token={token} setDelete={deleteItem} setTemplate={setItem} editTemplate={() => editItem(template, true)}/>
+              </div>
+            ))}
+          </div>
+        </CheckboxGroup>
+      </ScrollShadow>
+      
   </div>
   )
 }

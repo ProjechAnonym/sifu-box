@@ -29,6 +29,18 @@ export async function FetchConfiguration(token: string) {
   }
 }
 
+export async function FetchDefaultTemplate(token: string) {
+  try {
+    const res = await axios.get("http://192.168.10.6:9090/api/configuration/default/template", {
+      headers: { Authorization: token },
+    });
+    return res.status === 200 ? res.data.message : false;
+  } catch (e) {
+    console.error(e);
+    throw e;
+  }
+}
+
 function isConfiguration(obj: any): obj is {message: Array<{message: Array<any>,status: boolean, type:string}>} {
   return (
     typeof obj === "object" && "message" in obj && Array.isArray(obj.message) &&

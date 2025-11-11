@@ -101,7 +101,7 @@ export const authSlice = createSlice({
 });
 export const themeSlice = createSlice({
   name: "theme",
-  initialState: { theme: "sifulight" },
+  initialState: { theme: "sifudark" },
   reducers: {
     setTheme: (state, action: PayloadAction<string>) => {
       state.theme = action.payload;

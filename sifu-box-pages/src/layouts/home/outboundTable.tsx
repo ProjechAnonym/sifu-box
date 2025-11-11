@@ -70,7 +70,7 @@ export default function OutboundsTable(props: {
    
     return (
     <div className="p-2" style={{ height: `calc(100% - ${height}px)` }}>
-      {groups && groups.length > 0 && <NavBar groups={groups} />}
+      {groups && groups.length > 0 && <NavBar groups={groups} theme={theme} />}
       {groups && 
         <ScrollShadow className="w-full h-full">
           <Accordion selectionMode="multiple" variant="bordered" isCompact>
