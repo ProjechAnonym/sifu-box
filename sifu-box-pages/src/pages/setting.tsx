@@ -100,7 +100,7 @@ export default function SettingPage() {
         setHeight={setHeight}
       />
       <div style={{height: `calc(100% - ${height}px)`}}>
-        {template_mode ? <div className="w-full h-full"><TemplateLayout templates={template} setUpdate={setUpdate} token={token} theme={theme} default_template={default_template}/></div>: 
+        {template_mode ? <div className="w-full h-full"><TemplateLayout templates={template} setUpdate={setUpdate} token={token} theme={theme} default_template={default_template} providers={providers} rulesets={rulesets}/></div>: 
           <div className="flex flex-col gap-2 w-full h-full">
             <ProviderLayout providers={providers} theme={theme} token={token} setUpdate={setUpdate}/>
             <RulesetLayout rulesets={rulesets} theme={theme} token={token} setUpdate={setUpdate}/>

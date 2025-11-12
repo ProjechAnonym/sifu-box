@@ -31,7 +31,7 @@ export default function MonitorHead(props: {template: string, theme: string, adm
     useEffect(() => {
         listen !== "" && secret !== "" && FetchRules(listen, secret).then((res) => setRules(res)).catch(() => toast.error("获取规则列表失败"));
         header_container.current && fetchHeight(header_container.current.clientHeight);
-    }, [header_container.current && header_container.current.clientHeight]);
+    }, [header_container.current && header_container.current.clientHeight, listen, secret]);
     const memoryReceiver = useCallback((data: { inuse: number; oslimit: number }) => setMemory(data), []);
     const trafficReceiver = useCallback((data: { up: number; down: number; }) => setNetwork({ up: data.up, down: data.down }), []);
     const stasticsReceiver = useCallback((data: ConnectionData) => {

@@ -28,7 +28,7 @@ export default heroui(
                 content1: "#F9FFFF",
                 content2: "#C3F4FD",
                 content3: "#3f3f46",
-                content4: "#52525b",
+                content4: "#EBFCFF",
             }, // light theme colors
             },
             sifudark: {

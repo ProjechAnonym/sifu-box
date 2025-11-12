@@ -9,8 +9,10 @@ import TemplateCard from "@/components/card/template";
 import AddTemplate from "@/components/modal/template";
 import { DeleteTemplate } from "@/utils/configuration/template";
 import { SetTemplate } from "@/utils/select";
-export default function TemplateLayout(props: { templates: Array<{name: string; [key: string]: any;}>; setUpdate: (update: boolean) => void; token: string; theme: string; default_template: {name: string; [key: string]: any;}}) {
-  const { templates, setUpdate, token, theme, default_template } = props;
+import { Provider } from "@/types/setting/provider";
+import { RuleSet } from "@/types/setting/ruleset";
+export default function TemplateLayout(props: { providers:Array<Provider>, rulesets:Array<RuleSet>, templates: Array<{name: string; [key: string]: any;}>; setUpdate: (update: boolean) => void; token: string; theme: string; default_template: {name: string; [key: string]: any;}}) {
+  const { providers, rulesets, templates, setUpdate, token, theme, default_template } = props;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [edit, setEdit] = useState(false);
   const [edit_template, setEditTemplate] = useState<{name: string; [key: string]: any;}>(default_template);
@@ -54,7 +56,7 @@ export default function TemplateLayout(props: { templates: Array<{name: string; 
   },[])
   return (
     <div className="h-full w-full p-2">
-      <AddTemplate isOpen={isOpen} onClose={onClose} edit={edit} token={token} template={edit_template} theme={theme} setUpdate={setUpdate} />
+      <AddTemplate providers={providers} rulesets={rulesets} isOpen={isOpen} onClose={onClose} edit={edit} token={token} template={edit_template} theme={theme} setUpdate={setUpdate} />
       <header className="flex gap-2 flex-row items-center p-2">
         <Input
           size="sm"

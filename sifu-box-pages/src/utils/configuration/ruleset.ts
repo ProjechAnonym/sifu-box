@@ -33,10 +33,10 @@ export async function AddRulesetFiles(token: string, files: FileList) {
   }
 }
 
-export async function AddRulesetMsg(token: string, providers: Array<{name: string, path: string, remote: boolean}>) {
+export async function AddRulesetMsg(token: string, rulesets: Array<{name: string, path: string, remote: boolean, binary: boolean, download_detour: string, update_interval: string}>) {
   try {
     const res = await axios.post("http://192.168.10.6:9090/api/configuration/add/ruleset/remote",
-        providers,
+        rulesets,
         { headers: { Authorization: token } }
     );
     return res.status === 207
@@ -48,11 +48,14 @@ export async function AddRulesetMsg(token: string, providers: Array<{name: strin
   }
 }
 
-export async function EditRuleset(token: string, provider: {name: string, path: string, remote: boolean}) {
+export async function EditRuleset(token: string, ruleset: {name: string, path: string, remote: boolean, binary: boolean, download_detour: string, update_interval: string}) {
   const data = new FormData();
-  data.append("name", provider.name);
-  data.append("path", provider.path);
-  data.append("remote", provider.remote.toString());
+  data.append("name", ruleset.name);
+  data.append("path", ruleset.path);
+  data.append("remote", ruleset.remote.toString());
+  data.append("binary", ruleset.binary.toString())
+  ruleset.download_detour && data.append("download_detour", ruleset.download_detour);
+  ruleset.update_interval && data.append("update_interval", ruleset.update_interval);
   try {
     const res = await axios.patch("http://192.168.10.6:9090/api/configuration/edit/ruleset",
         data,
