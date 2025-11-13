@@ -5,6 +5,7 @@ import { Input, Textarea } from "@heroui/input";
 import { ScrollShadow } from "@heroui/scroll-shadow";
 import { CheckboxGroup, Checkbox } from "@heroui/checkbox";
 import {Breadcrumbs, BreadcrumbItem} from "@heroui/breadcrumbs";
+import OutboundsGroup from "../outboundsGroup";
 import toast from "react-hot-toast";
 import { AddTemplateMsg, EditTemplateMsg } from "@/utils/configuration/template";
 import { Provider } from "@/types/setting/provider";
@@ -26,6 +27,7 @@ export default function AddTemplate(props: {
   const [current_modal, setCurrentModal] = useState("providers");
   const [selected_providers, setSelectedProviders] = useState<Array<string>>([]);
   const [selected_rulesets, setSelectedRulesets] = useState<Array<string>>([]);
+  const [outbounds_groups, setOutboundsGroups] = useState<Array<{type: string, tag: string, providers: string[], tag_groups: string[]}>>([{type: "direct", tag: "direct", providers: [], tag_groups: []}]);
   useMemo(() => {
     template && setContent(JSON.stringify(template, null, 4));
   }, [template]);
@@ -42,6 +44,7 @@ export default function AddTemplate(props: {
         return ruleset_msg
       })
       template_msg.route.rule_set = ruleset_list
+      template_msg.outbounds_group = outbounds_groups
       content && toast.promise(AddTemplateMsg(token, template_msg),
         {
           loading: "正在添加...",
@@ -72,6 +75,7 @@ export default function AddTemplate(props: {
         return ruleset_msg
       })
       template_msg.route.rule_set = ruleset_list
+      template_msg.outbounds_group = outbounds_groups
       content && toast.promise(EditTemplateMsg(token, template_msg),
         {
           loading: "正在修改...",
@@ -106,6 +110,9 @@ export default function AddTemplate(props: {
                 <BreadcrumbItem key="rulesets" isCurrent={current_modal === "rulesets"}>
                   选择规则集
                 </BreadcrumbItem>
+                <BreadcrumbItem key="outbounds_group" isCurrent={current_modal === "outbounds_group"}>
+                  设置出站集
+                </BreadcrumbItem>
                 <BreadcrumbItem key="template" isCurrent={current_modal === "template"}>
                   编写模板
                 </BreadcrumbItem>
@@ -115,7 +122,7 @@ export default function AddTemplate(props: {
                   <CheckboxGroup value={selected_providers} onValueChange={setSelectedProviders}>
                     <div className="w-full flex flex-wrap gap-2 h-full">
                       {providers.map((provider) => (
-                        <div key={provider.name} className="bg-content4 p-2 rounded-xl">
+                        <div key={provider.name} className="border-1.5 p-1 rounded-lg">
                           <Checkbox value={provider.name}>
                             {provider.name}
                           </Checkbox>
@@ -127,9 +134,9 @@ export default function AddTemplate(props: {
               {current_modal === "rulesets" && (
                 <ScrollShadow className="w-full h-full">
                   <CheckboxGroup value={selected_rulesets} onValueChange={setSelectedRulesets}>
-                    <div className="w-full flex flex-wrap gap-2 h-full">
+                    <div className="flex flex-wrap gap-2 h-full">
                       {rulesets.map((ruleset) => (
-                        <div key={ruleset.name} className="bg-content4 p-2 rounded-xl">
+                        <div key={ruleset.name} className="border-1.5 p-1 rounded-lg">
                           <Checkbox value={ruleset.name}>
                             {ruleset.name}
                           </Checkbox>
@@ -139,6 +146,7 @@ export default function AddTemplate(props: {
                   </CheckboxGroup>
                 </ScrollShadow>)}
               {current_modal === "template" && (<Textarea label="模板内容" value={content} onValueChange={setContent}/>)}
+              {current_modal === "outbounds_group" && <OutboundsGroup theme={theme} providers={selected_providers} setOutboundsGroup={setOutboundsGroups}/>}
             </ModalBody>
             <ModalFooter>
               <Button size="sm" color="danger" variant="shadow" onPress={onClose}>
