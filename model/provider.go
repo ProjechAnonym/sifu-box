@@ -29,7 +29,7 @@ func (p *Provider) AutoFill(file *multipart.FileHeader, work_dir string) error {
 	file_name := strings.TrimSuffix(file.Filename, ext)
 
 	// 构建文件保存路径, 将文件名进行MD5加密后保存
-	save_path := filepath.Join(work_dir, "uploads", "providers", fmt.Sprintf("%x%s", md5.Sum([]byte(file_name)), ext))
+	save_path := filepath.Join(work_dir, "temp", "providers", fmt.Sprintf("%x%s", md5.Sum([]byte(file_name)), ext))
 
 	// 验证文件格式是否支持, 只允许yaml和yml格式
 	switch ext {

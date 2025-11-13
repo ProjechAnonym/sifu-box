@@ -27,9 +27,9 @@ func boot(cron bool, work_dir string, pid *int, exit *bool, bunt_client *buntdb.
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf(`获取当前使用模板错误: [%s]`, err.Error()), logger)
 		return
 	}
-	singbox_path := filepath.Join(work_dir, "sing-box", "sing-box")
-	singbox_lib := filepath.Join(work_dir, "sing-box", "lib")
-	singbox_config := filepath.Join(work_dir, "sing-box", "config", fmt.Sprintf("%x.json", md5.Sum([]byte(name))))
+	singbox_path := filepath.Join(work_dir, "core", "sing-box")
+	singbox_lib := filepath.Join(work_dir, "lib")
+	singbox_config := filepath.Join(work_dir, "temp", "config", fmt.Sprintf("%x.json", md5.Sum([]byte(name))))
 	if err := sh.Command(singbox_path, "-D", singbox_lib, "-c", singbox_config, "run").Run(); err != nil {
 		logger.Error(fmt.Sprintf("sing-box关闭: [%s]", err.Error()))
 		utils.SetValue(bunt_client, initial.OPERATION_ERRORS, fmt.Sprintf("执行启动命令失败: [%s]", err.Error()), logger)

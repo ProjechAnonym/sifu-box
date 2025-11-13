@@ -32,7 +32,7 @@ func (r *Ruleset) AutoFill(file *multipart.FileHeader, work_dir string) error {
 	file_name := strings.TrimSuffix(file.Filename, ext)
 
 	// 构建文件保存路径, 使用文件名的MD5值作为实际存储文件名
-	save_path := filepath.Join(work_dir, "uploads", "rulesets", fmt.Sprintf("%x%s", md5.Sum([]byte(file_name)), ext))
+	save_path := filepath.Join(work_dir, "temp", "rulesets", fmt.Sprintf("%x%s", md5.Sum([]byte(file_name)), ext))
 
 	// 根据文件扩展名判断规则集类型并设置二进制标志
 	switch ext {
