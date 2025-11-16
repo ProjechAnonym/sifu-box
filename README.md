@@ -34,7 +34,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/opt/sifu-box/bin/sifu-box run -c /opt/sifu-box/config.yaml -d /opt/sifu-box/lib -l 0.0.0.0:8080
+ExecStart=/opt/sifu-box/bin/sifu-box run -c /opt/sifu-box/config.yaml -d /opt/sifu-box -l 0.0.0.0:8080
 Restart=on-failure
 
 [Install]
@@ -68,7 +68,7 @@ AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_SYS_PTRACE CAP_DAC_RE
 
 User=sifubox
 Group=sifubox
-ExecStart=/opt/sifu-box/bin/sifu-box run -c /opt/sifu-box/config.yaml -d /opt/sifu-box/lib -l 0.0.0.0:8080
+ExecStart=/opt/sifu-box/bin/sifu-box run -c /opt/sifu-box/config.yaml -d /opt/sifu-box -l 0.0.0.0:8080
 Restart=on-failure
 RestartSec=10s
 [Install]
