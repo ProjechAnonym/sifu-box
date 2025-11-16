@@ -34,7 +34,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/opt/sifubox/bin/sifu-box run -c /opt/sifubox/config -w /opt/sifubox/lib -l :8080 -s
+ExecStart=/opt/sifu-box/bin/sifu-box run -c /opt/sifu-box/config.yaml -d /opt/sifu-box/lib -l 0.0.0.0:8080
 Restart=on-failure
 
 [Install]
@@ -59,22 +59,22 @@ chmod u+x /opt/sifu-box/bin/sifu-box
 cat > /usr/lib/systemd/system/sifu-box.service <<EOF
 [Unit]
 Description=A config file transform Service
-After=network.target
+After=network.target nss-lookup.target network-online.target
 
 [Service]
-Type=simple
+
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_SYS_PTRACE CAP_DAC_READ_SEARCH
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE CAP_SYS_PTRACE CAP_DAC_READ_SEARCH
+
 User=sifubox
 Group=sifubox
-ExecStart=/opt/sifubox/bin/sifu-box run -c /opt/sifubox/config -w /opt/sifubox/lib -l :8080 -s
+ExecStart=/opt/sifu-box/bin/sifu-box run -c /opt/sifu-box/config.yaml -d /opt/sifu-box/lib -l 0.0.0.0:8080
 Restart=on-failure
-
+RestartSec=10s
 [Install]
 WantedBy=multi-user.target
 EOF
-# 如果使用systemctl控制sing-box的启停, 则需要设置sudo权限, 一般的用户是没有权限执行systemctl的
-cat >> /etc/sudoers.d/sifubox-nopasswd << EOF
-sifubox ALL=(ALL) NOPASSWD: /bin/systemctl * sing-box
-EOF
+
 ```
 
 关于 sing-box 和 mosdns 的配置有时效问题,请移步博客[sing-box 和 mosdns 配置](https://vercel-blog.sifulin.top/zh-cn/2024/07/11/two-sexy-bitches-singbox-and-mosdns/)
