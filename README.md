@@ -4,7 +4,7 @@ sing-box 转换程序
 
 ## **注意**
 
-sifu-box@2.0版本运行逻辑与v1.0版本区别较大, v1.0的部署方案不适用于v2.0版本。v2.0版本采用信号沟通sing-box内核, 不再需要配置sing-box的systemctl文件, 只需要配置sifu-box的就可以 
+sifu-box@2.0版本运行逻辑与v1.0版本区别较大, v1.0的部署方案不适用于v2.0版本。v2.0版本采用信号沟通sing-box内核, 不再需要配置sing-box的systemctl文件, 只需要配置sifu-box的就可以, sing-box上传到工作目录的core文件夹下 
 
 ## 安装
 
