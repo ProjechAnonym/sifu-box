@@ -38,21 +38,21 @@ export const Login: AsyncThunk<
   }
 });
 
-export const AutoLogin: AsyncThunk<
+export const Verify: AsyncThunk<
   { status: boolean; token: string; admin: boolean },
   {},
   {}
 > = createAsyncThunk<{ status: boolean; token: string; admin: boolean }, {}>(
   "auth/verify",
   async () => {
-    const jwtToken = localStorage.getItem("jwtToken");
+    const jwt= localStorage.getItem("jwt");
 
-    if (jwtToken === null) {
+    if (jwt === null) {
       return { status: false, token: "", admin: false };
     }
     try {
       const res = await axios.get("/api/verify", {
-        headers: { Authorization: jwtToken },
+        headers: { Authorization: jwt },
       });
       return res.status === 200
         ? {

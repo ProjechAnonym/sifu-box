@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sifu-box/ent/template"
-	"sifu-box/models"
+	"sifu-box/singbox"
 	"strings"
 
 	"entgo.io/ent"
@@ -20,8 +20,24 @@ type Template struct {
 	ID int `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// Content holds the value of the "content" field.
-	Content      models.Template `json:"content,omitempty"`
+	// DNS holds the value of the "dns" field.
+	DNS singbox.DNS `json:"dns,omitempty"`
+	// Log holds the value of the "log" field.
+	Log singbox.Log `json:"log,omitempty"`
+	// Route holds the value of the "route" field.
+	Route singbox.Route `json:"route,omitempty"`
+	// Inbounds holds the value of the "inbounds" field.
+	Inbounds []map[string]interface{} `json:"inbounds,omitempty"`
+	// OutboundGroups holds the value of the "outbound_groups" field.
+	OutboundGroups []singbox.OutboundGroup `json:"outbound_groups,omitempty"`
+	// Ntp holds the value of the "ntp" field.
+	Ntp singbox.Ntp `json:"ntp,omitempty"`
+	// Experiment holds the value of the "experiment" field.
+	Experiment singbox.Experiment `json:"experiment,omitempty"`
+	// Providers holds the value of the "providers" field.
+	Providers []string `json:"providers,omitempty"`
+	// Updated holds the value of the "updated" field.
+	Updated      bool `json:"updated,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -30,8 +46,10 @@ func (*Template) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case template.FieldContent:
+		case template.FieldDNS, template.FieldLog, template.FieldRoute, template.FieldInbounds, template.FieldOutboundGroups, template.FieldNtp, template.FieldExperiment, template.FieldProviders:
 			values[i] = new([]byte)
+		case template.FieldUpdated:
+			values[i] = new(sql.NullBool)
 		case template.FieldID:
 			values[i] = new(sql.NullInt64)
 		case template.FieldName:
@@ -45,7 +63,7 @@ func (*Template) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Template fields.
-func (t *Template) assignValues(columns []string, values []any) error {
+func (_m *Template) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -56,23 +74,85 @@ func (t *Template) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			t.ID = int(value.Int64)
+			_m.ID = int(value.Int64)
 		case template.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				t.Name = value.String
+				_m.Name = value.String
 			}
-		case template.FieldContent:
+		case template.FieldDNS:
 			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field content", values[i])
+				return fmt.Errorf("unexpected type %T for field dns", values[i])
 			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &t.Content); err != nil {
-					return fmt.Errorf("unmarshal field content: %w", err)
+				if err := json.Unmarshal(*value, &_m.DNS); err != nil {
+					return fmt.Errorf("unmarshal field dns: %w", err)
 				}
 			}
+		case template.FieldLog:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field log", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Log); err != nil {
+					return fmt.Errorf("unmarshal field log: %w", err)
+				}
+			}
+		case template.FieldRoute:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field route", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Route); err != nil {
+					return fmt.Errorf("unmarshal field route: %w", err)
+				}
+			}
+		case template.FieldInbounds:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field inbounds", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Inbounds); err != nil {
+					return fmt.Errorf("unmarshal field inbounds: %w", err)
+				}
+			}
+		case template.FieldOutboundGroups:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field outbound_groups", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.OutboundGroups); err != nil {
+					return fmt.Errorf("unmarshal field outbound_groups: %w", err)
+				}
+			}
+		case template.FieldNtp:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field ntp", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Ntp); err != nil {
+					return fmt.Errorf("unmarshal field ntp: %w", err)
+				}
+			}
+		case template.FieldExperiment:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field experiment", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Experiment); err != nil {
+					return fmt.Errorf("unmarshal field experiment: %w", err)
+				}
+			}
+		case template.FieldProviders:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field providers", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.Providers); err != nil {
+					return fmt.Errorf("unmarshal field providers: %w", err)
+				}
+			}
+		case template.FieldUpdated:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field updated", values[i])
+			} else if value.Valid {
+				_m.Updated = value.Bool
+			}
 		default:
-			t.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -80,38 +160,62 @@ func (t *Template) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Template.
 // This includes values selected through modifiers, order, etc.
-func (t *Template) Value(name string) (ent.Value, error) {
-	return t.selectValues.Get(name)
+func (_m *Template) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // Update returns a builder for updating this Template.
 // Note that you need to call Template.Unwrap() before calling this method if this Template
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (t *Template) Update() *TemplateUpdateOne {
-	return NewTemplateClient(t.config).UpdateOne(t)
+func (_m *Template) Update() *TemplateUpdateOne {
+	return NewTemplateClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Template entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (t *Template) Unwrap() *Template {
-	_tx, ok := t.config.driver.(*txDriver)
+func (_m *Template) Unwrap() *Template {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Template is not a transactional entity")
 	}
-	t.config.driver = _tx.drv
-	return t
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (t *Template) String() string {
+func (_m *Template) String() string {
 	var builder strings.Builder
 	builder.WriteString("Template(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("name=")
-	builder.WriteString(t.Name)
+	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
-	builder.WriteString("content=")
-	builder.WriteString(fmt.Sprintf("%v", t.Content))
+	builder.WriteString("dns=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DNS))
+	builder.WriteString(", ")
+	builder.WriteString("log=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Log))
+	builder.WriteString(", ")
+	builder.WriteString("route=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Route))
+	builder.WriteString(", ")
+	builder.WriteString("inbounds=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Inbounds))
+	builder.WriteString(", ")
+	builder.WriteString("outbound_groups=")
+	builder.WriteString(fmt.Sprintf("%v", _m.OutboundGroups))
+	builder.WriteString(", ")
+	builder.WriteString("ntp=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Ntp))
+	builder.WriteString(", ")
+	builder.WriteString("experiment=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Experiment))
+	builder.WriteString(", ")
+	builder.WriteString("providers=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Providers))
+	builder.WriteString(", ")
+	builder.WriteString("updated=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Updated))
 	builder.WriteByte(')')
 	return builder.String()
 }

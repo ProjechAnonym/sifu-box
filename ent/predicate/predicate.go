@@ -9,8 +9,8 @@ import (
 // Provider is the predicate function for provider builders.
 type Provider func(*sql.Selector)
 
-// RuleSet is the predicate function for ruleset builders.
-type RuleSet func(*sql.Selector)
+// Ruleset is the predicate function for ruleset builders.
+type Ruleset func(*sql.Selector)
 
 // Template is the predicate function for template builders.
 type Template func(*sql.Selector)

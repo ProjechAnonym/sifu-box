@@ -15,10 +15,16 @@ const (
 	FieldName = "name"
 	// FieldPath holds the string denoting the path field in the database.
 	FieldPath = "path"
-	// FieldDetour holds the string denoting the detour field in the database.
-	FieldDetour = "detour"
+	// FieldNodes holds the string denoting the nodes field in the database.
+	FieldNodes = "nodes"
 	// FieldRemote holds the string denoting the remote field in the database.
 	FieldRemote = "remote"
+	// FieldUUID holds the string denoting the uuid field in the database.
+	FieldUUID = "uuid"
+	// FieldUpdated holds the string denoting the updated field in the database.
+	FieldUpdated = "updated"
+	// FieldTemplates holds the string denoting the templates field in the database.
+	FieldTemplates = "templates"
 	// Table holds the table name of the provider in the database.
 	Table = "providers"
 )
@@ -28,8 +34,11 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldPath,
-	FieldDetour,
+	FieldNodes,
 	FieldRemote,
+	FieldUUID,
+	FieldUpdated,
+	FieldTemplates,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -47,8 +56,8 @@ var (
 	NameValidator func(string) error
 	// PathValidator is a validator for the "path" field. It is called by the builders before save.
 	PathValidator func(string) error
-	// DetourValidator is a validator for the "detour" field. It is called by the builders before save.
-	DetourValidator func(string) error
+	// UUIDValidator is a validator for the "uuid" field. It is called by the builders before save.
+	UUIDValidator func(string) error
 )
 
 // OrderOption defines the ordering options for the Provider queries.
@@ -69,12 +78,17 @@ func ByPath(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPath, opts...).ToFunc()
 }
 
-// ByDetour orders the results by the detour field.
-func ByDetour(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDetour, opts...).ToFunc()
-}
-
 // ByRemote orders the results by the remote field.
 func ByRemote(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRemote, opts...).ToFunc()
+}
+
+// ByUUID orders the results by the uuid field.
+func ByUUID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUUID, opts...).ToFunc()
+}
+
+// ByUpdated orders the results by the updated field.
+func ByUpdated(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdated, opts...).ToFunc()
 }

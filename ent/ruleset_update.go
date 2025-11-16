@@ -11,179 +11,150 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
-// RuleSetUpdate is the builder for updating RuleSet entities.
-type RuleSetUpdate struct {
+// RulesetUpdate is the builder for updating Ruleset entities.
+type RulesetUpdate struct {
 	config
 	hooks    []Hook
-	mutation *RuleSetMutation
+	mutation *RulesetMutation
 }
 
-// Where appends a list predicates to the RuleSetUpdate builder.
-func (rsu *RuleSetUpdate) Where(ps ...predicate.RuleSet) *RuleSetUpdate {
-	rsu.mutation.Where(ps...)
-	return rsu
+// Where appends a list predicates to the RulesetUpdate builder.
+func (_u *RulesetUpdate) Where(ps ...predicate.Ruleset) *RulesetUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
-// SetTag sets the "tag" field.
-func (rsu *RuleSetUpdate) SetTag(s string) *RuleSetUpdate {
-	rsu.mutation.SetTag(s)
-	return rsu
+// SetName sets the "name" field.
+func (_u *RulesetUpdate) SetName(v string) *RulesetUpdate {
+	_u.mutation.SetName(v)
+	return _u
 }
 
-// SetNillableTag sets the "tag" field if the given value is not nil.
-func (rsu *RuleSetUpdate) SetNillableTag(s *string) *RuleSetUpdate {
-	if s != nil {
-		rsu.SetTag(*s)
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *RulesetUpdate) SetNillableName(v *string) *RulesetUpdate {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return rsu
-}
-
-// SetType sets the "type" field.
-func (rsu *RuleSetUpdate) SetType(s string) *RuleSetUpdate {
-	rsu.mutation.SetType(s)
-	return rsu
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (rsu *RuleSetUpdate) SetNillableType(s *string) *RuleSetUpdate {
-	if s != nil {
-		rsu.SetType(*s)
-	}
-	return rsu
+	return _u
 }
 
 // SetPath sets the "path" field.
-func (rsu *RuleSetUpdate) SetPath(s string) *RuleSetUpdate {
-	rsu.mutation.SetPath(s)
-	return rsu
+func (_u *RulesetUpdate) SetPath(v string) *RulesetUpdate {
+	_u.mutation.SetPath(v)
+	return _u
 }
 
 // SetNillablePath sets the "path" field if the given value is not nil.
-func (rsu *RuleSetUpdate) SetNillablePath(s *string) *RuleSetUpdate {
-	if s != nil {
-		rsu.SetPath(*s)
+func (_u *RulesetUpdate) SetNillablePath(v *string) *RulesetUpdate {
+	if v != nil {
+		_u.SetPath(*v)
 	}
-	return rsu
+	return _u
 }
 
-// SetFormat sets the "format" field.
-func (rsu *RuleSetUpdate) SetFormat(s string) *RuleSetUpdate {
-	rsu.mutation.SetFormat(s)
-	return rsu
+// SetRemote sets the "remote" field.
+func (_u *RulesetUpdate) SetRemote(v bool) *RulesetUpdate {
+	_u.mutation.SetRemote(v)
+	return _u
 }
 
-// SetNillableFormat sets the "format" field if the given value is not nil.
-func (rsu *RuleSetUpdate) SetNillableFormat(s *string) *RuleSetUpdate {
-	if s != nil {
-		rsu.SetFormat(*s)
+// SetNillableRemote sets the "remote" field if the given value is not nil.
+func (_u *RulesetUpdate) SetNillableRemote(v *bool) *RulesetUpdate {
+	if v != nil {
+		_u.SetRemote(*v)
 	}
-	return rsu
+	return _u
 }
 
-// SetLabel sets the "label" field.
-func (rsu *RuleSetUpdate) SetLabel(s string) *RuleSetUpdate {
-	rsu.mutation.SetLabel(s)
-	return rsu
+// SetBinary sets the "binary" field.
+func (_u *RulesetUpdate) SetBinary(v bool) *RulesetUpdate {
+	_u.mutation.SetBinary(v)
+	return _u
 }
 
-// SetNillableLabel sets the "label" field if the given value is not nil.
-func (rsu *RuleSetUpdate) SetNillableLabel(s *string) *RuleSetUpdate {
-	if s != nil {
-		rsu.SetLabel(*s)
+// SetNillableBinary sets the "binary" field if the given value is not nil.
+func (_u *RulesetUpdate) SetNillableBinary(v *bool) *RulesetUpdate {
+	if v != nil {
+		_u.SetBinary(*v)
 	}
-	return rsu
+	return _u
 }
 
 // SetDownloadDetour sets the "download_detour" field.
-func (rsu *RuleSetUpdate) SetDownloadDetour(s string) *RuleSetUpdate {
-	rsu.mutation.SetDownloadDetour(s)
-	return rsu
+func (_u *RulesetUpdate) SetDownloadDetour(v string) *RulesetUpdate {
+	_u.mutation.SetDownloadDetour(v)
+	return _u
 }
 
 // SetNillableDownloadDetour sets the "download_detour" field if the given value is not nil.
-func (rsu *RuleSetUpdate) SetNillableDownloadDetour(s *string) *RuleSetUpdate {
-	if s != nil {
-		rsu.SetDownloadDetour(*s)
+func (_u *RulesetUpdate) SetNillableDownloadDetour(v *string) *RulesetUpdate {
+	if v != nil {
+		_u.SetDownloadDetour(*v)
 	}
-	return rsu
+	return _u
 }
 
 // ClearDownloadDetour clears the value of the "download_detour" field.
-func (rsu *RuleSetUpdate) ClearDownloadDetour() *RuleSetUpdate {
-	rsu.mutation.ClearDownloadDetour()
-	return rsu
+func (_u *RulesetUpdate) ClearDownloadDetour() *RulesetUpdate {
+	_u.mutation.ClearDownloadDetour()
+	return _u
 }
 
 // SetUpdateInterval sets the "update_interval" field.
-func (rsu *RuleSetUpdate) SetUpdateInterval(s string) *RuleSetUpdate {
-	rsu.mutation.SetUpdateInterval(s)
-	return rsu
+func (_u *RulesetUpdate) SetUpdateInterval(v string) *RulesetUpdate {
+	_u.mutation.SetUpdateInterval(v)
+	return _u
 }
 
 // SetNillableUpdateInterval sets the "update_interval" field if the given value is not nil.
-func (rsu *RuleSetUpdate) SetNillableUpdateInterval(s *string) *RuleSetUpdate {
-	if s != nil {
-		rsu.SetUpdateInterval(*s)
+func (_u *RulesetUpdate) SetNillableUpdateInterval(v *string) *RulesetUpdate {
+	if v != nil {
+		_u.SetUpdateInterval(*v)
 	}
-	return rsu
+	return _u
 }
 
 // ClearUpdateInterval clears the value of the "update_interval" field.
-func (rsu *RuleSetUpdate) ClearUpdateInterval() *RuleSetUpdate {
-	rsu.mutation.ClearUpdateInterval()
-	return rsu
+func (_u *RulesetUpdate) ClearUpdateInterval() *RulesetUpdate {
+	_u.mutation.ClearUpdateInterval()
+	return _u
 }
 
-// SetNameServer sets the "name_server" field.
-func (rsu *RuleSetUpdate) SetNameServer(s string) *RuleSetUpdate {
-	rsu.mutation.SetNameServer(s)
-	return rsu
+// SetTemplates sets the "templates" field.
+func (_u *RulesetUpdate) SetTemplates(v []string) *RulesetUpdate {
+	_u.mutation.SetTemplates(v)
+	return _u
 }
 
-// SetNillableNameServer sets the "name_server" field if the given value is not nil.
-func (rsu *RuleSetUpdate) SetNillableNameServer(s *string) *RuleSetUpdate {
-	if s != nil {
-		rsu.SetNameServer(*s)
-	}
-	return rsu
+// AppendTemplates appends value to the "templates" field.
+func (_u *RulesetUpdate) AppendTemplates(v []string) *RulesetUpdate {
+	_u.mutation.AppendTemplates(v)
+	return _u
 }
 
-// ClearNameServer clears the value of the "name_server" field.
-func (rsu *RuleSetUpdate) ClearNameServer() *RuleSetUpdate {
-	rsu.mutation.ClearNameServer()
-	return rsu
+// ClearTemplates clears the value of the "templates" field.
+func (_u *RulesetUpdate) ClearTemplates() *RulesetUpdate {
+	_u.mutation.ClearTemplates()
+	return _u
 }
 
-// SetChina sets the "china" field.
-func (rsu *RuleSetUpdate) SetChina(b bool) *RuleSetUpdate {
-	rsu.mutation.SetChina(b)
-	return rsu
-}
-
-// SetNillableChina sets the "china" field if the given value is not nil.
-func (rsu *RuleSetUpdate) SetNillableChina(b *bool) *RuleSetUpdate {
-	if b != nil {
-		rsu.SetChina(*b)
-	}
-	return rsu
-}
-
-// Mutation returns the RuleSetMutation object of the builder.
-func (rsu *RuleSetUpdate) Mutation() *RuleSetMutation {
-	return rsu.mutation
+// Mutation returns the RulesetMutation object of the builder.
+func (_u *RulesetUpdate) Mutation() *RulesetMutation {
+	return _u.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (rsu *RuleSetUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, rsu.sqlSave, rsu.mutation, rsu.hooks)
+func (_u *RulesetUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (rsu *RuleSetUpdate) SaveX(ctx context.Context) int {
-	affected, err := rsu.Save(ctx)
+func (_u *RulesetUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -191,112 +162,86 @@ func (rsu *RuleSetUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (rsu *RuleSetUpdate) Exec(ctx context.Context) error {
-	_, err := rsu.Save(ctx)
+func (_u *RulesetUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rsu *RuleSetUpdate) ExecX(ctx context.Context) {
-	if err := rsu.Exec(ctx); err != nil {
+func (_u *RulesetUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (rsu *RuleSetUpdate) check() error {
-	if v, ok := rsu.mutation.Tag(); ok {
-		if err := ruleset.TagValidator(v); err != nil {
-			return &ValidationError{Name: "tag", err: fmt.Errorf(`ent: validator failed for field "RuleSet.tag": %w`, err)}
+func (_u *RulesetUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := ruleset.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Ruleset.name": %w`, err)}
 		}
 	}
-	if v, ok := rsu.mutation.GetType(); ok {
-		if err := ruleset.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "RuleSet.type": %w`, err)}
-		}
-	}
-	if v, ok := rsu.mutation.Path(); ok {
+	if v, ok := _u.mutation.Path(); ok {
 		if err := ruleset.PathValidator(v); err != nil {
-			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "RuleSet.path": %w`, err)}
+			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "Ruleset.path": %w`, err)}
 		}
 	}
-	if v, ok := rsu.mutation.Format(); ok {
-		if err := ruleset.FormatValidator(v); err != nil {
-			return &ValidationError{Name: "format", err: fmt.Errorf(`ent: validator failed for field "RuleSet.format": %w`, err)}
-		}
-	}
-	if v, ok := rsu.mutation.Label(); ok {
-		if err := ruleset.LabelValidator(v); err != nil {
-			return &ValidationError{Name: "label", err: fmt.Errorf(`ent: validator failed for field "RuleSet.label": %w`, err)}
-		}
-	}
-	if v, ok := rsu.mutation.DownloadDetour(); ok {
-		if err := ruleset.DownloadDetourValidator(v); err != nil {
-			return &ValidationError{Name: "download_detour", err: fmt.Errorf(`ent: validator failed for field "RuleSet.download_detour": %w`, err)}
-		}
-	}
-	if v, ok := rsu.mutation.UpdateInterval(); ok {
+	if v, ok := _u.mutation.UpdateInterval(); ok {
 		if err := ruleset.UpdateIntervalValidator(v); err != nil {
-			return &ValidationError{Name: "update_interval", err: fmt.Errorf(`ent: validator failed for field "RuleSet.update_interval": %w`, err)}
-		}
-	}
-	if v, ok := rsu.mutation.NameServer(); ok {
-		if err := ruleset.NameServerValidator(v); err != nil {
-			return &ValidationError{Name: "name_server", err: fmt.Errorf(`ent: validator failed for field "RuleSet.name_server": %w`, err)}
+			return &ValidationError{Name: "update_interval", err: fmt.Errorf(`ent: validator failed for field "Ruleset.update_interval": %w`, err)}
 		}
 	}
 	return nil
 }
 
-func (rsu *RuleSetUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := rsu.check(); err != nil {
-		return n, err
+func (_u *RulesetUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(ruleset.Table, ruleset.Columns, sqlgraph.NewFieldSpec(ruleset.FieldID, field.TypeInt))
-	if ps := rsu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := rsu.mutation.Tag(); ok {
-		_spec.SetField(ruleset.FieldTag, field.TypeString, value)
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(ruleset.FieldName, field.TypeString, value)
 	}
-	if value, ok := rsu.mutation.GetType(); ok {
-		_spec.SetField(ruleset.FieldType, field.TypeString, value)
-	}
-	if value, ok := rsu.mutation.Path(); ok {
+	if value, ok := _u.mutation.Path(); ok {
 		_spec.SetField(ruleset.FieldPath, field.TypeString, value)
 	}
-	if value, ok := rsu.mutation.Format(); ok {
-		_spec.SetField(ruleset.FieldFormat, field.TypeString, value)
+	if value, ok := _u.mutation.Remote(); ok {
+		_spec.SetField(ruleset.FieldRemote, field.TypeBool, value)
 	}
-	if value, ok := rsu.mutation.Label(); ok {
-		_spec.SetField(ruleset.FieldLabel, field.TypeString, value)
+	if value, ok := _u.mutation.Binary(); ok {
+		_spec.SetField(ruleset.FieldBinary, field.TypeBool, value)
 	}
-	if value, ok := rsu.mutation.DownloadDetour(); ok {
+	if value, ok := _u.mutation.DownloadDetour(); ok {
 		_spec.SetField(ruleset.FieldDownloadDetour, field.TypeString, value)
 	}
-	if rsu.mutation.DownloadDetourCleared() {
+	if _u.mutation.DownloadDetourCleared() {
 		_spec.ClearField(ruleset.FieldDownloadDetour, field.TypeString)
 	}
-	if value, ok := rsu.mutation.UpdateInterval(); ok {
+	if value, ok := _u.mutation.UpdateInterval(); ok {
 		_spec.SetField(ruleset.FieldUpdateInterval, field.TypeString, value)
 	}
-	if rsu.mutation.UpdateIntervalCleared() {
+	if _u.mutation.UpdateIntervalCleared() {
 		_spec.ClearField(ruleset.FieldUpdateInterval, field.TypeString)
 	}
-	if value, ok := rsu.mutation.NameServer(); ok {
-		_spec.SetField(ruleset.FieldNameServer, field.TypeString, value)
+	if value, ok := _u.mutation.Templates(); ok {
+		_spec.SetField(ruleset.FieldTemplates, field.TypeJSON, value)
 	}
-	if rsu.mutation.NameServerCleared() {
-		_spec.ClearField(ruleset.FieldNameServer, field.TypeString)
+	if value, ok := _u.mutation.AppendedTemplates(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, ruleset.FieldTemplates, value)
+		})
 	}
-	if value, ok := rsu.mutation.China(); ok {
-		_spec.SetField(ruleset.FieldChina, field.TypeBool, value)
+	if _u.mutation.TemplatesCleared() {
+		_spec.ClearField(ruleset.FieldTemplates, field.TypeJSON)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, rsu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{ruleset.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -304,188 +249,158 @@ func (rsu *RuleSetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	rsu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
-// RuleSetUpdateOne is the builder for updating a single RuleSet entity.
-type RuleSetUpdateOne struct {
+// RulesetUpdateOne is the builder for updating a single Ruleset entity.
+type RulesetUpdateOne struct {
 	config
 	fields   []string
 	hooks    []Hook
-	mutation *RuleSetMutation
+	mutation *RulesetMutation
 }
 
-// SetTag sets the "tag" field.
-func (rsuo *RuleSetUpdateOne) SetTag(s string) *RuleSetUpdateOne {
-	rsuo.mutation.SetTag(s)
-	return rsuo
+// SetName sets the "name" field.
+func (_u *RulesetUpdateOne) SetName(v string) *RulesetUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
 }
 
-// SetNillableTag sets the "tag" field if the given value is not nil.
-func (rsuo *RuleSetUpdateOne) SetNillableTag(s *string) *RuleSetUpdateOne {
-	if s != nil {
-		rsuo.SetTag(*s)
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *RulesetUpdateOne) SetNillableName(v *string) *RulesetUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return rsuo
-}
-
-// SetType sets the "type" field.
-func (rsuo *RuleSetUpdateOne) SetType(s string) *RuleSetUpdateOne {
-	rsuo.mutation.SetType(s)
-	return rsuo
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (rsuo *RuleSetUpdateOne) SetNillableType(s *string) *RuleSetUpdateOne {
-	if s != nil {
-		rsuo.SetType(*s)
-	}
-	return rsuo
+	return _u
 }
 
 // SetPath sets the "path" field.
-func (rsuo *RuleSetUpdateOne) SetPath(s string) *RuleSetUpdateOne {
-	rsuo.mutation.SetPath(s)
-	return rsuo
+func (_u *RulesetUpdateOne) SetPath(v string) *RulesetUpdateOne {
+	_u.mutation.SetPath(v)
+	return _u
 }
 
 // SetNillablePath sets the "path" field if the given value is not nil.
-func (rsuo *RuleSetUpdateOne) SetNillablePath(s *string) *RuleSetUpdateOne {
-	if s != nil {
-		rsuo.SetPath(*s)
+func (_u *RulesetUpdateOne) SetNillablePath(v *string) *RulesetUpdateOne {
+	if v != nil {
+		_u.SetPath(*v)
 	}
-	return rsuo
+	return _u
 }
 
-// SetFormat sets the "format" field.
-func (rsuo *RuleSetUpdateOne) SetFormat(s string) *RuleSetUpdateOne {
-	rsuo.mutation.SetFormat(s)
-	return rsuo
+// SetRemote sets the "remote" field.
+func (_u *RulesetUpdateOne) SetRemote(v bool) *RulesetUpdateOne {
+	_u.mutation.SetRemote(v)
+	return _u
 }
 
-// SetNillableFormat sets the "format" field if the given value is not nil.
-func (rsuo *RuleSetUpdateOne) SetNillableFormat(s *string) *RuleSetUpdateOne {
-	if s != nil {
-		rsuo.SetFormat(*s)
+// SetNillableRemote sets the "remote" field if the given value is not nil.
+func (_u *RulesetUpdateOne) SetNillableRemote(v *bool) *RulesetUpdateOne {
+	if v != nil {
+		_u.SetRemote(*v)
 	}
-	return rsuo
+	return _u
 }
 
-// SetLabel sets the "label" field.
-func (rsuo *RuleSetUpdateOne) SetLabel(s string) *RuleSetUpdateOne {
-	rsuo.mutation.SetLabel(s)
-	return rsuo
+// SetBinary sets the "binary" field.
+func (_u *RulesetUpdateOne) SetBinary(v bool) *RulesetUpdateOne {
+	_u.mutation.SetBinary(v)
+	return _u
 }
 
-// SetNillableLabel sets the "label" field if the given value is not nil.
-func (rsuo *RuleSetUpdateOne) SetNillableLabel(s *string) *RuleSetUpdateOne {
-	if s != nil {
-		rsuo.SetLabel(*s)
+// SetNillableBinary sets the "binary" field if the given value is not nil.
+func (_u *RulesetUpdateOne) SetNillableBinary(v *bool) *RulesetUpdateOne {
+	if v != nil {
+		_u.SetBinary(*v)
 	}
-	return rsuo
+	return _u
 }
 
 // SetDownloadDetour sets the "download_detour" field.
-func (rsuo *RuleSetUpdateOne) SetDownloadDetour(s string) *RuleSetUpdateOne {
-	rsuo.mutation.SetDownloadDetour(s)
-	return rsuo
+func (_u *RulesetUpdateOne) SetDownloadDetour(v string) *RulesetUpdateOne {
+	_u.mutation.SetDownloadDetour(v)
+	return _u
 }
 
 // SetNillableDownloadDetour sets the "download_detour" field if the given value is not nil.
-func (rsuo *RuleSetUpdateOne) SetNillableDownloadDetour(s *string) *RuleSetUpdateOne {
-	if s != nil {
-		rsuo.SetDownloadDetour(*s)
+func (_u *RulesetUpdateOne) SetNillableDownloadDetour(v *string) *RulesetUpdateOne {
+	if v != nil {
+		_u.SetDownloadDetour(*v)
 	}
-	return rsuo
+	return _u
 }
 
 // ClearDownloadDetour clears the value of the "download_detour" field.
-func (rsuo *RuleSetUpdateOne) ClearDownloadDetour() *RuleSetUpdateOne {
-	rsuo.mutation.ClearDownloadDetour()
-	return rsuo
+func (_u *RulesetUpdateOne) ClearDownloadDetour() *RulesetUpdateOne {
+	_u.mutation.ClearDownloadDetour()
+	return _u
 }
 
 // SetUpdateInterval sets the "update_interval" field.
-func (rsuo *RuleSetUpdateOne) SetUpdateInterval(s string) *RuleSetUpdateOne {
-	rsuo.mutation.SetUpdateInterval(s)
-	return rsuo
+func (_u *RulesetUpdateOne) SetUpdateInterval(v string) *RulesetUpdateOne {
+	_u.mutation.SetUpdateInterval(v)
+	return _u
 }
 
 // SetNillableUpdateInterval sets the "update_interval" field if the given value is not nil.
-func (rsuo *RuleSetUpdateOne) SetNillableUpdateInterval(s *string) *RuleSetUpdateOne {
-	if s != nil {
-		rsuo.SetUpdateInterval(*s)
+func (_u *RulesetUpdateOne) SetNillableUpdateInterval(v *string) *RulesetUpdateOne {
+	if v != nil {
+		_u.SetUpdateInterval(*v)
 	}
-	return rsuo
+	return _u
 }
 
 // ClearUpdateInterval clears the value of the "update_interval" field.
-func (rsuo *RuleSetUpdateOne) ClearUpdateInterval() *RuleSetUpdateOne {
-	rsuo.mutation.ClearUpdateInterval()
-	return rsuo
+func (_u *RulesetUpdateOne) ClearUpdateInterval() *RulesetUpdateOne {
+	_u.mutation.ClearUpdateInterval()
+	return _u
 }
 
-// SetNameServer sets the "name_server" field.
-func (rsuo *RuleSetUpdateOne) SetNameServer(s string) *RuleSetUpdateOne {
-	rsuo.mutation.SetNameServer(s)
-	return rsuo
+// SetTemplates sets the "templates" field.
+func (_u *RulesetUpdateOne) SetTemplates(v []string) *RulesetUpdateOne {
+	_u.mutation.SetTemplates(v)
+	return _u
 }
 
-// SetNillableNameServer sets the "name_server" field if the given value is not nil.
-func (rsuo *RuleSetUpdateOne) SetNillableNameServer(s *string) *RuleSetUpdateOne {
-	if s != nil {
-		rsuo.SetNameServer(*s)
-	}
-	return rsuo
+// AppendTemplates appends value to the "templates" field.
+func (_u *RulesetUpdateOne) AppendTemplates(v []string) *RulesetUpdateOne {
+	_u.mutation.AppendTemplates(v)
+	return _u
 }
 
-// ClearNameServer clears the value of the "name_server" field.
-func (rsuo *RuleSetUpdateOne) ClearNameServer() *RuleSetUpdateOne {
-	rsuo.mutation.ClearNameServer()
-	return rsuo
+// ClearTemplates clears the value of the "templates" field.
+func (_u *RulesetUpdateOne) ClearTemplates() *RulesetUpdateOne {
+	_u.mutation.ClearTemplates()
+	return _u
 }
 
-// SetChina sets the "china" field.
-func (rsuo *RuleSetUpdateOne) SetChina(b bool) *RuleSetUpdateOne {
-	rsuo.mutation.SetChina(b)
-	return rsuo
+// Mutation returns the RulesetMutation object of the builder.
+func (_u *RulesetUpdateOne) Mutation() *RulesetMutation {
+	return _u.mutation
 }
 
-// SetNillableChina sets the "china" field if the given value is not nil.
-func (rsuo *RuleSetUpdateOne) SetNillableChina(b *bool) *RuleSetUpdateOne {
-	if b != nil {
-		rsuo.SetChina(*b)
-	}
-	return rsuo
-}
-
-// Mutation returns the RuleSetMutation object of the builder.
-func (rsuo *RuleSetUpdateOne) Mutation() *RuleSetMutation {
-	return rsuo.mutation
-}
-
-// Where appends a list predicates to the RuleSetUpdate builder.
-func (rsuo *RuleSetUpdateOne) Where(ps ...predicate.RuleSet) *RuleSetUpdateOne {
-	rsuo.mutation.Where(ps...)
-	return rsuo
+// Where appends a list predicates to the RulesetUpdate builder.
+func (_u *RulesetUpdateOne) Where(ps ...predicate.Ruleset) *RulesetUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (rsuo *RuleSetUpdateOne) Select(field string, fields ...string) *RuleSetUpdateOne {
-	rsuo.fields = append([]string{field}, fields...)
-	return rsuo
+func (_u *RulesetUpdateOne) Select(field string, fields ...string) *RulesetUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
-// Save executes the query and returns the updated RuleSet entity.
-func (rsuo *RuleSetUpdateOne) Save(ctx context.Context) (*RuleSet, error) {
-	return withHooks(ctx, rsuo.sqlSave, rsuo.mutation, rsuo.hooks)
+// Save executes the query and returns the updated Ruleset entity.
+func (_u *RulesetUpdateOne) Save(ctx context.Context) (*Ruleset, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (rsuo *RuleSetUpdateOne) SaveX(ctx context.Context) *RuleSet {
-	node, err := rsuo.Save(ctx)
+func (_u *RulesetUpdateOne) SaveX(ctx context.Context) *Ruleset {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -493,74 +408,49 @@ func (rsuo *RuleSetUpdateOne) SaveX(ctx context.Context) *RuleSet {
 }
 
 // Exec executes the query on the entity.
-func (rsuo *RuleSetUpdateOne) Exec(ctx context.Context) error {
-	_, err := rsuo.Save(ctx)
+func (_u *RulesetUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rsuo *RuleSetUpdateOne) ExecX(ctx context.Context) {
-	if err := rsuo.Exec(ctx); err != nil {
+func (_u *RulesetUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (rsuo *RuleSetUpdateOne) check() error {
-	if v, ok := rsuo.mutation.Tag(); ok {
-		if err := ruleset.TagValidator(v); err != nil {
-			return &ValidationError{Name: "tag", err: fmt.Errorf(`ent: validator failed for field "RuleSet.tag": %w`, err)}
+func (_u *RulesetUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
+		if err := ruleset.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Ruleset.name": %w`, err)}
 		}
 	}
-	if v, ok := rsuo.mutation.GetType(); ok {
-		if err := ruleset.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "RuleSet.type": %w`, err)}
-		}
-	}
-	if v, ok := rsuo.mutation.Path(); ok {
+	if v, ok := _u.mutation.Path(); ok {
 		if err := ruleset.PathValidator(v); err != nil {
-			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "RuleSet.path": %w`, err)}
+			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "Ruleset.path": %w`, err)}
 		}
 	}
-	if v, ok := rsuo.mutation.Format(); ok {
-		if err := ruleset.FormatValidator(v); err != nil {
-			return &ValidationError{Name: "format", err: fmt.Errorf(`ent: validator failed for field "RuleSet.format": %w`, err)}
-		}
-	}
-	if v, ok := rsuo.mutation.Label(); ok {
-		if err := ruleset.LabelValidator(v); err != nil {
-			return &ValidationError{Name: "label", err: fmt.Errorf(`ent: validator failed for field "RuleSet.label": %w`, err)}
-		}
-	}
-	if v, ok := rsuo.mutation.DownloadDetour(); ok {
-		if err := ruleset.DownloadDetourValidator(v); err != nil {
-			return &ValidationError{Name: "download_detour", err: fmt.Errorf(`ent: validator failed for field "RuleSet.download_detour": %w`, err)}
-		}
-	}
-	if v, ok := rsuo.mutation.UpdateInterval(); ok {
+	if v, ok := _u.mutation.UpdateInterval(); ok {
 		if err := ruleset.UpdateIntervalValidator(v); err != nil {
-			return &ValidationError{Name: "update_interval", err: fmt.Errorf(`ent: validator failed for field "RuleSet.update_interval": %w`, err)}
-		}
-	}
-	if v, ok := rsuo.mutation.NameServer(); ok {
-		if err := ruleset.NameServerValidator(v); err != nil {
-			return &ValidationError{Name: "name_server", err: fmt.Errorf(`ent: validator failed for field "RuleSet.name_server": %w`, err)}
+			return &ValidationError{Name: "update_interval", err: fmt.Errorf(`ent: validator failed for field "Ruleset.update_interval": %w`, err)}
 		}
 	}
 	return nil
 }
 
-func (rsuo *RuleSetUpdateOne) sqlSave(ctx context.Context) (_node *RuleSet, err error) {
-	if err := rsuo.check(); err != nil {
+func (_u *RulesetUpdateOne) sqlSave(ctx context.Context) (_node *Ruleset, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(ruleset.Table, ruleset.Columns, sqlgraph.NewFieldSpec(ruleset.FieldID, field.TypeInt))
-	id, ok := rsuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "RuleSet.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Ruleset.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := rsuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, ruleset.FieldID)
 		for _, f := range fields {
@@ -572,53 +462,52 @@ func (rsuo *RuleSetUpdateOne) sqlSave(ctx context.Context) (_node *RuleSet, err 
 			}
 		}
 	}
-	if ps := rsuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := rsuo.mutation.Tag(); ok {
-		_spec.SetField(ruleset.FieldTag, field.TypeString, value)
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(ruleset.FieldName, field.TypeString, value)
 	}
-	if value, ok := rsuo.mutation.GetType(); ok {
-		_spec.SetField(ruleset.FieldType, field.TypeString, value)
-	}
-	if value, ok := rsuo.mutation.Path(); ok {
+	if value, ok := _u.mutation.Path(); ok {
 		_spec.SetField(ruleset.FieldPath, field.TypeString, value)
 	}
-	if value, ok := rsuo.mutation.Format(); ok {
-		_spec.SetField(ruleset.FieldFormat, field.TypeString, value)
+	if value, ok := _u.mutation.Remote(); ok {
+		_spec.SetField(ruleset.FieldRemote, field.TypeBool, value)
 	}
-	if value, ok := rsuo.mutation.Label(); ok {
-		_spec.SetField(ruleset.FieldLabel, field.TypeString, value)
+	if value, ok := _u.mutation.Binary(); ok {
+		_spec.SetField(ruleset.FieldBinary, field.TypeBool, value)
 	}
-	if value, ok := rsuo.mutation.DownloadDetour(); ok {
+	if value, ok := _u.mutation.DownloadDetour(); ok {
 		_spec.SetField(ruleset.FieldDownloadDetour, field.TypeString, value)
 	}
-	if rsuo.mutation.DownloadDetourCleared() {
+	if _u.mutation.DownloadDetourCleared() {
 		_spec.ClearField(ruleset.FieldDownloadDetour, field.TypeString)
 	}
-	if value, ok := rsuo.mutation.UpdateInterval(); ok {
+	if value, ok := _u.mutation.UpdateInterval(); ok {
 		_spec.SetField(ruleset.FieldUpdateInterval, field.TypeString, value)
 	}
-	if rsuo.mutation.UpdateIntervalCleared() {
+	if _u.mutation.UpdateIntervalCleared() {
 		_spec.ClearField(ruleset.FieldUpdateInterval, field.TypeString)
 	}
-	if value, ok := rsuo.mutation.NameServer(); ok {
-		_spec.SetField(ruleset.FieldNameServer, field.TypeString, value)
+	if value, ok := _u.mutation.Templates(); ok {
+		_spec.SetField(ruleset.FieldTemplates, field.TypeJSON, value)
 	}
-	if rsuo.mutation.NameServerCleared() {
-		_spec.ClearField(ruleset.FieldNameServer, field.TypeString)
+	if value, ok := _u.mutation.AppendedTemplates(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, ruleset.FieldTemplates, value)
+		})
 	}
-	if value, ok := rsuo.mutation.China(); ok {
-		_spec.SetField(ruleset.FieldChina, field.TypeBool, value)
+	if _u.mutation.TemplatesCleared() {
+		_spec.ClearField(ruleset.FieldTemplates, field.TypeJSON)
 	}
-	_node = &RuleSet{config: rsuo.config}
+	_node = &Ruleset{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, rsuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{ruleset.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -626,6 +515,6 @@ func (rsuo *RuleSetUpdateOne) sqlSave(ctx context.Context) (_node *RuleSet, err 
 		}
 		return nil, err
 	}
-	rsuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

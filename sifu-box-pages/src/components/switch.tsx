@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import { setTheme } from "@/redux/slice";
 import { Switch } from "@heroui/switch";
 

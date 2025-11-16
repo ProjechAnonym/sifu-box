@@ -1,13 +1,12 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
 import DefaultLayout from "@/layouts/default";
-import SingBox from "@/components/singbox";
-import { HomeDashBoard } from "@/components/dashboard";
-import Status from "@/components/status";
+import MonitorHead from "@/layouts/home/monitorHead";
+import OutboundsTable from "@/layouts/home/outboundTable";
 import { toast } from "react-hot-toast";
-import { AutoLogin } from "@/utils/auth";
-import { FetchSingboxApplication } from "@/utils/application";
+import { Verify } from "@/utils/auth";
+import { FetchYacd } from "@/utils/configuration/fetch";
 
 export default function HomePage() {
   const admin = useAppSelector((state) => state.auth.admin);
@@ -17,23 +16,20 @@ export default function HomePage() {
   const navigate = useNavigate();
   const token = useAppSelector((state) => state.auth.jwt);
   const dispatch = useAppDispatch();
-  const headerContainer = useRef<HTMLHeadElement>(null);
   const [height, setHeight] = useState(0);
   const [secret, setSecret] = useState("");
   const [listen, setListen] = useState("");
   const [log, setLog] = useState(false);
-  const [provider, setProvider] = useState("");
   const [template, setTemplate] = useState("");
   useEffect(() => {
     !auto && !status && navigate("/");
-    auto && dispatch(AutoLogin({}));
+    auto && dispatch(Verify({}));
     token !== "" &&
-      FetchSingboxApplication(token)
+      FetchYacd(token)
         .then((res) => {
-          res.status && setListen(res.msg.listen);
+          res.status && setListen(res.msg.url);
           res.status && setSecret(res.msg.secret);
-          res.status && setProvider(res.msg.current_provider);
-          res.status && setTemplate(res.msg.current_template);
+          res.status && setTemplate(res.msg.template ? res.msg.template : "");
           res.status && setLog(res.msg.log);
         })
         .catch((e) => {
@@ -42,34 +38,19 @@ export default function HomePage() {
             return;
           }
           if (e.response.data.message) {
-            setListen(e.response.data.message.listen);
-            setSecret(e.response.data.message.secret);
-            setProvider(e.response.data.message.current_provider);
-            setTemplate(e.response.data.message.current_template);
-            setLog(e.response.data.message.log);
-            toast.error(e.response.data.message.error);
+            setListen(e.response.data.message.listen ? e.response.data.message.listen : "");
+            setSecret(e.response.data.message.secret ? e.response.data.message.secret : "");
+            setTemplate(e.response.data.message.current_template ? e.response.data.message.current_template : "");
+            setLog(e.response.data.message.log ? e.response.data.message.log : false);
+            toast.error(e.response.data.message);
             return;
           }
         });
-    headerContainer.current && setHeight(headerContainer.current.clientHeight);
-  }, [
-    admin,
-    token,
-    headerContainer.current && headerContainer.current.clientHeight,
-  ]);
+  }, [admin,token]);
   return (
     <DefaultLayout>
-      <header className="flex flex-wrap gap-2" ref={headerContainer}>
-        <HomeDashBoard
-          provider={provider}
-          template={template}
-          admin={admin}
-          token={token}
-          theme={theme}
-        />
-        <Status listen={listen} secret={secret} log={log} theme={theme} />
-      </header>
-      <SingBox listen={listen} secret={secret} height={height} theme={theme} />
+      <MonitorHead template={template} theme={theme} admin={admin} token={token} listen={listen} secret={secret} log={log} fetchHeight={setHeight} />
+      <OutboundsTable listen={listen} secret={secret} height={height} theme={theme} />
     </DefaultLayout>
   );
 }

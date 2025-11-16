@@ -28,40 +28,40 @@ type TemplateQuery struct {
 }
 
 // Where adds a new predicate for the TemplateQuery builder.
-func (tq *TemplateQuery) Where(ps ...predicate.Template) *TemplateQuery {
-	tq.predicates = append(tq.predicates, ps...)
-	return tq
+func (_q *TemplateQuery) Where(ps ...predicate.Template) *TemplateQuery {
+	_q.predicates = append(_q.predicates, ps...)
+	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (tq *TemplateQuery) Limit(limit int) *TemplateQuery {
-	tq.ctx.Limit = &limit
-	return tq
+func (_q *TemplateQuery) Limit(limit int) *TemplateQuery {
+	_q.ctx.Limit = &limit
+	return _q
 }
 
 // Offset to start from.
-func (tq *TemplateQuery) Offset(offset int) *TemplateQuery {
-	tq.ctx.Offset = &offset
-	return tq
+func (_q *TemplateQuery) Offset(offset int) *TemplateQuery {
+	_q.ctx.Offset = &offset
+	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (tq *TemplateQuery) Unique(unique bool) *TemplateQuery {
-	tq.ctx.Unique = &unique
-	return tq
+func (_q *TemplateQuery) Unique(unique bool) *TemplateQuery {
+	_q.ctx.Unique = &unique
+	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (tq *TemplateQuery) Order(o ...template.OrderOption) *TemplateQuery {
-	tq.order = append(tq.order, o...)
-	return tq
+func (_q *TemplateQuery) Order(o ...template.OrderOption) *TemplateQuery {
+	_q.order = append(_q.order, o...)
+	return _q
 }
 
 // First returns the first Template entity from the query.
 // Returns a *NotFoundError when no Template was found.
-func (tq *TemplateQuery) First(ctx context.Context) (*Template, error) {
-	nodes, err := tq.Limit(1).All(setContextOp(ctx, tq.ctx, ent.OpQueryFirst))
+func (_q *TemplateQuery) First(ctx context.Context) (*Template, error) {
+	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -72,8 +72,8 @@ func (tq *TemplateQuery) First(ctx context.Context) (*Template, error) {
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (tq *TemplateQuery) FirstX(ctx context.Context) *Template {
-	node, err := tq.First(ctx)
+func (_q *TemplateQuery) FirstX(ctx context.Context) *Template {
+	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -82,9 +82,9 @@ func (tq *TemplateQuery) FirstX(ctx context.Context) *Template {
 
 // FirstID returns the first Template ID from the query.
 // Returns a *NotFoundError when no Template ID was found.
-func (tq *TemplateQuery) FirstID(ctx context.Context) (id int, err error) {
+func (_q *TemplateQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = tq.Limit(1).IDs(setContextOp(ctx, tq.ctx, ent.OpQueryFirstID)); err != nil {
+	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -95,8 +95,8 @@ func (tq *TemplateQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (tq *TemplateQuery) FirstIDX(ctx context.Context) int {
-	id, err := tq.FirstID(ctx)
+func (_q *TemplateQuery) FirstIDX(ctx context.Context) int {
+	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -106,8 +106,8 @@ func (tq *TemplateQuery) FirstIDX(ctx context.Context) int {
 // Only returns a single Template entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one Template entity is found.
 // Returns a *NotFoundError when no Template entities are found.
-func (tq *TemplateQuery) Only(ctx context.Context) (*Template, error) {
-	nodes, err := tq.Limit(2).All(setContextOp(ctx, tq.ctx, ent.OpQueryOnly))
+func (_q *TemplateQuery) Only(ctx context.Context) (*Template, error) {
+	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -122,8 +122,8 @@ func (tq *TemplateQuery) Only(ctx context.Context) (*Template, error) {
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (tq *TemplateQuery) OnlyX(ctx context.Context) *Template {
-	node, err := tq.Only(ctx)
+func (_q *TemplateQuery) OnlyX(ctx context.Context) *Template {
+	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -133,9 +133,9 @@ func (tq *TemplateQuery) OnlyX(ctx context.Context) *Template {
 // OnlyID is like Only, but returns the only Template ID in the query.
 // Returns a *NotSingularError when more than one Template ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (tq *TemplateQuery) OnlyID(ctx context.Context) (id int, err error) {
+func (_q *TemplateQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = tq.Limit(2).IDs(setContextOp(ctx, tq.ctx, ent.OpQueryOnlyID)); err != nil {
+	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -150,8 +150,8 @@ func (tq *TemplateQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (tq *TemplateQuery) OnlyIDX(ctx context.Context) int {
-	id, err := tq.OnlyID(ctx)
+func (_q *TemplateQuery) OnlyIDX(ctx context.Context) int {
+	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -159,18 +159,18 @@ func (tq *TemplateQuery) OnlyIDX(ctx context.Context) int {
 }
 
 // All executes the query and returns a list of Templates.
-func (tq *TemplateQuery) All(ctx context.Context) ([]*Template, error) {
-	ctx = setContextOp(ctx, tq.ctx, ent.OpQueryAll)
-	if err := tq.prepareQuery(ctx); err != nil {
+func (_q *TemplateQuery) All(ctx context.Context) ([]*Template, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
 	qr := querierAll[[]*Template, *TemplateQuery]()
-	return withInterceptors[[]*Template](ctx, tq, qr, tq.inters)
+	return withInterceptors[[]*Template](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (tq *TemplateQuery) AllX(ctx context.Context) []*Template {
-	nodes, err := tq.All(ctx)
+func (_q *TemplateQuery) AllX(ctx context.Context) []*Template {
+	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -178,20 +178,20 @@ func (tq *TemplateQuery) AllX(ctx context.Context) []*Template {
 }
 
 // IDs executes the query and returns a list of Template IDs.
-func (tq *TemplateQuery) IDs(ctx context.Context) (ids []int, err error) {
-	if tq.ctx.Unique == nil && tq.path != nil {
-		tq.Unique(true)
+func (_q *TemplateQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if _q.ctx.Unique == nil && _q.path != nil {
+		_q.Unique(true)
 	}
-	ctx = setContextOp(ctx, tq.ctx, ent.OpQueryIDs)
-	if err = tq.Select(template.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
+	if err = _q.Select(template.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (tq *TemplateQuery) IDsX(ctx context.Context) []int {
-	ids, err := tq.IDs(ctx)
+func (_q *TemplateQuery) IDsX(ctx context.Context) []int {
+	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -199,17 +199,17 @@ func (tq *TemplateQuery) IDsX(ctx context.Context) []int {
 }
 
 // Count returns the count of the given query.
-func (tq *TemplateQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, tq.ctx, ent.OpQueryCount)
-	if err := tq.prepareQuery(ctx); err != nil {
+func (_q *TemplateQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, tq, querierCount[*TemplateQuery](), tq.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*TemplateQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (tq *TemplateQuery) CountX(ctx context.Context) int {
-	count, err := tq.Count(ctx)
+func (_q *TemplateQuery) CountX(ctx context.Context) int {
+	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -217,9 +217,9 @@ func (tq *TemplateQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (tq *TemplateQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, tq.ctx, ent.OpQueryExist)
-	switch _, err := tq.FirstID(ctx); {
+func (_q *TemplateQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
+	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -230,8 +230,8 @@ func (tq *TemplateQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (tq *TemplateQuery) ExistX(ctx context.Context) bool {
-	exist, err := tq.Exist(ctx)
+func (_q *TemplateQuery) ExistX(ctx context.Context) bool {
+	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -240,19 +240,19 @@ func (tq *TemplateQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the TemplateQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (tq *TemplateQuery) Clone() *TemplateQuery {
-	if tq == nil {
+func (_q *TemplateQuery) Clone() *TemplateQuery {
+	if _q == nil {
 		return nil
 	}
 	return &TemplateQuery{
-		config:     tq.config,
-		ctx:        tq.ctx.Clone(),
-		order:      append([]template.OrderOption{}, tq.order...),
-		inters:     append([]Interceptor{}, tq.inters...),
-		predicates: append([]predicate.Template{}, tq.predicates...),
+		config:     _q.config,
+		ctx:        _q.ctx.Clone(),
+		order:      append([]template.OrderOption{}, _q.order...),
+		inters:     append([]Interceptor{}, _q.inters...),
+		predicates: append([]predicate.Template{}, _q.predicates...),
 		// clone intermediate query.
-		sql:  tq.sql.Clone(),
-		path: tq.path,
+		sql:  _q.sql.Clone(),
+		path: _q.path,
 	}
 }
 
@@ -270,10 +270,10 @@ func (tq *TemplateQuery) Clone() *TemplateQuery {
 //		GroupBy(template.FieldName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (tq *TemplateQuery) GroupBy(field string, fields ...string) *TemplateGroupBy {
-	tq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &TemplateGroupBy{build: tq}
-	grbuild.flds = &tq.ctx.Fields
+func (_q *TemplateQuery) GroupBy(field string, fields ...string) *TemplateGroupBy {
+	_q.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &TemplateGroupBy{build: _q}
+	grbuild.flds = &_q.ctx.Fields
 	grbuild.label = template.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -291,62 +291,62 @@ func (tq *TemplateQuery) GroupBy(field string, fields ...string) *TemplateGroupB
 //	client.Template.Query().
 //		Select(template.FieldName).
 //		Scan(ctx, &v)
-func (tq *TemplateQuery) Select(fields ...string) *TemplateSelect {
-	tq.ctx.Fields = append(tq.ctx.Fields, fields...)
-	sbuild := &TemplateSelect{TemplateQuery: tq}
+func (_q *TemplateQuery) Select(fields ...string) *TemplateSelect {
+	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
+	sbuild := &TemplateSelect{TemplateQuery: _q}
 	sbuild.label = template.Label
-	sbuild.flds, sbuild.scan = &tq.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
 // Aggregate returns a TemplateSelect configured with the given aggregations.
-func (tq *TemplateQuery) Aggregate(fns ...AggregateFunc) *TemplateSelect {
-	return tq.Select().Aggregate(fns...)
+func (_q *TemplateQuery) Aggregate(fns ...AggregateFunc) *TemplateSelect {
+	return _q.Select().Aggregate(fns...)
 }
 
-func (tq *TemplateQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range tq.inters {
+func (_q *TemplateQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, tq); err != nil {
+			if err := trv.Traverse(ctx, _q); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range tq.ctx.Fields {
+	for _, f := range _q.ctx.Fields {
 		if !template.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if tq.path != nil {
-		prev, err := tq.path(ctx)
+	if _q.path != nil {
+		prev, err := _q.path(ctx)
 		if err != nil {
 			return err
 		}
-		tq.sql = prev
+		_q.sql = prev
 	}
 	return nil
 }
 
-func (tq *TemplateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Template, error) {
+func (_q *TemplateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Template, error) {
 	var (
 		nodes = []*Template{}
-		_spec = tq.querySpec()
+		_spec = _q.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Template).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Template{config: tq.config}
+		node := &Template{config: _q.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, tq.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
@@ -355,24 +355,24 @@ func (tq *TemplateQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Tem
 	return nodes, nil
 }
 
-func (tq *TemplateQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := tq.querySpec()
-	_spec.Node.Columns = tq.ctx.Fields
-	if len(tq.ctx.Fields) > 0 {
-		_spec.Unique = tq.ctx.Unique != nil && *tq.ctx.Unique
+func (_q *TemplateQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := _q.querySpec()
+	_spec.Node.Columns = _q.ctx.Fields
+	if len(_q.ctx.Fields) > 0 {
+		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, tq.driver, _spec)
+	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (tq *TemplateQuery) querySpec() *sqlgraph.QuerySpec {
+func (_q *TemplateQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(template.Table, template.Columns, sqlgraph.NewFieldSpec(template.FieldID, field.TypeInt))
-	_spec.From = tq.sql
-	if unique := tq.ctx.Unique; unique != nil {
+	_spec.From = _q.sql
+	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if tq.path != nil {
+	} else if _q.path != nil {
 		_spec.Unique = true
 	}
-	if fields := tq.ctx.Fields; len(fields) > 0 {
+	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, template.FieldID)
 		for i := range fields {
@@ -381,20 +381,20 @@ func (tq *TemplateQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if ps := tq.predicates; len(ps) > 0 {
+	if ps := _q.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := tq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := tq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := tq.order; len(ps) > 0 {
+	if ps := _q.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -404,33 +404,33 @@ func (tq *TemplateQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (tq *TemplateQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(tq.driver.Dialect())
+func (_q *TemplateQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(_q.driver.Dialect())
 	t1 := builder.Table(template.Table)
-	columns := tq.ctx.Fields
+	columns := _q.ctx.Fields
 	if len(columns) == 0 {
 		columns = template.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if tq.sql != nil {
-		selector = tq.sql
+	if _q.sql != nil {
+		selector = _q.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if tq.ctx.Unique != nil && *tq.ctx.Unique {
+	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range tq.predicates {
+	for _, p := range _q.predicates {
 		p(selector)
 	}
-	for _, p := range tq.order {
+	for _, p := range _q.order {
 		p(selector)
 	}
-	if offset := tq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := tq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -443,41 +443,41 @@ type TemplateGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (tgb *TemplateGroupBy) Aggregate(fns ...AggregateFunc) *TemplateGroupBy {
-	tgb.fns = append(tgb.fns, fns...)
-	return tgb
+func (_g *TemplateGroupBy) Aggregate(fns ...AggregateFunc) *TemplateGroupBy {
+	_g.fns = append(_g.fns, fns...)
+	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (tgb *TemplateGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, tgb.build.ctx, ent.OpQueryGroupBy)
-	if err := tgb.build.prepareQuery(ctx); err != nil {
+func (_g *TemplateGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
+	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*TemplateQuery, *TemplateGroupBy](ctx, tgb.build, tgb, tgb.build.inters, v)
+	return scanWithInterceptors[*TemplateQuery, *TemplateGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (tgb *TemplateGroupBy) sqlScan(ctx context.Context, root *TemplateQuery, v any) error {
+func (_g *TemplateGroupBy) sqlScan(ctx context.Context, root *TemplateQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(tgb.fns))
-	for _, fn := range tgb.fns {
+	aggregation := make([]string, 0, len(_g.fns))
+	for _, fn := range _g.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*tgb.flds)+len(tgb.fns))
-		for _, f := range *tgb.flds {
+		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
+		for _, f := range *_g.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*tgb.flds...)...)
+	selector.GroupBy(selector.Columns(*_g.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := tgb.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
@@ -491,27 +491,27 @@ type TemplateSelect struct {
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (ts *TemplateSelect) Aggregate(fns ...AggregateFunc) *TemplateSelect {
-	ts.fns = append(ts.fns, fns...)
-	return ts
+func (_s *TemplateSelect) Aggregate(fns ...AggregateFunc) *TemplateSelect {
+	_s.fns = append(_s.fns, fns...)
+	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (ts *TemplateSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, ts.ctx, ent.OpQuerySelect)
-	if err := ts.prepareQuery(ctx); err != nil {
+func (_s *TemplateSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
+	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*TemplateQuery, *TemplateSelect](ctx, ts.TemplateQuery, ts, ts.inters, v)
+	return scanWithInterceptors[*TemplateQuery, *TemplateSelect](ctx, _s.TemplateQuery, _s, _s.inters, v)
 }
 
-func (ts *TemplateSelect) sqlScan(ctx context.Context, root *TemplateQuery, v any) error {
+func (_s *TemplateSelect) sqlScan(ctx context.Context, root *TemplateQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(ts.fns))
-	for _, fn := range ts.fns {
+	aggregation := make([]string, 0, len(_s.fns))
+	for _, fn := range _s.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*ts.selector.flds); {
+	switch n := len(*_s.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -519,7 +519,7 @@ func (ts *TemplateSelect) sqlScan(ctx context.Context, root *TemplateQuery, v an
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := ts.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()

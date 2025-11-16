@@ -1,5 +1,29 @@
-logs
-sifu-box.*
-bin
-sifu-box
-temp
+# Logs
+sifu-box-pages/logs
+sifu-box-pages/*.log
+sifu-box-pages/npm-debug.log*
+sifu-box-pages/yarn-debug.log*
+sifu-box-pages/yarn-error.log*
+sifu-box-pages/pnpm-debug.log*
+sifu-box-pages/lerna-debug.log*
+
+sifu-box-pages/node_modules
+sifu-box-pages/dist
+sifu-box-pages/dist-ssr
+sifu-box-pages/*.local
+
+# Editor directories and files
+sifu-box-pages/!.vscode/extensions.json
+sifu-box-pages/.idea
+sifu-box-pages/.DS_Store
+sifu-box-pages/*.suo
+sifu-box-pages/*.ntvs*
+sifu-box-pages/*.njsproj
+sifu-box-pages/*.sln
+sifu-box-pages/*.sw?
+
+
+sifu-box-pages/pnpm-lock.yaml
+sifu-box-pages/yarn.lock
+sifu-box-pages/package-lock.json
+sifu-box-pages/bun.lockb

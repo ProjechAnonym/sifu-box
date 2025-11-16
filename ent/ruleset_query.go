@@ -15,53 +15,53 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// RuleSetQuery is the builder for querying RuleSet entities.
-type RuleSetQuery struct {
+// RulesetQuery is the builder for querying Ruleset entities.
+type RulesetQuery struct {
 	config
 	ctx        *QueryContext
 	order      []ruleset.OrderOption
 	inters     []Interceptor
-	predicates []predicate.RuleSet
+	predicates []predicate.Ruleset
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the RuleSetQuery builder.
-func (rsq *RuleSetQuery) Where(ps ...predicate.RuleSet) *RuleSetQuery {
-	rsq.predicates = append(rsq.predicates, ps...)
-	return rsq
+// Where adds a new predicate for the RulesetQuery builder.
+func (_q *RulesetQuery) Where(ps ...predicate.Ruleset) *RulesetQuery {
+	_q.predicates = append(_q.predicates, ps...)
+	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (rsq *RuleSetQuery) Limit(limit int) *RuleSetQuery {
-	rsq.ctx.Limit = &limit
-	return rsq
+func (_q *RulesetQuery) Limit(limit int) *RulesetQuery {
+	_q.ctx.Limit = &limit
+	return _q
 }
 
 // Offset to start from.
-func (rsq *RuleSetQuery) Offset(offset int) *RuleSetQuery {
-	rsq.ctx.Offset = &offset
-	return rsq
+func (_q *RulesetQuery) Offset(offset int) *RulesetQuery {
+	_q.ctx.Offset = &offset
+	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (rsq *RuleSetQuery) Unique(unique bool) *RuleSetQuery {
-	rsq.ctx.Unique = &unique
-	return rsq
+func (_q *RulesetQuery) Unique(unique bool) *RulesetQuery {
+	_q.ctx.Unique = &unique
+	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (rsq *RuleSetQuery) Order(o ...ruleset.OrderOption) *RuleSetQuery {
-	rsq.order = append(rsq.order, o...)
-	return rsq
+func (_q *RulesetQuery) Order(o ...ruleset.OrderOption) *RulesetQuery {
+	_q.order = append(_q.order, o...)
+	return _q
 }
 
-// First returns the first RuleSet entity from the query.
-// Returns a *NotFoundError when no RuleSet was found.
-func (rsq *RuleSetQuery) First(ctx context.Context) (*RuleSet, error) {
-	nodes, err := rsq.Limit(1).All(setContextOp(ctx, rsq.ctx, ent.OpQueryFirst))
+// First returns the first Ruleset entity from the query.
+// Returns a *NotFoundError when no Ruleset was found.
+func (_q *RulesetQuery) First(ctx context.Context) (*Ruleset, error) {
+	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -72,19 +72,19 @@ func (rsq *RuleSetQuery) First(ctx context.Context) (*RuleSet, error) {
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (rsq *RuleSetQuery) FirstX(ctx context.Context) *RuleSet {
-	node, err := rsq.First(ctx)
+func (_q *RulesetQuery) FirstX(ctx context.Context) *Ruleset {
+	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
 	return node
 }
 
-// FirstID returns the first RuleSet ID from the query.
-// Returns a *NotFoundError when no RuleSet ID was found.
-func (rsq *RuleSetQuery) FirstID(ctx context.Context) (id int, err error) {
+// FirstID returns the first Ruleset ID from the query.
+// Returns a *NotFoundError when no Ruleset ID was found.
+func (_q *RulesetQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = rsq.Limit(1).IDs(setContextOp(ctx, rsq.ctx, ent.OpQueryFirstID)); err != nil {
+	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -95,19 +95,19 @@ func (rsq *RuleSetQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (rsq *RuleSetQuery) FirstIDX(ctx context.Context) int {
-	id, err := rsq.FirstID(ctx)
+func (_q *RulesetQuery) FirstIDX(ctx context.Context) int {
+	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
 	return id
 }
 
-// Only returns a single RuleSet entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one RuleSet entity is found.
-// Returns a *NotFoundError when no RuleSet entities are found.
-func (rsq *RuleSetQuery) Only(ctx context.Context) (*RuleSet, error) {
-	nodes, err := rsq.Limit(2).All(setContextOp(ctx, rsq.ctx, ent.OpQueryOnly))
+// Only returns a single Ruleset entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one Ruleset entity is found.
+// Returns a *NotFoundError when no Ruleset entities are found.
+func (_q *RulesetQuery) Only(ctx context.Context) (*Ruleset, error) {
+	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -122,20 +122,20 @@ func (rsq *RuleSetQuery) Only(ctx context.Context) (*RuleSet, error) {
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (rsq *RuleSetQuery) OnlyX(ctx context.Context) *RuleSet {
-	node, err := rsq.Only(ctx)
+func (_q *RulesetQuery) OnlyX(ctx context.Context) *Ruleset {
+	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return node
 }
 
-// OnlyID is like Only, but returns the only RuleSet ID in the query.
-// Returns a *NotSingularError when more than one RuleSet ID is found.
+// OnlyID is like Only, but returns the only Ruleset ID in the query.
+// Returns a *NotSingularError when more than one Ruleset ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (rsq *RuleSetQuery) OnlyID(ctx context.Context) (id int, err error) {
+func (_q *RulesetQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = rsq.Limit(2).IDs(setContextOp(ctx, rsq.ctx, ent.OpQueryOnlyID)); err != nil {
+	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -150,48 +150,48 @@ func (rsq *RuleSetQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (rsq *RuleSetQuery) OnlyIDX(ctx context.Context) int {
-	id, err := rsq.OnlyID(ctx)
+func (_q *RulesetQuery) OnlyIDX(ctx context.Context) int {
+	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return id
 }
 
-// All executes the query and returns a list of RuleSets.
-func (rsq *RuleSetQuery) All(ctx context.Context) ([]*RuleSet, error) {
-	ctx = setContextOp(ctx, rsq.ctx, ent.OpQueryAll)
-	if err := rsq.prepareQuery(ctx); err != nil {
+// All executes the query and returns a list of Rulesets.
+func (_q *RulesetQuery) All(ctx context.Context) ([]*Ruleset, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*RuleSet, *RuleSetQuery]()
-	return withInterceptors[[]*RuleSet](ctx, rsq, qr, rsq.inters)
+	qr := querierAll[[]*Ruleset, *RulesetQuery]()
+	return withInterceptors[[]*Ruleset](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (rsq *RuleSetQuery) AllX(ctx context.Context) []*RuleSet {
-	nodes, err := rsq.All(ctx)
+func (_q *RulesetQuery) AllX(ctx context.Context) []*Ruleset {
+	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return nodes
 }
 
-// IDs executes the query and returns a list of RuleSet IDs.
-func (rsq *RuleSetQuery) IDs(ctx context.Context) (ids []int, err error) {
-	if rsq.ctx.Unique == nil && rsq.path != nil {
-		rsq.Unique(true)
+// IDs executes the query and returns a list of Ruleset IDs.
+func (_q *RulesetQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if _q.ctx.Unique == nil && _q.path != nil {
+		_q.Unique(true)
 	}
-	ctx = setContextOp(ctx, rsq.ctx, ent.OpQueryIDs)
-	if err = rsq.Select(ruleset.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
+	if err = _q.Select(ruleset.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (rsq *RuleSetQuery) IDsX(ctx context.Context) []int {
-	ids, err := rsq.IDs(ctx)
+func (_q *RulesetQuery) IDsX(ctx context.Context) []int {
+	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -199,17 +199,17 @@ func (rsq *RuleSetQuery) IDsX(ctx context.Context) []int {
 }
 
 // Count returns the count of the given query.
-func (rsq *RuleSetQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, rsq.ctx, ent.OpQueryCount)
-	if err := rsq.prepareQuery(ctx); err != nil {
+func (_q *RulesetQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, rsq, querierCount[*RuleSetQuery](), rsq.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*RulesetQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (rsq *RuleSetQuery) CountX(ctx context.Context) int {
-	count, err := rsq.Count(ctx)
+func (_q *RulesetQuery) CountX(ctx context.Context) int {
+	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -217,9 +217,9 @@ func (rsq *RuleSetQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (rsq *RuleSetQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, rsq.ctx, ent.OpQueryExist)
-	switch _, err := rsq.FirstID(ctx); {
+func (_q *RulesetQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
+	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -230,29 +230,29 @@ func (rsq *RuleSetQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (rsq *RuleSetQuery) ExistX(ctx context.Context) bool {
-	exist, err := rsq.Exist(ctx)
+func (_q *RulesetQuery) ExistX(ctx context.Context) bool {
+	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return exist
 }
 
-// Clone returns a duplicate of the RuleSetQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the RulesetQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (rsq *RuleSetQuery) Clone() *RuleSetQuery {
-	if rsq == nil {
+func (_q *RulesetQuery) Clone() *RulesetQuery {
+	if _q == nil {
 		return nil
 	}
-	return &RuleSetQuery{
-		config:     rsq.config,
-		ctx:        rsq.ctx.Clone(),
-		order:      append([]ruleset.OrderOption{}, rsq.order...),
-		inters:     append([]Interceptor{}, rsq.inters...),
-		predicates: append([]predicate.RuleSet{}, rsq.predicates...),
+	return &RulesetQuery{
+		config:     _q.config,
+		ctx:        _q.ctx.Clone(),
+		order:      append([]ruleset.OrderOption{}, _q.order...),
+		inters:     append([]Interceptor{}, _q.inters...),
+		predicates: append([]predicate.Ruleset{}, _q.predicates...),
 		// clone intermediate query.
-		sql:  rsq.sql.Clone(),
-		path: rsq.path,
+		sql:  _q.sql.Clone(),
+		path: _q.path,
 	}
 }
 
@@ -262,18 +262,18 @@ func (rsq *RuleSetQuery) Clone() *RuleSetQuery {
 // Example:
 //
 //	var v []struct {
-//		Tag string `json:"tag,omitempty"`
+//		Name string `json:"name,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.RuleSet.Query().
-//		GroupBy(ruleset.FieldTag).
+//	client.Ruleset.Query().
+//		GroupBy(ruleset.FieldName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (rsq *RuleSetQuery) GroupBy(field string, fields ...string) *RuleSetGroupBy {
-	rsq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &RuleSetGroupBy{build: rsq}
-	grbuild.flds = &rsq.ctx.Fields
+func (_q *RulesetQuery) GroupBy(field string, fields ...string) *RulesetGroupBy {
+	_q.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &RulesetGroupBy{build: _q}
+	grbuild.flds = &_q.ctx.Fields
 	grbuild.label = ruleset.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -285,68 +285,68 @@ func (rsq *RuleSetQuery) GroupBy(field string, fields ...string) *RuleSetGroupBy
 // Example:
 //
 //	var v []struct {
-//		Tag string `json:"tag,omitempty"`
+//		Name string `json:"name,omitempty"`
 //	}
 //
-//	client.RuleSet.Query().
-//		Select(ruleset.FieldTag).
+//	client.Ruleset.Query().
+//		Select(ruleset.FieldName).
 //		Scan(ctx, &v)
-func (rsq *RuleSetQuery) Select(fields ...string) *RuleSetSelect {
-	rsq.ctx.Fields = append(rsq.ctx.Fields, fields...)
-	sbuild := &RuleSetSelect{RuleSetQuery: rsq}
+func (_q *RulesetQuery) Select(fields ...string) *RulesetSelect {
+	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
+	sbuild := &RulesetSelect{RulesetQuery: _q}
 	sbuild.label = ruleset.Label
-	sbuild.flds, sbuild.scan = &rsq.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a RuleSetSelect configured with the given aggregations.
-func (rsq *RuleSetQuery) Aggregate(fns ...AggregateFunc) *RuleSetSelect {
-	return rsq.Select().Aggregate(fns...)
+// Aggregate returns a RulesetSelect configured with the given aggregations.
+func (_q *RulesetQuery) Aggregate(fns ...AggregateFunc) *RulesetSelect {
+	return _q.Select().Aggregate(fns...)
 }
 
-func (rsq *RuleSetQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range rsq.inters {
+func (_q *RulesetQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, rsq); err != nil {
+			if err := trv.Traverse(ctx, _q); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range rsq.ctx.Fields {
+	for _, f := range _q.ctx.Fields {
 		if !ruleset.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if rsq.path != nil {
-		prev, err := rsq.path(ctx)
+	if _q.path != nil {
+		prev, err := _q.path(ctx)
 		if err != nil {
 			return err
 		}
-		rsq.sql = prev
+		_q.sql = prev
 	}
 	return nil
 }
 
-func (rsq *RuleSetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*RuleSet, error) {
+func (_q *RulesetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ruleset, error) {
 	var (
-		nodes = []*RuleSet{}
-		_spec = rsq.querySpec()
+		nodes = []*Ruleset{}
+		_spec = _q.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*RuleSet).scanValues(nil, columns)
+		return (*Ruleset).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &RuleSet{config: rsq.config}
+		node := &Ruleset{config: _q.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, rsq.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
@@ -355,24 +355,24 @@ func (rsq *RuleSetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rul
 	return nodes, nil
 }
 
-func (rsq *RuleSetQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := rsq.querySpec()
-	_spec.Node.Columns = rsq.ctx.Fields
-	if len(rsq.ctx.Fields) > 0 {
-		_spec.Unique = rsq.ctx.Unique != nil && *rsq.ctx.Unique
+func (_q *RulesetQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := _q.querySpec()
+	_spec.Node.Columns = _q.ctx.Fields
+	if len(_q.ctx.Fields) > 0 {
+		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, rsq.driver, _spec)
+	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (rsq *RuleSetQuery) querySpec() *sqlgraph.QuerySpec {
+func (_q *RulesetQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(ruleset.Table, ruleset.Columns, sqlgraph.NewFieldSpec(ruleset.FieldID, field.TypeInt))
-	_spec.From = rsq.sql
-	if unique := rsq.ctx.Unique; unique != nil {
+	_spec.From = _q.sql
+	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if rsq.path != nil {
+	} else if _q.path != nil {
 		_spec.Unique = true
 	}
-	if fields := rsq.ctx.Fields; len(fields) > 0 {
+	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, ruleset.FieldID)
 		for i := range fields {
@@ -381,20 +381,20 @@ func (rsq *RuleSetQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if ps := rsq.predicates; len(ps) > 0 {
+	if ps := _q.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := rsq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := rsq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := rsq.order; len(ps) > 0 {
+	if ps := _q.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -404,114 +404,114 @@ func (rsq *RuleSetQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (rsq *RuleSetQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(rsq.driver.Dialect())
+func (_q *RulesetQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(_q.driver.Dialect())
 	t1 := builder.Table(ruleset.Table)
-	columns := rsq.ctx.Fields
+	columns := _q.ctx.Fields
 	if len(columns) == 0 {
 		columns = ruleset.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if rsq.sql != nil {
-		selector = rsq.sql
+	if _q.sql != nil {
+		selector = _q.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if rsq.ctx.Unique != nil && *rsq.ctx.Unique {
+	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range rsq.predicates {
+	for _, p := range _q.predicates {
 		p(selector)
 	}
-	for _, p := range rsq.order {
+	for _, p := range _q.order {
 		p(selector)
 	}
-	if offset := rsq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := rsq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
 }
 
-// RuleSetGroupBy is the group-by builder for RuleSet entities.
-type RuleSetGroupBy struct {
+// RulesetGroupBy is the group-by builder for Ruleset entities.
+type RulesetGroupBy struct {
 	selector
-	build *RuleSetQuery
+	build *RulesetQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (rsgb *RuleSetGroupBy) Aggregate(fns ...AggregateFunc) *RuleSetGroupBy {
-	rsgb.fns = append(rsgb.fns, fns...)
-	return rsgb
+func (_g *RulesetGroupBy) Aggregate(fns ...AggregateFunc) *RulesetGroupBy {
+	_g.fns = append(_g.fns, fns...)
+	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (rsgb *RuleSetGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rsgb.build.ctx, ent.OpQueryGroupBy)
-	if err := rsgb.build.prepareQuery(ctx); err != nil {
+func (_g *RulesetGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
+	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*RuleSetQuery, *RuleSetGroupBy](ctx, rsgb.build, rsgb, rsgb.build.inters, v)
+	return scanWithInterceptors[*RulesetQuery, *RulesetGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (rsgb *RuleSetGroupBy) sqlScan(ctx context.Context, root *RuleSetQuery, v any) error {
+func (_g *RulesetGroupBy) sqlScan(ctx context.Context, root *RulesetQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(rsgb.fns))
-	for _, fn := range rsgb.fns {
+	aggregation := make([]string, 0, len(_g.fns))
+	for _, fn := range _g.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*rsgb.flds)+len(rsgb.fns))
-		for _, f := range *rsgb.flds {
+		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
+		for _, f := range *_g.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*rsgb.flds...)...)
+	selector.GroupBy(selector.Columns(*_g.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := rsgb.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
 	return sql.ScanSlice(rows, v)
 }
 
-// RuleSetSelect is the builder for selecting fields of RuleSet entities.
-type RuleSetSelect struct {
-	*RuleSetQuery
+// RulesetSelect is the builder for selecting fields of Ruleset entities.
+type RulesetSelect struct {
+	*RulesetQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (rss *RuleSetSelect) Aggregate(fns ...AggregateFunc) *RuleSetSelect {
-	rss.fns = append(rss.fns, fns...)
-	return rss
+func (_s *RulesetSelect) Aggregate(fns ...AggregateFunc) *RulesetSelect {
+	_s.fns = append(_s.fns, fns...)
+	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (rss *RuleSetSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, rss.ctx, ent.OpQuerySelect)
-	if err := rss.prepareQuery(ctx); err != nil {
+func (_s *RulesetSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
+	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*RuleSetQuery, *RuleSetSelect](ctx, rss.RuleSetQuery, rss, rss.inters, v)
+	return scanWithInterceptors[*RulesetQuery, *RulesetSelect](ctx, _s.RulesetQuery, _s, _s.inters, v)
 }
 
-func (rss *RuleSetSelect) sqlScan(ctx context.Context, root *RuleSetQuery, v any) error {
+func (_s *RulesetSelect) sqlScan(ctx context.Context, root *RulesetQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(rss.fns))
-	for _, fn := range rss.fns {
+	aggregation := make([]string, 0, len(_s.fns))
+	for _, fn := range _s.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*rss.selector.flds); {
+	switch n := len(*_s.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -519,7 +519,7 @@ func (rss *RuleSetSelect) sqlScan(ctx context.Context, root *RuleSetQuery, v any
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := rss.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()

@@ -1,0 +1,153 @@
+import { useState, useEffect } from "react";
+import { Modal, ModalContent, ModalBody, ModalFooter, ModalHeader } from "@heroui/modal";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { Switch } from "@heroui/switch";
+import { ScrollShadow } from "@heroui/scroll-shadow";
+import { Divider } from "@heroui/divider";
+import toast from "react-hot-toast";
+import { AddProviderMsg, EditProvider } from "@/utils/configuration/provider";
+import { cloneDeep } from "lodash";
+export default function AddProviders(props: {edit:boolean; isOpen: boolean; onClose: () => void; theme: string; token: string; setUpdate: (update: boolean) => void; initial_value: {name: string, path: string, remote: boolean}}) {
+  const { isOpen, onClose, theme, token, setUpdate, initial_value, edit } = props;
+  const [providers, setProviders] = useState<Array<{name: string, path: string, remote: boolean}>>([initial_value])
+  useEffect(() => {
+    setProviders([initial_value]);
+  }, [initial_value]);
+  const AddItems = () => toast.promise(
+    AddProviderMsg(token, providers),
+    {
+      loading: "正在添加...",
+      success: (res) => {
+        res ? res.map(item => item.status ? toast.success(item.message) : toast.error(item.message)) : toast.error("添加失败, 未知错误")
+        setUpdate(true);
+        onClose();
+        return "添加操作完成";
+      },
+      error:(e) => e.code === "ERR_NETWORK" ? "请检查网络连接" : 
+                e.response.data.message ? e.response.data.message : e.response.data
+    }
+  );
+  const EditItems = () => toast.promise(
+    EditProvider(token, providers[0]),
+    {
+      loading: "正在修改...",
+      success: (res) => {
+        res ? res.message ? toast.success(res.message) : toast.error("未知错误") : toast.error("修改失败, 未知错误")
+        setUpdate(true);
+        onClose();
+        return "修改操作完成";
+      },
+      error:(e) => e.code === "ERR_NETWORK" ? "请检查网络连接" : 
+                e.response.data.message ? e.response.data.message : e.response.data
+    }
+  )
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} backdrop="blur" size="xl" classNames={{ base: `${theme} bg-content1 text-foreground` }}>
+      <ModalContent>
+        {(onClose) => (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              edit ? EditItems() :AddItems();
+            }}
+          >
+            <ModalHeader className="gap-2 items-center">
+              <span className="font-black text-xl">添加机场</span>
+              {!edit &&
+              <div className="flex flex-row gap-1">
+                <Button size="sm" isIconOnly 
+                  onPress={() => {
+                    if (providers.length == 1) {
+                      toast.error("无法继续删除");
+                      return;
+                    }
+                    const temp_providers = cloneDeep(providers);
+                    temp_providers.pop();
+                    setProviders(temp_providers);
+                }}>
+                  <i className="bi bi-dash text-3xl" />
+                </Button>
+                <Button size="sm" isIconOnly 
+                  onPress={() => {
+                  const temp_providers = cloneDeep(providers);
+                    temp_providers.push({
+                      name: "",
+                      remote: false,
+                      path: "",
+                    });
+                    setProviders(temp_providers);
+                  }}
+                >
+                  <i className="bi bi-plus text-3xl" />
+                </Button>
+              </div>}
+            </ModalHeader>
+            <ModalBody>
+              <ScrollShadow className="flex flex-col gap-4 h-96">
+                {providers &&
+                  providers.map((provider, i) => (
+                    <div key={`provider-${i}`} className="flex flex-col gap-2">
+                      <Input
+                        variant="flat"
+                        size="sm"
+                        label={<span className="text-lg font-black">Path</span>}
+                        className="w-full"
+                        isRequired
+                        isClearable
+                        value={provider.path}
+                        onValueChange={(value) => {
+                          const temp_providers = cloneDeep(providers);
+                          temp_providers[i].path = value;
+                          setProviders(temp_providers);
+                        }}
+                      />
+                      <div className="flex flex-row gap-2 items-center">
+                        <Input
+                          variant="flat"
+                          size="sm"
+                          label={
+                            <span className="text-lg font-black">名称</span>
+                          }
+                          className="w-36"
+                          isRequired
+                          isClearable
+                          value={provider.name}
+                          onValueChange={(value) => {
+                            const temp_providers = cloneDeep(providers);
+                            temp_providers[i].name = value;
+                            setProviders(temp_providers);
+                          }}
+                        />
+                        <Switch
+                          isSelected={provider.remote}
+                          onValueChange={(value) => {
+                            const temp_providers = cloneDeep(providers);
+                            temp_providers[i].remote = value;
+                            setProviders(temp_providers);
+                          }}
+                        >
+                          <span className="text-xl font-black">
+                            {provider.remote ? "远程" : "本地"}
+                          </span>
+                        </Switch>
+                      </div>
+                      <Divider />
+                    </div>
+                  ))}
+              </ScrollShadow>
+            </ModalBody>
+            <ModalFooter>
+              <Button size="sm" variant="shadow" color="danger" onPress={()=>{setProviders([initial_value]); onClose()}} type="button">
+                <span className="text-lg font-black">关闭</span>
+              </Button>
+              <Button size="sm" variant="shadow" color="primary" type="submit">
+                <span className="text-lg font-black">确认</span>
+              </Button>
+            </ModalFooter>
+          </form>
+        )}
+      </ModalContent>
+    </Modal>
+  );
+}

@@ -13,8 +13,24 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldContent holds the string denoting the content field in the database.
-	FieldContent = "content"
+	// FieldDNS holds the string denoting the dns field in the database.
+	FieldDNS = "dns"
+	// FieldLog holds the string denoting the log field in the database.
+	FieldLog = "log"
+	// FieldRoute holds the string denoting the route field in the database.
+	FieldRoute = "route"
+	// FieldInbounds holds the string denoting the inbounds field in the database.
+	FieldInbounds = "inbounds"
+	// FieldOutboundGroups holds the string denoting the outbound_groups field in the database.
+	FieldOutboundGroups = "outbound_groups"
+	// FieldNtp holds the string denoting the ntp field in the database.
+	FieldNtp = "ntp"
+	// FieldExperiment holds the string denoting the experiment field in the database.
+	FieldExperiment = "experiment"
+	// FieldProviders holds the string denoting the providers field in the database.
+	FieldProviders = "providers"
+	// FieldUpdated holds the string denoting the updated field in the database.
+	FieldUpdated = "updated"
 	// Table holds the table name of the template in the database.
 	Table = "templates"
 )
@@ -23,7 +39,15 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldName,
-	FieldContent,
+	FieldDNS,
+	FieldLog,
+	FieldRoute,
+	FieldInbounds,
+	FieldOutboundGroups,
+	FieldNtp,
+	FieldExperiment,
+	FieldProviders,
+	FieldUpdated,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -52,4 +76,9 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByUpdated orders the results by the updated field.
+func ByUpdated(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUpdated, opts...).ToFunc()
 }

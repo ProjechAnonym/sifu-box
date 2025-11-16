@@ -20,16 +20,16 @@ func (f ProviderFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProviderMutation", m)
 }
 
-// The RuleSetFunc type is an adapter to allow the use of ordinary
-// function as RuleSet mutator.
-type RuleSetFunc func(context.Context, *ent.RuleSetMutation) (ent.Value, error)
+// The RulesetFunc type is an adapter to allow the use of ordinary
+// function as Ruleset mutator.
+type RulesetFunc func(context.Context, *ent.RulesetMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f RuleSetFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.RuleSetMutation); ok {
+func (f RulesetFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.RulesetMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RuleSetMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RulesetMutation", m)
 }
 
 // The TemplateFunc type is an adapter to allow the use of ordinary

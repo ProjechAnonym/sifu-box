@@ -14,8 +14,8 @@ type Tx struct {
 	config
 	// Provider is the client for interacting with the Provider builders.
 	Provider *ProviderClient
-	// RuleSet is the client for interacting with the RuleSet builders.
-	RuleSet *RuleSetClient
+	// Ruleset is the client for interacting with the Ruleset builders.
+	Ruleset *RulesetClient
 	// Template is the client for interacting with the Template builders.
 	Template *TemplateClient
 
@@ -150,7 +150,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Provider = NewProviderClient(tx.config)
-	tx.RuleSet = NewRuleSetClient(tx.config)
+	tx.Ruleset = NewRulesetClient(tx.config)
 	tx.Template = NewTemplateClient(tx.config)
 }
 

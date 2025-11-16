@@ -58,6 +58,11 @@ func Name(v string) predicate.Template {
 	return predicate.Template(sql.FieldEQ(FieldName, v))
 }
 
+// Updated applies equality check predicate on the "updated" field. It's identical to UpdatedEQ.
+func Updated(v bool) predicate.Template {
+	return predicate.Template(sql.FieldEQ(FieldUpdated, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Template {
 	return predicate.Template(sql.FieldEQ(FieldName, v))
@@ -121,6 +126,106 @@ func NameEqualFold(v string) predicate.Template {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Template {
 	return predicate.Template(sql.FieldContainsFold(FieldName, v))
+}
+
+// DNSIsNil applies the IsNil predicate on the "dns" field.
+func DNSIsNil() predicate.Template {
+	return predicate.Template(sql.FieldIsNull(FieldDNS))
+}
+
+// DNSNotNil applies the NotNil predicate on the "dns" field.
+func DNSNotNil() predicate.Template {
+	return predicate.Template(sql.FieldNotNull(FieldDNS))
+}
+
+// LogIsNil applies the IsNil predicate on the "log" field.
+func LogIsNil() predicate.Template {
+	return predicate.Template(sql.FieldIsNull(FieldLog))
+}
+
+// LogNotNil applies the NotNil predicate on the "log" field.
+func LogNotNil() predicate.Template {
+	return predicate.Template(sql.FieldNotNull(FieldLog))
+}
+
+// RouteIsNil applies the IsNil predicate on the "route" field.
+func RouteIsNil() predicate.Template {
+	return predicate.Template(sql.FieldIsNull(FieldRoute))
+}
+
+// RouteNotNil applies the NotNil predicate on the "route" field.
+func RouteNotNil() predicate.Template {
+	return predicate.Template(sql.FieldNotNull(FieldRoute))
+}
+
+// InboundsIsNil applies the IsNil predicate on the "inbounds" field.
+func InboundsIsNil() predicate.Template {
+	return predicate.Template(sql.FieldIsNull(FieldInbounds))
+}
+
+// InboundsNotNil applies the NotNil predicate on the "inbounds" field.
+func InboundsNotNil() predicate.Template {
+	return predicate.Template(sql.FieldNotNull(FieldInbounds))
+}
+
+// OutboundGroupsIsNil applies the IsNil predicate on the "outbound_groups" field.
+func OutboundGroupsIsNil() predicate.Template {
+	return predicate.Template(sql.FieldIsNull(FieldOutboundGroups))
+}
+
+// OutboundGroupsNotNil applies the NotNil predicate on the "outbound_groups" field.
+func OutboundGroupsNotNil() predicate.Template {
+	return predicate.Template(sql.FieldNotNull(FieldOutboundGroups))
+}
+
+// NtpIsNil applies the IsNil predicate on the "ntp" field.
+func NtpIsNil() predicate.Template {
+	return predicate.Template(sql.FieldIsNull(FieldNtp))
+}
+
+// NtpNotNil applies the NotNil predicate on the "ntp" field.
+func NtpNotNil() predicate.Template {
+	return predicate.Template(sql.FieldNotNull(FieldNtp))
+}
+
+// ExperimentIsNil applies the IsNil predicate on the "experiment" field.
+func ExperimentIsNil() predicate.Template {
+	return predicate.Template(sql.FieldIsNull(FieldExperiment))
+}
+
+// ExperimentNotNil applies the NotNil predicate on the "experiment" field.
+func ExperimentNotNil() predicate.Template {
+	return predicate.Template(sql.FieldNotNull(FieldExperiment))
+}
+
+// ProvidersIsNil applies the IsNil predicate on the "providers" field.
+func ProvidersIsNil() predicate.Template {
+	return predicate.Template(sql.FieldIsNull(FieldProviders))
+}
+
+// ProvidersNotNil applies the NotNil predicate on the "providers" field.
+func ProvidersNotNil() predicate.Template {
+	return predicate.Template(sql.FieldNotNull(FieldProviders))
+}
+
+// UpdatedEQ applies the EQ predicate on the "updated" field.
+func UpdatedEQ(v bool) predicate.Template {
+	return predicate.Template(sql.FieldEQ(FieldUpdated, v))
+}
+
+// UpdatedNEQ applies the NEQ predicate on the "updated" field.
+func UpdatedNEQ(v bool) predicate.Template {
+	return predicate.Template(sql.FieldNEQ(FieldUpdated, v))
+}
+
+// UpdatedIsNil applies the IsNil predicate on the "updated" field.
+func UpdatedIsNil() predicate.Template {
+	return predicate.Template(sql.FieldIsNull(FieldUpdated))
+}
+
+// UpdatedNotNil applies the NotNil predicate on the "updated" field.
+func UpdatedNotNil() predicate.Template {
+	return predicate.Template(sql.FieldNotNull(FieldUpdated))
 }
 
 // And groups predicates with the AND operator between them.

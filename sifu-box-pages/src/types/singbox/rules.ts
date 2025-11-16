@@ -1,4 +1,4 @@
-export const initRuleLabels = [
+export const init_rule_labels = [
   { label: "类型", key: "type", allowSort: true, initShow: true },
   { label: "规则", key: "payload", allowSort: true, initShow: true },
   { label: "出站", key: "proxy", allowSort: true, initShow: true },

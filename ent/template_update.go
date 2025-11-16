@@ -8,10 +8,11 @@ import (
 	"fmt"
 	"sifu-box/ent/predicate"
 	"sifu-box/ent/template"
-	"sifu-box/models"
+	"sifu-box/singbox"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -23,52 +24,212 @@ type TemplateUpdate struct {
 }
 
 // Where appends a list predicates to the TemplateUpdate builder.
-func (tu *TemplateUpdate) Where(ps ...predicate.Template) *TemplateUpdate {
-	tu.mutation.Where(ps...)
-	return tu
+func (_u *TemplateUpdate) Where(ps ...predicate.Template) *TemplateUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetName sets the "name" field.
-func (tu *TemplateUpdate) SetName(s string) *TemplateUpdate {
-	tu.mutation.SetName(s)
-	return tu
+func (_u *TemplateUpdate) SetName(v string) *TemplateUpdate {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (tu *TemplateUpdate) SetNillableName(s *string) *TemplateUpdate {
-	if s != nil {
-		tu.SetName(*s)
+func (_u *TemplateUpdate) SetNillableName(v *string) *TemplateUpdate {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return tu
+	return _u
 }
 
-// SetContent sets the "content" field.
-func (tu *TemplateUpdate) SetContent(m models.Template) *TemplateUpdate {
-	tu.mutation.SetContent(m)
-	return tu
+// SetDNS sets the "dns" field.
+func (_u *TemplateUpdate) SetDNS(v singbox.DNS) *TemplateUpdate {
+	_u.mutation.SetDNS(v)
+	return _u
 }
 
-// SetNillableContent sets the "content" field if the given value is not nil.
-func (tu *TemplateUpdate) SetNillableContent(m *models.Template) *TemplateUpdate {
-	if m != nil {
-		tu.SetContent(*m)
+// SetNillableDNS sets the "dns" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableDNS(v *singbox.DNS) *TemplateUpdate {
+	if v != nil {
+		_u.SetDNS(*v)
 	}
-	return tu
+	return _u
+}
+
+// ClearDNS clears the value of the "dns" field.
+func (_u *TemplateUpdate) ClearDNS() *TemplateUpdate {
+	_u.mutation.ClearDNS()
+	return _u
+}
+
+// SetLog sets the "log" field.
+func (_u *TemplateUpdate) SetLog(v singbox.Log) *TemplateUpdate {
+	_u.mutation.SetLog(v)
+	return _u
+}
+
+// SetNillableLog sets the "log" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableLog(v *singbox.Log) *TemplateUpdate {
+	if v != nil {
+		_u.SetLog(*v)
+	}
+	return _u
+}
+
+// ClearLog clears the value of the "log" field.
+func (_u *TemplateUpdate) ClearLog() *TemplateUpdate {
+	_u.mutation.ClearLog()
+	return _u
+}
+
+// SetRoute sets the "route" field.
+func (_u *TemplateUpdate) SetRoute(v singbox.Route) *TemplateUpdate {
+	_u.mutation.SetRoute(v)
+	return _u
+}
+
+// SetNillableRoute sets the "route" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableRoute(v *singbox.Route) *TemplateUpdate {
+	if v != nil {
+		_u.SetRoute(*v)
+	}
+	return _u
+}
+
+// ClearRoute clears the value of the "route" field.
+func (_u *TemplateUpdate) ClearRoute() *TemplateUpdate {
+	_u.mutation.ClearRoute()
+	return _u
+}
+
+// SetInbounds sets the "inbounds" field.
+func (_u *TemplateUpdate) SetInbounds(v []map[string]interface{}) *TemplateUpdate {
+	_u.mutation.SetInbounds(v)
+	return _u
+}
+
+// AppendInbounds appends value to the "inbounds" field.
+func (_u *TemplateUpdate) AppendInbounds(v []map[string]interface{}) *TemplateUpdate {
+	_u.mutation.AppendInbounds(v)
+	return _u
+}
+
+// ClearInbounds clears the value of the "inbounds" field.
+func (_u *TemplateUpdate) ClearInbounds() *TemplateUpdate {
+	_u.mutation.ClearInbounds()
+	return _u
+}
+
+// SetOutboundGroups sets the "outbound_groups" field.
+func (_u *TemplateUpdate) SetOutboundGroups(v []singbox.OutboundGroup) *TemplateUpdate {
+	_u.mutation.SetOutboundGroups(v)
+	return _u
+}
+
+// AppendOutboundGroups appends value to the "outbound_groups" field.
+func (_u *TemplateUpdate) AppendOutboundGroups(v []singbox.OutboundGroup) *TemplateUpdate {
+	_u.mutation.AppendOutboundGroups(v)
+	return _u
+}
+
+// ClearOutboundGroups clears the value of the "outbound_groups" field.
+func (_u *TemplateUpdate) ClearOutboundGroups() *TemplateUpdate {
+	_u.mutation.ClearOutboundGroups()
+	return _u
+}
+
+// SetNtp sets the "ntp" field.
+func (_u *TemplateUpdate) SetNtp(v singbox.Ntp) *TemplateUpdate {
+	_u.mutation.SetNtp(v)
+	return _u
+}
+
+// SetNillableNtp sets the "ntp" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableNtp(v *singbox.Ntp) *TemplateUpdate {
+	if v != nil {
+		_u.SetNtp(*v)
+	}
+	return _u
+}
+
+// ClearNtp clears the value of the "ntp" field.
+func (_u *TemplateUpdate) ClearNtp() *TemplateUpdate {
+	_u.mutation.ClearNtp()
+	return _u
+}
+
+// SetExperiment sets the "experiment" field.
+func (_u *TemplateUpdate) SetExperiment(v singbox.Experiment) *TemplateUpdate {
+	_u.mutation.SetExperiment(v)
+	return _u
+}
+
+// SetNillableExperiment sets the "experiment" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableExperiment(v *singbox.Experiment) *TemplateUpdate {
+	if v != nil {
+		_u.SetExperiment(*v)
+	}
+	return _u
+}
+
+// ClearExperiment clears the value of the "experiment" field.
+func (_u *TemplateUpdate) ClearExperiment() *TemplateUpdate {
+	_u.mutation.ClearExperiment()
+	return _u
+}
+
+// SetProviders sets the "providers" field.
+func (_u *TemplateUpdate) SetProviders(v []string) *TemplateUpdate {
+	_u.mutation.SetProviders(v)
+	return _u
+}
+
+// AppendProviders appends value to the "providers" field.
+func (_u *TemplateUpdate) AppendProviders(v []string) *TemplateUpdate {
+	_u.mutation.AppendProviders(v)
+	return _u
+}
+
+// ClearProviders clears the value of the "providers" field.
+func (_u *TemplateUpdate) ClearProviders() *TemplateUpdate {
+	_u.mutation.ClearProviders()
+	return _u
+}
+
+// SetUpdated sets the "updated" field.
+func (_u *TemplateUpdate) SetUpdated(v bool) *TemplateUpdate {
+	_u.mutation.SetUpdated(v)
+	return _u
+}
+
+// SetNillableUpdated sets the "updated" field if the given value is not nil.
+func (_u *TemplateUpdate) SetNillableUpdated(v *bool) *TemplateUpdate {
+	if v != nil {
+		_u.SetUpdated(*v)
+	}
+	return _u
+}
+
+// ClearUpdated clears the value of the "updated" field.
+func (_u *TemplateUpdate) ClearUpdated() *TemplateUpdate {
+	_u.mutation.ClearUpdated()
+	return _u
 }
 
 // Mutation returns the TemplateMutation object of the builder.
-func (tu *TemplateUpdate) Mutation() *TemplateMutation {
-	return tu.mutation
+func (_u *TemplateUpdate) Mutation() *TemplateMutation {
+	return _u.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (tu *TemplateUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, tu.sqlSave, tu.mutation, tu.hooks)
+func (_u *TemplateUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (tu *TemplateUpdate) SaveX(ctx context.Context) int {
-	affected, err := tu.Save(ctx)
+func (_u *TemplateUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -76,21 +237,21 @@ func (tu *TemplateUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (tu *TemplateUpdate) Exec(ctx context.Context) error {
-	_, err := tu.Save(ctx)
+func (_u *TemplateUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (tu *TemplateUpdate) ExecX(ctx context.Context) {
-	if err := tu.Exec(ctx); err != nil {
+func (_u *TemplateUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (tu *TemplateUpdate) check() error {
-	if v, ok := tu.mutation.Name(); ok {
+func (_u *TemplateUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
 		if err := template.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Template.name": %w`, err)}
 		}
@@ -98,25 +259,91 @@ func (tu *TemplateUpdate) check() error {
 	return nil
 }
 
-func (tu *TemplateUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := tu.check(); err != nil {
-		return n, err
+func (_u *TemplateUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(template.Table, template.Columns, sqlgraph.NewFieldSpec(template.FieldID, field.TypeInt))
-	if ps := tu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := tu.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(template.FieldName, field.TypeString, value)
 	}
-	if value, ok := tu.mutation.Content(); ok {
-		_spec.SetField(template.FieldContent, field.TypeJSON, value)
+	if value, ok := _u.mutation.DNS(); ok {
+		_spec.SetField(template.FieldDNS, field.TypeJSON, value)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
+	if _u.mutation.DNSCleared() {
+		_spec.ClearField(template.FieldDNS, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Log(); ok {
+		_spec.SetField(template.FieldLog, field.TypeJSON, value)
+	}
+	if _u.mutation.LogCleared() {
+		_spec.ClearField(template.FieldLog, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Route(); ok {
+		_spec.SetField(template.FieldRoute, field.TypeJSON, value)
+	}
+	if _u.mutation.RouteCleared() {
+		_spec.ClearField(template.FieldRoute, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Inbounds(); ok {
+		_spec.SetField(template.FieldInbounds, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedInbounds(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, template.FieldInbounds, value)
+		})
+	}
+	if _u.mutation.InboundsCleared() {
+		_spec.ClearField(template.FieldInbounds, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.OutboundGroups(); ok {
+		_spec.SetField(template.FieldOutboundGroups, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedOutboundGroups(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, template.FieldOutboundGroups, value)
+		})
+	}
+	if _u.mutation.OutboundGroupsCleared() {
+		_spec.ClearField(template.FieldOutboundGroups, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Ntp(); ok {
+		_spec.SetField(template.FieldNtp, field.TypeJSON, value)
+	}
+	if _u.mutation.NtpCleared() {
+		_spec.ClearField(template.FieldNtp, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Experiment(); ok {
+		_spec.SetField(template.FieldExperiment, field.TypeJSON, value)
+	}
+	if _u.mutation.ExperimentCleared() {
+		_spec.ClearField(template.FieldExperiment, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Providers(); ok {
+		_spec.SetField(template.FieldProviders, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedProviders(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, template.FieldProviders, value)
+		})
+	}
+	if _u.mutation.ProvidersCleared() {
+		_spec.ClearField(template.FieldProviders, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Updated(); ok {
+		_spec.SetField(template.FieldUpdated, field.TypeBool, value)
+	}
+	if _u.mutation.UpdatedCleared() {
+		_spec.ClearField(template.FieldUpdated, field.TypeBool)
+	}
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{template.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -124,8 +351,8 @@ func (tu *TemplateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	tu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // TemplateUpdateOne is the builder for updating a single Template entity.
@@ -137,59 +364,219 @@ type TemplateUpdateOne struct {
 }
 
 // SetName sets the "name" field.
-func (tuo *TemplateUpdateOne) SetName(s string) *TemplateUpdateOne {
-	tuo.mutation.SetName(s)
-	return tuo
+func (_u *TemplateUpdateOne) SetName(v string) *TemplateUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (tuo *TemplateUpdateOne) SetNillableName(s *string) *TemplateUpdateOne {
-	if s != nil {
-		tuo.SetName(*s)
+func (_u *TemplateUpdateOne) SetNillableName(v *string) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return tuo
+	return _u
 }
 
-// SetContent sets the "content" field.
-func (tuo *TemplateUpdateOne) SetContent(m models.Template) *TemplateUpdateOne {
-	tuo.mutation.SetContent(m)
-	return tuo
+// SetDNS sets the "dns" field.
+func (_u *TemplateUpdateOne) SetDNS(v singbox.DNS) *TemplateUpdateOne {
+	_u.mutation.SetDNS(v)
+	return _u
 }
 
-// SetNillableContent sets the "content" field if the given value is not nil.
-func (tuo *TemplateUpdateOne) SetNillableContent(m *models.Template) *TemplateUpdateOne {
-	if m != nil {
-		tuo.SetContent(*m)
+// SetNillableDNS sets the "dns" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableDNS(v *singbox.DNS) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetDNS(*v)
 	}
-	return tuo
+	return _u
+}
+
+// ClearDNS clears the value of the "dns" field.
+func (_u *TemplateUpdateOne) ClearDNS() *TemplateUpdateOne {
+	_u.mutation.ClearDNS()
+	return _u
+}
+
+// SetLog sets the "log" field.
+func (_u *TemplateUpdateOne) SetLog(v singbox.Log) *TemplateUpdateOne {
+	_u.mutation.SetLog(v)
+	return _u
+}
+
+// SetNillableLog sets the "log" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableLog(v *singbox.Log) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetLog(*v)
+	}
+	return _u
+}
+
+// ClearLog clears the value of the "log" field.
+func (_u *TemplateUpdateOne) ClearLog() *TemplateUpdateOne {
+	_u.mutation.ClearLog()
+	return _u
+}
+
+// SetRoute sets the "route" field.
+func (_u *TemplateUpdateOne) SetRoute(v singbox.Route) *TemplateUpdateOne {
+	_u.mutation.SetRoute(v)
+	return _u
+}
+
+// SetNillableRoute sets the "route" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableRoute(v *singbox.Route) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetRoute(*v)
+	}
+	return _u
+}
+
+// ClearRoute clears the value of the "route" field.
+func (_u *TemplateUpdateOne) ClearRoute() *TemplateUpdateOne {
+	_u.mutation.ClearRoute()
+	return _u
+}
+
+// SetInbounds sets the "inbounds" field.
+func (_u *TemplateUpdateOne) SetInbounds(v []map[string]interface{}) *TemplateUpdateOne {
+	_u.mutation.SetInbounds(v)
+	return _u
+}
+
+// AppendInbounds appends value to the "inbounds" field.
+func (_u *TemplateUpdateOne) AppendInbounds(v []map[string]interface{}) *TemplateUpdateOne {
+	_u.mutation.AppendInbounds(v)
+	return _u
+}
+
+// ClearInbounds clears the value of the "inbounds" field.
+func (_u *TemplateUpdateOne) ClearInbounds() *TemplateUpdateOne {
+	_u.mutation.ClearInbounds()
+	return _u
+}
+
+// SetOutboundGroups sets the "outbound_groups" field.
+func (_u *TemplateUpdateOne) SetOutboundGroups(v []singbox.OutboundGroup) *TemplateUpdateOne {
+	_u.mutation.SetOutboundGroups(v)
+	return _u
+}
+
+// AppendOutboundGroups appends value to the "outbound_groups" field.
+func (_u *TemplateUpdateOne) AppendOutboundGroups(v []singbox.OutboundGroup) *TemplateUpdateOne {
+	_u.mutation.AppendOutboundGroups(v)
+	return _u
+}
+
+// ClearOutboundGroups clears the value of the "outbound_groups" field.
+func (_u *TemplateUpdateOne) ClearOutboundGroups() *TemplateUpdateOne {
+	_u.mutation.ClearOutboundGroups()
+	return _u
+}
+
+// SetNtp sets the "ntp" field.
+func (_u *TemplateUpdateOne) SetNtp(v singbox.Ntp) *TemplateUpdateOne {
+	_u.mutation.SetNtp(v)
+	return _u
+}
+
+// SetNillableNtp sets the "ntp" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableNtp(v *singbox.Ntp) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetNtp(*v)
+	}
+	return _u
+}
+
+// ClearNtp clears the value of the "ntp" field.
+func (_u *TemplateUpdateOne) ClearNtp() *TemplateUpdateOne {
+	_u.mutation.ClearNtp()
+	return _u
+}
+
+// SetExperiment sets the "experiment" field.
+func (_u *TemplateUpdateOne) SetExperiment(v singbox.Experiment) *TemplateUpdateOne {
+	_u.mutation.SetExperiment(v)
+	return _u
+}
+
+// SetNillableExperiment sets the "experiment" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableExperiment(v *singbox.Experiment) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetExperiment(*v)
+	}
+	return _u
+}
+
+// ClearExperiment clears the value of the "experiment" field.
+func (_u *TemplateUpdateOne) ClearExperiment() *TemplateUpdateOne {
+	_u.mutation.ClearExperiment()
+	return _u
+}
+
+// SetProviders sets the "providers" field.
+func (_u *TemplateUpdateOne) SetProviders(v []string) *TemplateUpdateOne {
+	_u.mutation.SetProviders(v)
+	return _u
+}
+
+// AppendProviders appends value to the "providers" field.
+func (_u *TemplateUpdateOne) AppendProviders(v []string) *TemplateUpdateOne {
+	_u.mutation.AppendProviders(v)
+	return _u
+}
+
+// ClearProviders clears the value of the "providers" field.
+func (_u *TemplateUpdateOne) ClearProviders() *TemplateUpdateOne {
+	_u.mutation.ClearProviders()
+	return _u
+}
+
+// SetUpdated sets the "updated" field.
+func (_u *TemplateUpdateOne) SetUpdated(v bool) *TemplateUpdateOne {
+	_u.mutation.SetUpdated(v)
+	return _u
+}
+
+// SetNillableUpdated sets the "updated" field if the given value is not nil.
+func (_u *TemplateUpdateOne) SetNillableUpdated(v *bool) *TemplateUpdateOne {
+	if v != nil {
+		_u.SetUpdated(*v)
+	}
+	return _u
+}
+
+// ClearUpdated clears the value of the "updated" field.
+func (_u *TemplateUpdateOne) ClearUpdated() *TemplateUpdateOne {
+	_u.mutation.ClearUpdated()
+	return _u
 }
 
 // Mutation returns the TemplateMutation object of the builder.
-func (tuo *TemplateUpdateOne) Mutation() *TemplateMutation {
-	return tuo.mutation
+func (_u *TemplateUpdateOne) Mutation() *TemplateMutation {
+	return _u.mutation
 }
 
 // Where appends a list predicates to the TemplateUpdate builder.
-func (tuo *TemplateUpdateOne) Where(ps ...predicate.Template) *TemplateUpdateOne {
-	tuo.mutation.Where(ps...)
-	return tuo
+func (_u *TemplateUpdateOne) Where(ps ...predicate.Template) *TemplateUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (tuo *TemplateUpdateOne) Select(field string, fields ...string) *TemplateUpdateOne {
-	tuo.fields = append([]string{field}, fields...)
-	return tuo
+func (_u *TemplateUpdateOne) Select(field string, fields ...string) *TemplateUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Template entity.
-func (tuo *TemplateUpdateOne) Save(ctx context.Context) (*Template, error) {
-	return withHooks(ctx, tuo.sqlSave, tuo.mutation, tuo.hooks)
+func (_u *TemplateUpdateOne) Save(ctx context.Context) (*Template, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (tuo *TemplateUpdateOne) SaveX(ctx context.Context) *Template {
-	node, err := tuo.Save(ctx)
+func (_u *TemplateUpdateOne) SaveX(ctx context.Context) *Template {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -197,21 +584,21 @@ func (tuo *TemplateUpdateOne) SaveX(ctx context.Context) *Template {
 }
 
 // Exec executes the query on the entity.
-func (tuo *TemplateUpdateOne) Exec(ctx context.Context) error {
-	_, err := tuo.Save(ctx)
+func (_u *TemplateUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (tuo *TemplateUpdateOne) ExecX(ctx context.Context) {
-	if err := tuo.Exec(ctx); err != nil {
+func (_u *TemplateUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (tuo *TemplateUpdateOne) check() error {
-	if v, ok := tuo.mutation.Name(); ok {
+func (_u *TemplateUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
 		if err := template.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Template.name": %w`, err)}
 		}
@@ -219,17 +606,17 @@ func (tuo *TemplateUpdateOne) check() error {
 	return nil
 }
 
-func (tuo *TemplateUpdateOne) sqlSave(ctx context.Context) (_node *Template, err error) {
-	if err := tuo.check(); err != nil {
+func (_u *TemplateUpdateOne) sqlSave(ctx context.Context) (_node *Template, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(template.Table, template.Columns, sqlgraph.NewFieldSpec(template.FieldID, field.TypeInt))
-	id, ok := tuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Template.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := tuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, template.FieldID)
 		for _, f := range fields {
@@ -241,23 +628,89 @@ func (tuo *TemplateUpdateOne) sqlSave(ctx context.Context) (_node *Template, err
 			}
 		}
 	}
-	if ps := tuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := tuo.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(template.FieldName, field.TypeString, value)
 	}
-	if value, ok := tuo.mutation.Content(); ok {
-		_spec.SetField(template.FieldContent, field.TypeJSON, value)
+	if value, ok := _u.mutation.DNS(); ok {
+		_spec.SetField(template.FieldDNS, field.TypeJSON, value)
 	}
-	_node = &Template{config: tuo.config}
+	if _u.mutation.DNSCleared() {
+		_spec.ClearField(template.FieldDNS, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Log(); ok {
+		_spec.SetField(template.FieldLog, field.TypeJSON, value)
+	}
+	if _u.mutation.LogCleared() {
+		_spec.ClearField(template.FieldLog, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Route(); ok {
+		_spec.SetField(template.FieldRoute, field.TypeJSON, value)
+	}
+	if _u.mutation.RouteCleared() {
+		_spec.ClearField(template.FieldRoute, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Inbounds(); ok {
+		_spec.SetField(template.FieldInbounds, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedInbounds(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, template.FieldInbounds, value)
+		})
+	}
+	if _u.mutation.InboundsCleared() {
+		_spec.ClearField(template.FieldInbounds, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.OutboundGroups(); ok {
+		_spec.SetField(template.FieldOutboundGroups, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedOutboundGroups(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, template.FieldOutboundGroups, value)
+		})
+	}
+	if _u.mutation.OutboundGroupsCleared() {
+		_spec.ClearField(template.FieldOutboundGroups, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Ntp(); ok {
+		_spec.SetField(template.FieldNtp, field.TypeJSON, value)
+	}
+	if _u.mutation.NtpCleared() {
+		_spec.ClearField(template.FieldNtp, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Experiment(); ok {
+		_spec.SetField(template.FieldExperiment, field.TypeJSON, value)
+	}
+	if _u.mutation.ExperimentCleared() {
+		_spec.ClearField(template.FieldExperiment, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Providers(); ok {
+		_spec.SetField(template.FieldProviders, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedProviders(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, template.FieldProviders, value)
+		})
+	}
+	if _u.mutation.ProvidersCleared() {
+		_spec.ClearField(template.FieldProviders, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Updated(); ok {
+		_spec.SetField(template.FieldUpdated, field.TypeBool, value)
+	}
+	if _u.mutation.UpdatedCleared() {
+		_spec.ClearField(template.FieldUpdated, field.TypeBool)
+	}
+	_node = &Template{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, tuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{template.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -265,6 +718,6 @@ func (tuo *TemplateUpdateOne) sqlSave(ctx context.Context) (_node *Template, err
 		}
 		return nil, err
 	}
-	tuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

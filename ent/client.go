@@ -27,8 +27,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Provider is the client for interacting with the Provider builders.
 	Provider *ProviderClient
-	// RuleSet is the client for interacting with the RuleSet builders.
-	RuleSet *RuleSetClient
+	// Ruleset is the client for interacting with the Ruleset builders.
+	Ruleset *RulesetClient
 	// Template is the client for interacting with the Template builders.
 	Template *TemplateClient
 }
@@ -43,7 +43,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Provider = NewProviderClient(c.config)
-	c.RuleSet = NewRuleSetClient(c.config)
+	c.Ruleset = NewRulesetClient(c.config)
 	c.Template = NewTemplateClient(c.config)
 }
 
@@ -138,7 +138,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:      ctx,
 		config:   cfg,
 		Provider: NewProviderClient(cfg),
-		RuleSet:  NewRuleSetClient(cfg),
+		Ruleset:  NewRulesetClient(cfg),
 		Template: NewTemplateClient(cfg),
 	}, nil
 }
@@ -160,7 +160,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:      ctx,
 		config:   cfg,
 		Provider: NewProviderClient(cfg),
-		RuleSet:  NewRuleSetClient(cfg),
+		Ruleset:  NewRulesetClient(cfg),
 		Template: NewTemplateClient(cfg),
 	}, nil
 }
@@ -191,7 +191,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Provider.Use(hooks...)
-	c.RuleSet.Use(hooks...)
+	c.Ruleset.Use(hooks...)
 	c.Template.Use(hooks...)
 }
 
@@ -199,7 +199,7 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Provider.Intercept(interceptors...)
-	c.RuleSet.Intercept(interceptors...)
+	c.Ruleset.Intercept(interceptors...)
 	c.Template.Intercept(interceptors...)
 }
 
@@ -208,8 +208,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *ProviderMutation:
 		return c.Provider.mutate(ctx, m)
-	case *RuleSetMutation:
-		return c.RuleSet.mutate(ctx, m)
+	case *RulesetMutation:
+		return c.Ruleset.mutate(ctx, m)
 	case *TemplateMutation:
 		return c.Template.mutate(ctx, m)
 	default:
@@ -272,8 +272,8 @@ func (c *ProviderClient) Update() *ProviderUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *ProviderClient) UpdateOne(pr *Provider) *ProviderUpdateOne {
-	mutation := newProviderMutation(c.config, OpUpdateOne, withProvider(pr))
+func (c *ProviderClient) UpdateOne(_m *Provider) *ProviderUpdateOne {
+	mutation := newProviderMutation(c.config, OpUpdateOne, withProvider(_m))
 	return &ProviderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -290,8 +290,8 @@ func (c *ProviderClient) Delete() *ProviderDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *ProviderClient) DeleteOne(pr *Provider) *ProviderDeleteOne {
-	return c.DeleteOneID(pr.ID)
+func (c *ProviderClient) DeleteOne(_m *Provider) *ProviderDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -350,107 +350,107 @@ func (c *ProviderClient) mutate(ctx context.Context, m *ProviderMutation) (Value
 	}
 }
 
-// RuleSetClient is a client for the RuleSet schema.
-type RuleSetClient struct {
+// RulesetClient is a client for the Ruleset schema.
+type RulesetClient struct {
 	config
 }
 
-// NewRuleSetClient returns a client for the RuleSet from the given config.
-func NewRuleSetClient(c config) *RuleSetClient {
-	return &RuleSetClient{config: c}
+// NewRulesetClient returns a client for the Ruleset from the given config.
+func NewRulesetClient(c config) *RulesetClient {
+	return &RulesetClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
 // A call to `Use(f, g, h)` equals to `ruleset.Hooks(f(g(h())))`.
-func (c *RuleSetClient) Use(hooks ...Hook) {
-	c.hooks.RuleSet = append(c.hooks.RuleSet, hooks...)
+func (c *RulesetClient) Use(hooks ...Hook) {
+	c.hooks.Ruleset = append(c.hooks.Ruleset, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
 // A call to `Intercept(f, g, h)` equals to `ruleset.Intercept(f(g(h())))`.
-func (c *RuleSetClient) Intercept(interceptors ...Interceptor) {
-	c.inters.RuleSet = append(c.inters.RuleSet, interceptors...)
+func (c *RulesetClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Ruleset = append(c.inters.Ruleset, interceptors...)
 }
 
-// Create returns a builder for creating a RuleSet entity.
-func (c *RuleSetClient) Create() *RuleSetCreate {
-	mutation := newRuleSetMutation(c.config, OpCreate)
-	return &RuleSetCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Ruleset entity.
+func (c *RulesetClient) Create() *RulesetCreate {
+	mutation := newRulesetMutation(c.config, OpCreate)
+	return &RulesetCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of RuleSet entities.
-func (c *RuleSetClient) CreateBulk(builders ...*RuleSetCreate) *RuleSetCreateBulk {
-	return &RuleSetCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Ruleset entities.
+func (c *RulesetClient) CreateBulk(builders ...*RulesetCreate) *RulesetCreateBulk {
+	return &RulesetCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *RuleSetClient) MapCreateBulk(slice any, setFunc func(*RuleSetCreate, int)) *RuleSetCreateBulk {
+func (c *RulesetClient) MapCreateBulk(slice any, setFunc func(*RulesetCreate, int)) *RulesetCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &RuleSetCreateBulk{err: fmt.Errorf("calling to RuleSetClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &RulesetCreateBulk{err: fmt.Errorf("calling to RulesetClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*RuleSetCreate, rv.Len())
+	builders := make([]*RulesetCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &RuleSetCreateBulk{config: c.config, builders: builders}
+	return &RulesetCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for RuleSet.
-func (c *RuleSetClient) Update() *RuleSetUpdate {
-	mutation := newRuleSetMutation(c.config, OpUpdate)
-	return &RuleSetUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Ruleset.
+func (c *RulesetClient) Update() *RulesetUpdate {
+	mutation := newRulesetMutation(c.config, OpUpdate)
+	return &RulesetUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *RuleSetClient) UpdateOne(rs *RuleSet) *RuleSetUpdateOne {
-	mutation := newRuleSetMutation(c.config, OpUpdateOne, withRuleSet(rs))
-	return &RuleSetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *RulesetClient) UpdateOne(_m *Ruleset) *RulesetUpdateOne {
+	mutation := newRulesetMutation(c.config, OpUpdateOne, withRuleset(_m))
+	return &RulesetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RuleSetClient) UpdateOneID(id int) *RuleSetUpdateOne {
-	mutation := newRuleSetMutation(c.config, OpUpdateOne, withRuleSetID(id))
-	return &RuleSetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *RulesetClient) UpdateOneID(id int) *RulesetUpdateOne {
+	mutation := newRulesetMutation(c.config, OpUpdateOne, withRulesetID(id))
+	return &RulesetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for RuleSet.
-func (c *RuleSetClient) Delete() *RuleSetDelete {
-	mutation := newRuleSetMutation(c.config, OpDelete)
-	return &RuleSetDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Ruleset.
+func (c *RulesetClient) Delete() *RulesetDelete {
+	mutation := newRulesetMutation(c.config, OpDelete)
+	return &RulesetDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *RuleSetClient) DeleteOne(rs *RuleSet) *RuleSetDeleteOne {
-	return c.DeleteOneID(rs.ID)
+func (c *RulesetClient) DeleteOne(_m *Ruleset) *RulesetDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RuleSetClient) DeleteOneID(id int) *RuleSetDeleteOne {
+func (c *RulesetClient) DeleteOneID(id int) *RulesetDeleteOne {
 	builder := c.Delete().Where(ruleset.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &RuleSetDeleteOne{builder}
+	return &RulesetDeleteOne{builder}
 }
 
-// Query returns a query builder for RuleSet.
-func (c *RuleSetClient) Query() *RuleSetQuery {
-	return &RuleSetQuery{
+// Query returns a query builder for Ruleset.
+func (c *RulesetClient) Query() *RulesetQuery {
+	return &RulesetQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeRuleSet},
+		ctx:    &QueryContext{Type: TypeRuleset},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a RuleSet entity by its id.
-func (c *RuleSetClient) Get(ctx context.Context, id int) (*RuleSet, error) {
+// Get returns a Ruleset entity by its id.
+func (c *RulesetClient) Get(ctx context.Context, id int) (*Ruleset, error) {
 	return c.Query().Where(ruleset.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RuleSetClient) GetX(ctx context.Context, id int) *RuleSet {
+func (c *RulesetClient) GetX(ctx context.Context, id int) *Ruleset {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -459,27 +459,27 @@ func (c *RuleSetClient) GetX(ctx context.Context, id int) *RuleSet {
 }
 
 // Hooks returns the client hooks.
-func (c *RuleSetClient) Hooks() []Hook {
-	return c.hooks.RuleSet
+func (c *RulesetClient) Hooks() []Hook {
+	return c.hooks.Ruleset
 }
 
 // Interceptors returns the client interceptors.
-func (c *RuleSetClient) Interceptors() []Interceptor {
-	return c.inters.RuleSet
+func (c *RulesetClient) Interceptors() []Interceptor {
+	return c.inters.Ruleset
 }
 
-func (c *RuleSetClient) mutate(ctx context.Context, m *RuleSetMutation) (Value, error) {
+func (c *RulesetClient) mutate(ctx context.Context, m *RulesetMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&RuleSetCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&RulesetCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&RuleSetUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&RulesetUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&RuleSetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&RulesetUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&RuleSetDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&RulesetDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown RuleSet mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Ruleset mutation op: %q", m.Op())
 	}
 }
 
@@ -538,8 +538,8 @@ func (c *TemplateClient) Update() *TemplateUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *TemplateClient) UpdateOne(t *Template) *TemplateUpdateOne {
-	mutation := newTemplateMutation(c.config, OpUpdateOne, withTemplate(t))
+func (c *TemplateClient) UpdateOne(_m *Template) *TemplateUpdateOne {
+	mutation := newTemplateMutation(c.config, OpUpdateOne, withTemplate(_m))
 	return &TemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -556,8 +556,8 @@ func (c *TemplateClient) Delete() *TemplateDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *TemplateClient) DeleteOne(t *Template) *TemplateDeleteOne {
-	return c.DeleteOneID(t.ID)
+func (c *TemplateClient) DeleteOne(_m *Template) *TemplateDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -619,9 +619,9 @@ func (c *TemplateClient) mutate(ctx context.Context, m *TemplateMutation) (Value
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Provider, RuleSet, Template []ent.Hook
+		Provider, Ruleset, Template []ent.Hook
 	}
 	inters struct {
-		Provider, RuleSet, Template []ent.Interceptor
+		Provider, Ruleset, Template []ent.Interceptor
 	}
 )

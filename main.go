@@ -2,119 +2,126 @@ package main
 
 import (
 	"fmt"
+	"sifu-box/application"
 	"sifu-box/cmd"
 	"sifu-box/ent"
 	"sifu-box/initial"
 	"sifu-box/middleware"
-	"sifu-box/models"
+	"sifu-box/model"
 	"sifu-box/route"
-	"sifu-box/singbox"
+	"sifu-box/utils"
 	"sync"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/robfig/cron/v3"
 	"github.com/tidwall/buntdb"
-	"go.uber.org/zap"
+	"gopkg.in/yaml.v3"
 )
 
-var taskLogger *zap.Logger
-var buntClient *buntdb.DB
-var entClient *ent.Client
-var setting *models.Setting
-var workDir, config, listen *string
-var server *bool
+var listen string
+var config_path string
+var work_dir string
+var ent_client *ent.Client
+var bunt_client *buntdb.DB
+
 func init() {
-	var err error
-	workDir, config, listen, server = cmd.InitCmd()
-	initLogger := initial.GetLogger(*workDir, "init")
-	defer initLogger.Sync()
-	taskLogger = initial.GetLogger(*workDir, "task")
-
-	buntClient = initial.InitBuntdb(initLogger)
-	initLogger.Info("内存数据库BuntDB初始化完成")
-
-	setting, err = initial.InitSetting(*config, *server, buntClient, initLogger)
-	if err != nil {
-		panic(err)
+	config_path, work_dir, listen = cmd.Command()
+	init_logger := initial.GetLogger(work_dir, "init", false)
+	defer init_logger.Sync()
+	ent_client = initial.InitEntdb(work_dir)
+	bunt_client = initial.InitBuntdb()
+	init_logger.Info("初始化数据库成功")
+	initial.LoadSetting(config_path, bunt_client, init_logger)
+	if err := utils.SetValue(bunt_client, initial.ACTIVE_TEMPLATE, "", init_logger); err != nil {
+		init_logger.Error(fmt.Sprintf("初始化激活模板失败: [%s]", err.Error()))
+		panic(fmt.Sprintf("初始化激活模板失败: [%s]", err.Error()))
 	}
-	initLogger.Info("Singbox配置初始化完成")
-
-	if *server {
-		entClient = initial.InitEntdb(*workDir, initLogger)
-
-		initLogger.Info("加载配置文件完成")
-		if err := initial.SetDefaultTemplate(*workDir, buntClient, initLogger); err != nil {
-			panic(err)
-		}
-		initLogger.Info("读取默认模板完成")
-
-		if setting.Configuration == nil {
-			initLogger.Debug("配置字段为空, 将直接使用数据库中配置")
-			return
-		}
-		initial.SaveNewProxySetting(*setting.Configuration, entClient, initLogger)
+	if err := utils.SetValue(bunt_client, initial.OPERATION_ERRORS, "", init_logger); err != nil {
+		init_logger.Error(fmt.Sprintf("初始化操作错误失败: [%s]", err.Error()))
+		panic(fmt.Sprintf("初始化操作错误失败: [%s]", err.Error()))
 	}
-
+	init_logger.Info("初始化成功")
 }
-
 func main() {
-	var webLogger *zap.Logger
-	rwLock := sync.RWMutex{}
-	execLock := sync.Mutex{}
-	if *server { webLogger = initial.GetLogger(*workDir, "web") }
+	signal_chan := make(chan application.Signal, 5)
+	hook_chan := make(chan application.SignalHook, 5)
+	cron_chan := make(chan application.ResSignal, 5)
+	web_chan := make(chan application.ResSignal, 5)
+	exec_lock := sync.Mutex{}
+	task_logger := initial.GetLogger(work_dir, "task", true)
+	operation_logger := initial.GetLogger(work_dir, "operation", true)
+	web_logger := initial.GetLogger(work_dir, "web", true)
+	go application.ServiceControl(&signal_chan, task_logger, work_dir, bunt_client, &hook_chan)
+	go application.HookHandle(&hook_chan, &cron_chan, &web_chan, bunt_client, task_logger)
 	defer func() {
-		taskLogger.Sync()
-		buntClient.Close()
-		if *server { webLogger.Sync() }
-		if entClient != nil {entClient.Close()}
+		web_logger.Sync()
+		task_logger.Sync()
+		operation_logger.Sync()
+		ent_client.Close()
+		bunt_client.Close()
 	}()
 
-	if *server {
-		scheduler := cron.New()
-		scheduler.Start()
-		initial.SetDefautlApplication(entClient, buntClient, taskLogger)
-		jobID, err := scheduler.AddFunc("30 4 * * 1", func(){
-			singbox.GenerateConfigFiles(entClient, buntClient, nil, nil, *workDir, *server, &rwLock, taskLogger)
-			singbox.ApplyNewConfig(*workDir, *setting.Application.Singbox, buntClient, &rwLock, &execLock, taskLogger)
-		})
+	scheduler := cron.New()
+	scheduler.Start()
+	job_id, err := scheduler.AddFunc("0 3 * * 1", func() {
+		for {
+			if exec_lock.TryLock() {
+				break
+			}
+		}
+		defer exec_lock.Unlock()
+		task_logger.Info(`开始执行定时任务`)
+		application.Process(work_dir, ent_client, task_logger)
+		name, err := utils.GetValue(bunt_client, initial.ACTIVE_TEMPLATE, task_logger)
 		if err != nil {
-			taskLogger.Error(fmt.Sprintf("设置定时任务失败: [%s]", err.Error()))
-			panic(err)
+			task_logger.Error(fmt.Sprintf("获取激活模板失败: [%s]", err.Error()))
+			return
+		} else if name == "" {
+			task_logger.Error("未设置激活模板")
+			return
 		}
-		gin.SetMode(gin.ReleaseMode)
-		server := gin.Default()
-		server.Use(middleware.Logger(webLogger),middleware.Recovery(true, webLogger), cors.New(middleware.Cors()))
-		route.SettingPages(server, *workDir)
-		api := server.Group("/api")
-		route.SettingMigrate(api, setting.Application.Server.User.PrivateKey, *workDir, *setting.Application.Singbox, &rwLock, &execLock, entClient, buntClient, scheduler, &jobID, webLogger)
-		route.SettingHost(api, setting.Application.Server.User, entClient, buntClient, *setting.Application.Singbox, *workDir, &rwLock, &execLock, scheduler, &jobID, webLogger)
-		route.SettingExec(api, entClient, buntClient, *workDir, setting.Application.Server.User, &execLock, &rwLock, setting.Application.Singbox, webLogger)
-		route.SettingFiles(api, setting.Application.Server.User, *workDir, entClient, webLogger)
-		route.SettingLogin(api, setting.Application.Server.User, webLogger)
-		route.SettingConfiguration(api, *workDir, entClient, *setting.Application.Server.User, buntClient, &rwLock, &execLock, *setting.Application.Singbox, webLogger)
-		if setting.Application.Server.SSL != nil {
-			server.RunTLS(*listen, setting.Application.Server.SSL.Public, setting.Application.Server.SSL.Private)
-		}else{
-			server.Run(*listen)
+		signal_chan <- application.Signal{Cron: true, Operation: application.RELOAD_SERVICE}
+		select {
+		case res := <-cron_chan:
+			if res.Status {
+				task_logger.Info(`定时任务执行成功`)
+			} else {
+				task_logger.Error(`重载sing-box失败`)
+			}
+		case <-time.After(time.Second * 10):
+			task_logger.Error(`接收操作结果超时`)
 		}
-	}else{
-		singbox.GenerateConfigFiles(nil, buntClient, nil, nil, *workDir, *server, &rwLock, taskLogger)
+	})
+	if err != nil {
+		task_logger.Error(fmt.Sprintf("添加定时任务失败: [%s]", err.Error()))
 	}
-	
-	
-	
-	
+
+	application.Process(work_dir, ent_client, task_logger)
+	gin.SetMode(gin.ReleaseMode)
+	server := gin.Default()
+	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger), cors.New(middleware.Cors()))
+	route.SettingPages(server, work_dir)
+
+	api := server.Group("/api")
+
+	content, err := utils.GetValue(bunt_client, initial.USER, operation_logger)
+	if err != nil {
+		operation_logger.Error(fmt.Sprintf("获取用户配置信息失败: [%s]", err.Error()))
+		panic(fmt.Sprintf("获取用户配置信息失败: [%s]", err.Error()))
+	}
+	user := model.User{}
+	if err := yaml.Unmarshal([]byte(content), &user); err != nil {
+		operation_logger.Error(fmt.Sprintf("序列化用户配置信息失败: [%s]", err.Error()))
+		panic(fmt.Sprintf("序列化用户配置信息失败: [%s]", err.Error()))
+	}
+	route.SettingLogin(api, &user, bunt_client, operation_logger)
+	route.SettingConfiguration(api, &user, bunt_client, ent_client, work_dir, operation_logger)
+	route.SettingMigrate(api, &user, ent_client, bunt_client, operation_logger)
+	route.SettingExecute(api, &user, bunt_client, ent_client, work_dir, &signal_chan, &web_chan, &exec_lock, operation_logger)
+	route.SettingHosting(api, &user, bunt_client, ent_client, work_dir, operation_logger)
+	route.SettingApplication(api, work_dir, &user, ent_client, bunt_client, &signal_chan, &web_chan, &cron_chan, &exec_lock, scheduler, &job_id, task_logger, operation_logger)
+	server.Run(listen)
 }
-
-// func getWorkDir() (string, error) {
-// 	// workDir, err := os.Executable()
-	
-// 	// workDir := "E:/Myproject/sifu-box@1.1.0/bin"
-// 	var err error
-// 	workDir := "/opt/sifubox/bin/bin"
-// 	return filepath.Dir(filepath.Dir(workDir)), err
-// }
-
-

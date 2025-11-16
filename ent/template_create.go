@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"sifu-box/ent/template"
-	"sifu-box/models"
+	"sifu-box/singbox"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -21,30 +21,126 @@ type TemplateCreate struct {
 }
 
 // SetName sets the "name" field.
-func (tc *TemplateCreate) SetName(s string) *TemplateCreate {
-	tc.mutation.SetName(s)
-	return tc
+func (_c *TemplateCreate) SetName(v string) *TemplateCreate {
+	_c.mutation.SetName(v)
+	return _c
 }
 
-// SetContent sets the "content" field.
-func (tc *TemplateCreate) SetContent(m models.Template) *TemplateCreate {
-	tc.mutation.SetContent(m)
-	return tc
+// SetDNS sets the "dns" field.
+func (_c *TemplateCreate) SetDNS(v singbox.DNS) *TemplateCreate {
+	_c.mutation.SetDNS(v)
+	return _c
+}
+
+// SetNillableDNS sets the "dns" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableDNS(v *singbox.DNS) *TemplateCreate {
+	if v != nil {
+		_c.SetDNS(*v)
+	}
+	return _c
+}
+
+// SetLog sets the "log" field.
+func (_c *TemplateCreate) SetLog(v singbox.Log) *TemplateCreate {
+	_c.mutation.SetLog(v)
+	return _c
+}
+
+// SetNillableLog sets the "log" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableLog(v *singbox.Log) *TemplateCreate {
+	if v != nil {
+		_c.SetLog(*v)
+	}
+	return _c
+}
+
+// SetRoute sets the "route" field.
+func (_c *TemplateCreate) SetRoute(v singbox.Route) *TemplateCreate {
+	_c.mutation.SetRoute(v)
+	return _c
+}
+
+// SetNillableRoute sets the "route" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableRoute(v *singbox.Route) *TemplateCreate {
+	if v != nil {
+		_c.SetRoute(*v)
+	}
+	return _c
+}
+
+// SetInbounds sets the "inbounds" field.
+func (_c *TemplateCreate) SetInbounds(v []map[string]interface{}) *TemplateCreate {
+	_c.mutation.SetInbounds(v)
+	return _c
+}
+
+// SetOutboundGroups sets the "outbound_groups" field.
+func (_c *TemplateCreate) SetOutboundGroups(v []singbox.OutboundGroup) *TemplateCreate {
+	_c.mutation.SetOutboundGroups(v)
+	return _c
+}
+
+// SetNtp sets the "ntp" field.
+func (_c *TemplateCreate) SetNtp(v singbox.Ntp) *TemplateCreate {
+	_c.mutation.SetNtp(v)
+	return _c
+}
+
+// SetNillableNtp sets the "ntp" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableNtp(v *singbox.Ntp) *TemplateCreate {
+	if v != nil {
+		_c.SetNtp(*v)
+	}
+	return _c
+}
+
+// SetExperiment sets the "experiment" field.
+func (_c *TemplateCreate) SetExperiment(v singbox.Experiment) *TemplateCreate {
+	_c.mutation.SetExperiment(v)
+	return _c
+}
+
+// SetNillableExperiment sets the "experiment" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableExperiment(v *singbox.Experiment) *TemplateCreate {
+	if v != nil {
+		_c.SetExperiment(*v)
+	}
+	return _c
+}
+
+// SetProviders sets the "providers" field.
+func (_c *TemplateCreate) SetProviders(v []string) *TemplateCreate {
+	_c.mutation.SetProviders(v)
+	return _c
+}
+
+// SetUpdated sets the "updated" field.
+func (_c *TemplateCreate) SetUpdated(v bool) *TemplateCreate {
+	_c.mutation.SetUpdated(v)
+	return _c
+}
+
+// SetNillableUpdated sets the "updated" field if the given value is not nil.
+func (_c *TemplateCreate) SetNillableUpdated(v *bool) *TemplateCreate {
+	if v != nil {
+		_c.SetUpdated(*v)
+	}
+	return _c
 }
 
 // Mutation returns the TemplateMutation object of the builder.
-func (tc *TemplateCreate) Mutation() *TemplateMutation {
-	return tc.mutation
+func (_c *TemplateCreate) Mutation() *TemplateMutation {
+	return _c.mutation
 }
 
 // Save creates the Template in the database.
-func (tc *TemplateCreate) Save(ctx context.Context) (*Template, error) {
-	return withHooks(ctx, tc.sqlSave, tc.mutation, tc.hooks)
+func (_c *TemplateCreate) Save(ctx context.Context) (*Template, error) {
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (tc *TemplateCreate) SaveX(ctx context.Context) *Template {
-	v, err := tc.Save(ctx)
+func (_c *TemplateCreate) SaveX(ctx context.Context) *Template {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -52,40 +148,37 @@ func (tc *TemplateCreate) SaveX(ctx context.Context) *Template {
 }
 
 // Exec executes the query.
-func (tc *TemplateCreate) Exec(ctx context.Context) error {
-	_, err := tc.Save(ctx)
+func (_c *TemplateCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (tc *TemplateCreate) ExecX(ctx context.Context) {
-	if err := tc.Exec(ctx); err != nil {
+func (_c *TemplateCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (tc *TemplateCreate) check() error {
-	if _, ok := tc.mutation.Name(); !ok {
+func (_c *TemplateCreate) check() error {
+	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Template.name"`)}
 	}
-	if v, ok := tc.mutation.Name(); ok {
+	if v, ok := _c.mutation.Name(); ok {
 		if err := template.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Template.name": %w`, err)}
 		}
 	}
-	if _, ok := tc.mutation.Content(); !ok {
-		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Template.content"`)}
-	}
 	return nil
 }
 
-func (tc *TemplateCreate) sqlSave(ctx context.Context) (*Template, error) {
-	if err := tc.check(); err != nil {
+func (_c *TemplateCreate) sqlSave(ctx context.Context) (*Template, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := tc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, tc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -93,23 +186,55 @@ func (tc *TemplateCreate) sqlSave(ctx context.Context) (*Template, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
-	tc.mutation.id = &_node.ID
-	tc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (tc *TemplateCreate) createSpec() (*Template, *sqlgraph.CreateSpec) {
+func (_c *TemplateCreate) createSpec() (*Template, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Template{config: tc.config}
+		_node = &Template{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(template.Table, sqlgraph.NewFieldSpec(template.FieldID, field.TypeInt))
 	)
-	if value, ok := tc.mutation.Name(); ok {
+	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(template.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := tc.mutation.Content(); ok {
-		_spec.SetField(template.FieldContent, field.TypeJSON, value)
-		_node.Content = value
+	if value, ok := _c.mutation.DNS(); ok {
+		_spec.SetField(template.FieldDNS, field.TypeJSON, value)
+		_node.DNS = value
+	}
+	if value, ok := _c.mutation.Log(); ok {
+		_spec.SetField(template.FieldLog, field.TypeJSON, value)
+		_node.Log = value
+	}
+	if value, ok := _c.mutation.Route(); ok {
+		_spec.SetField(template.FieldRoute, field.TypeJSON, value)
+		_node.Route = value
+	}
+	if value, ok := _c.mutation.Inbounds(); ok {
+		_spec.SetField(template.FieldInbounds, field.TypeJSON, value)
+		_node.Inbounds = value
+	}
+	if value, ok := _c.mutation.OutboundGroups(); ok {
+		_spec.SetField(template.FieldOutboundGroups, field.TypeJSON, value)
+		_node.OutboundGroups = value
+	}
+	if value, ok := _c.mutation.Ntp(); ok {
+		_spec.SetField(template.FieldNtp, field.TypeJSON, value)
+		_node.Ntp = value
+	}
+	if value, ok := _c.mutation.Experiment(); ok {
+		_spec.SetField(template.FieldExperiment, field.TypeJSON, value)
+		_node.Experiment = value
+	}
+	if value, ok := _c.mutation.Providers(); ok {
+		_spec.SetField(template.FieldProviders, field.TypeJSON, value)
+		_node.Providers = value
+	}
+	if value, ok := _c.mutation.Updated(); ok {
+		_spec.SetField(template.FieldUpdated, field.TypeBool, value)
+		_node.Updated = value
 	}
 	return _node, _spec
 }
@@ -122,16 +247,16 @@ type TemplateCreateBulk struct {
 }
 
 // Save creates the Template entities in the database.
-func (tcb *TemplateCreateBulk) Save(ctx context.Context) ([]*Template, error) {
-	if tcb.err != nil {
-		return nil, tcb.err
+func (_c *TemplateCreateBulk) Save(ctx context.Context) ([]*Template, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(tcb.builders))
-	nodes := make([]*Template, len(tcb.builders))
-	mutators := make([]Mutator, len(tcb.builders))
-	for i := range tcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Template, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := tcb.builders[i]
+			builder := _c.builders[i]
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*TemplateMutation)
 				if !ok {
@@ -144,11 +269,11 @@ func (tcb *TemplateCreateBulk) Save(ctx context.Context) ([]*Template, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, tcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, tcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -172,7 +297,7 @@ func (tcb *TemplateCreateBulk) Save(ctx context.Context) ([]*Template, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, tcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -180,8 +305,8 @@ func (tcb *TemplateCreateBulk) Save(ctx context.Context) ([]*Template, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (tcb *TemplateCreateBulk) SaveX(ctx context.Context) []*Template {
-	v, err := tcb.Save(ctx)
+func (_c *TemplateCreateBulk) SaveX(ctx context.Context) []*Template {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -189,14 +314,14 @@ func (tcb *TemplateCreateBulk) SaveX(ctx context.Context) []*Template {
 }
 
 // Exec executes the query.
-func (tcb *TemplateCreateBulk) Exec(ctx context.Context) error {
-	_, err := tcb.Save(ctx)
+func (_c *TemplateCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (tcb *TemplateCreateBulk) ExecX(ctx context.Context) {
-	if err := tcb.Exec(ctx); err != nil {
+func (_c *TemplateCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

@@ -12,64 +12,64 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// RuleSetDelete is the builder for deleting a RuleSet entity.
-type RuleSetDelete struct {
+// RulesetDelete is the builder for deleting a Ruleset entity.
+type RulesetDelete struct {
 	config
 	hooks    []Hook
-	mutation *RuleSetMutation
+	mutation *RulesetMutation
 }
 
-// Where appends a list predicates to the RuleSetDelete builder.
-func (rsd *RuleSetDelete) Where(ps ...predicate.RuleSet) *RuleSetDelete {
-	rsd.mutation.Where(ps...)
-	return rsd
+// Where appends a list predicates to the RulesetDelete builder.
+func (_d *RulesetDelete) Where(ps ...predicate.Ruleset) *RulesetDelete {
+	_d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (rsd *RuleSetDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, rsd.sqlExec, rsd.mutation, rsd.hooks)
+func (_d *RulesetDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rsd *RuleSetDelete) ExecX(ctx context.Context) int {
-	n, err := rsd.Exec(ctx)
+func (_d *RulesetDelete) ExecX(ctx context.Context) int {
+	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (rsd *RuleSetDelete) sqlExec(ctx context.Context) (int, error) {
+func (_d *RulesetDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(ruleset.Table, sqlgraph.NewFieldSpec(ruleset.FieldID, field.TypeInt))
-	if ps := rsd.mutation.predicates; len(ps) > 0 {
+	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, rsd.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	rsd.mutation.done = true
+	_d.mutation.done = true
 	return affected, err
 }
 
-// RuleSetDeleteOne is the builder for deleting a single RuleSet entity.
-type RuleSetDeleteOne struct {
-	rsd *RuleSetDelete
+// RulesetDeleteOne is the builder for deleting a single Ruleset entity.
+type RulesetDeleteOne struct {
+	_d *RulesetDelete
 }
 
-// Where appends a list predicates to the RuleSetDelete builder.
-func (rsdo *RuleSetDeleteOne) Where(ps ...predicate.RuleSet) *RuleSetDeleteOne {
-	rsdo.rsd.mutation.Where(ps...)
-	return rsdo
+// Where appends a list predicates to the RulesetDelete builder.
+func (_d *RulesetDeleteOne) Where(ps ...predicate.Ruleset) *RulesetDeleteOne {
+	_d._d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query.
-func (rsdo *RuleSetDeleteOne) Exec(ctx context.Context) error {
-	n, err := rsdo.rsd.Exec(ctx)
+func (_d *RulesetDeleteOne) Exec(ctx context.Context) error {
+	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (rsdo *RuleSetDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rsdo *RuleSetDeleteOne) ExecX(ctx context.Context) {
-	if err := rsdo.Exec(ctx); err != nil {
+func (_d *RulesetDeleteOne) ExecX(ctx context.Context) {
+	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

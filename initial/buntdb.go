@@ -4,14 +4,17 @@ import (
 	"fmt"
 
 	"github.com/tidwall/buntdb"
-	"go.uber.org/zap"
 )
 
-func InitBuntdb(logger *zap.Logger) *buntdb.DB{
+func InitBuntdb() *buntdb.DB {
+	// defer func() {
+	// 	if r := recover(); r != nil {
+	// 		fmt.Printf("%v\n", r)
+	// 	}
+	// }()
 	buntClient, err := buntdb.Open(":memory:")
 	if err != nil {
-		logger.Error(fmt.Sprintf("连接Buntdb数据库失败: [%s]",err.Error()))
-		panic(err)
+		panic(fmt.Sprintf(`创建内存数据库buntdb失败: [%s]`, err.Error()))
 	}
 	return buntClient
 }

@@ -3,160 +3,176 @@ package route
 import (
 	"fmt"
 	"net/http"
-	"path/filepath"
 	"sifu-box/control"
 	"sifu-box/ent"
 	"sifu-box/middleware"
-	"sifu-box/models"
-	"sifu-box/utils"
-	"sync"
+	"sifu-box/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tidwall/buntdb"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v3"
 )
 
-func SettingConfiguration(api *gin.RouterGroup, workDir string, entClient *ent.Client, user models.User, buntClient *buntdb.DB, rwLock *sync.RWMutex,  execLock *sync.Mutex, singboxSetting models.Singbox, logger *zap.Logger){
+func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *buntdb.DB, ent_client *ent.Client, work_dir string, logger *zap.Logger) {
 	configuration := api.Group("/configuration")
-	configuration.Use(middleware.Jwt(user.PrivateKey, logger))
+	configuration.Use(middleware.JwtAuth(user.Key, logger))
 	configuration.GET("/fetch", func(ctx *gin.Context) {
-		if !ctx.GetBool("admin") {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "非管理员用户"})
-			return
-		}
-		configuration, err :=control.Fetch(entClient, logger)
+		msg := control.FetchItems(ent_client, logger)
+		ctx.JSON(http.StatusMultiStatus, gin.H{"message": msg})
+	})
+	configuration.GET("/yacd", func(ctx *gin.Context) {
+		yacd, err := control.FetchYacd(ent_client, bunt_client, logger)
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"message": configuration})
+		ctx.JSON(http.StatusOK, gin.H{"message": yacd})
 	})
-	configuration.DELETE("/items", func(ctx *gin.Context){
-		if !ctx.GetBool("admin") {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": []string{"非管理员用户"}})
-			return
-		}
-		providers := ctx.PostFormArray("providers")
-		rulesets := ctx.PostFormArray("rulesets")
-		templates := ctx.PostFormArray("templates")
-		errors := control.Delete(providers, rulesets, templates, workDir, buntClient, entClient, rwLock, logger)
-		if errors != nil {
-			errorList := make([]string, len(errors))
-			for i, err := range errors {
-				errorList[i] = err.Error()
-			}
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": errorList})
-			return
-		}
-		ctx.JSON(http.StatusOK, gin.H{"message": "删除成功"})
-	})
-	configuration.POST("/add", func(ctx *gin.Context) {
-		conf := struct{
-			Providers []models.Provider `json:"providers"`
-			Rulesets []models.RuleSet `json:"rulesets"`
-		}{}
-		if err := ctx.ShouldBindJSON(&conf); err != nil {
-			logger.Error(fmt.Sprintf("解析请求体失败: [%s]", err.Error()))
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": []string{"解析请求体失败"}})
-			return
-		}
-		errors := control.Add(conf.Providers, conf.Rulesets, entClient, buntClient, workDir, rwLock, logger)
-		if errors != nil {
-			errorList := make([]string, len(errors))
-			for i, err := range errors {
-				errorList[i] = err.Error()
-			}
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": errorList})
-			return
-		}
-		ctx.JSON(http.StatusOK, gin.H{"message": "success"})
-	})
-	configuration.POST("/files",func(ctx *gin.Context) {
-		form, err := ctx.MultipartForm()
+	configuration.GET("/default/template", middleware.AdminAuth(), func(ctx *gin.Context) {
+		template, err := control.FetchDefaultTemplate(bunt_client, logger)
 		if err != nil {
-			logger.Error(fmt.Sprintf("获取表单错误: [%s]", err.Error()))
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": []string{"获取表单错误"}})
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
-		files, ok := form.File["files"]
-		if !ok {
-			logger.Error("没有上传文件")
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": []string{"没有上传文件"}})
-		}
-		var errors []error
-		providers := make([]models.Provider, len(files))
-		for i, file := range files {
-			ext := filepath.Ext(file.Filename)
-			fileHashName, err := utils.EncryptionMd5(file.Filename[:len(file.Filename) - len(ext)])
+		ctx.JSON(http.StatusOK, gin.H{"message": template})
+	})
+	configuration.POST("/add/provider/:remote", middleware.AdminAuth(), func(ctx *gin.Context) {
+		providers := []model.Provider{}
+		res := []gin.H{}
+		switch ctx.Param("remote") {
+		case "remote":
+			if err := ctx.BindJSON(&providers); err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
+				return
+			}
+		case "local":
+			form, err := ctx.MultipartForm()
 			if err != nil {
-				logger.Error(fmt.Sprintf("计算'%s'哈希值失败: [%s]", file.Filename, err.Error()))
-				errors = append(errors, fmt.Errorf("计算'%s'哈希值失败", file.Filename))
-				continue
+				ctx.JSON(http.StatusBadRequest, gin.H{"message": "获取文件表单失败"})
+				return
 			}
-			providers[i] = models.Provider{
-				Name: file.Filename[:len(file.Filename) - len(ext)],
-				Path: filepath.Join(workDir, models.STATICDIR, models.CLASHCONFIGFILE, fmt.Sprintf("%s.yaml",fileHashName)),
-				Remote: false,
+			files := form.File["file"]
+			for _, file := range files {
+				provider := model.Provider{}
+				if err := provider.AutoFill(file, work_dir); err != nil {
+					res = append(res, gin.H{"status": false, "message": err.Error()})
+					continue
+				}
+				if err := ctx.SaveUploadedFile(file, provider.Path); err != nil {
+					res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`保存文件"%s"失败: [%s]`, file.Filename, err.Error())})
+					continue
+				}
+				providers = append(providers, provider)
 			}
-			if err := ctx.SaveUploadedFile(file, filepath.Join(workDir, models.STATICDIR, models.CLASHCONFIGFILE, fmt.Sprintf("%s.yaml",fileHashName))); err != nil {
-				logger.Error(fmt.Sprintf("保存文件失败: [%s]",err.Error()))
-				errors = append(errors, fmt.Errorf("保存'%s'文件失败", file.Filename))
-			}
-		}
-		if errors != nil {
-			errorList := make([]string, len(errors))
-			for i, err := range errors {
-				errorList[i] = err.Error()
-			}
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": errorList})
+		default:
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "未标明云端或本地"})
 			return
 		}
-		errors = append(errors, control.Add(providers, nil, entClient, buntClient, workDir, rwLock, logger)...)
-		if errors != nil {
-			errorList := make([]string, len(errors))
-			for i, err := range errors {
-				errorList[i] = err.Error()
-			}
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": errorList})
-			return
-		}
-		ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+		res = append(res, control.AddProvider(providers, ent_client, logger)...)
+		ctx.JSON(http.StatusMultiStatus, res)
 	})
-	configuration.POST("/template", func(ctx *gin.Context) {
-		name := ctx.Query("name")
-		if name == "" {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": []string{"模板名称必须提供"}})
+	configuration.PATCH("/edit/provider", middleware.AdminAuth(), func(ctx *gin.Context) {
+		name := ctx.PostForm("name")
+		path := ctx.PostForm("path")
+		remote := ctx.PostForm("remote") == "true"
+		if err := control.EditProvider(name, path, remote, ent_client, logger); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
-		template := models.Template{}
-		if err := ctx.ShouldBindJSON(&template); err != nil {
-			logger.Error(fmt.Sprintf("解析请求体失败: [%s]", err.Error()))
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": []string{"解析请求体失败"}})
-			return
-		}
-		errors := control.Set(name, workDir, singboxSetting, template, buntClient, entClient, rwLock, execLock, logger)
-		if errors != nil {
-			errorList := make([]string, len(errors))
-			for i, err := range errors {
-				errorList[i] = err.Error()
+		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf(`修改机场"%s"配置成功`, name)})
+	})
+	configuration.DELETE("/delete/provider", middleware.AdminAuth(), func(ctx *gin.Context) {
+		name := ctx.PostFormArray("name")
+		res := control.DeleteProvider(name, ent_client, logger)
+		ctx.JSON(http.StatusMultiStatus, res)
+	})
+	configuration.POST("/add/ruleset/:remote", middleware.AdminAuth(), func(ctx *gin.Context) {
+		rulesets := []model.Ruleset{}
+		res := []gin.H{}
+		switch ctx.Param("remote") {
+		case "remote":
+			if err := ctx.BindJSON(&rulesets); err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
+				return
 			}
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": errorList})
+		case "local":
+			form, err := ctx.MultipartForm()
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"message": "获取文件表单失败"})
+				return
+			}
+			files := form.File["file"]
+			for _, file := range files {
+				ruleset := model.Ruleset{}
+				if err := ruleset.AutoFill(file, work_dir); err != nil {
+					res = append(res, gin.H{"status": false, "message": err.Error()})
+					continue
+				}
+				if err := ctx.SaveUploadedFile(file, ruleset.Path); err != nil {
+					res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`保存文件"%s"失败: [%s]`, file.Filename, err.Error())})
+					continue
+				}
+				rulesets = append(rulesets, ruleset)
+			}
+		default:
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "未标明云端或本地"})
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"message": "success"})
+		res = append(res, control.AddRuleset(rulesets, ent_client, logger)...)
+		ctx.JSON(http.StatusMultiStatus, res)
 	})
-	configuration.GET("/recover", func(ctx *gin.Context){
-		content, err := utils.GetValue(buntClient, models.DEFAULTTEMPLATEKEY, logger)
-		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "获取默认模板失败"})
+	configuration.PATCH("/edit/ruleset", middleware.AdminAuth(), func(ctx *gin.Context) {
+		name := ctx.PostForm("name")
+		path := ctx.PostForm("path")
+		download_detour := ctx.PostForm("download_detour")
+		update_interval := ctx.PostForm("update_interval")
+		remote := ctx.PostForm("remote") == "true"
+		binary := ctx.PostForm("binary") == "true"
+
+		if err := control.EditRuleset(name, path, update_interval, download_detour, remote, binary, ent_client, logger); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
-		var template models.Template
-		if err := yaml.Unmarshal([]byte(content), &template); err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "解析默认模板失败"})
-			return
-		}
-		ctx.JSON(http.StatusOK, gin.H{"message":template})
+		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf(`修改规则集"%s"成功`, name)})
 	})
+	configuration.DELETE("/delete/ruleset", middleware.AdminAuth(), func(ctx *gin.Context) {
+		name := ctx.PostFormArray("name")
+		res := control.DeleteRuleset(name, ent_client, logger)
+		ctx.JSON(http.StatusMultiStatus, res)
+	})
+	configuration.POST("/add/template", middleware.AdminAuth(), func(ctx *gin.Context) {
+		template := model.Template{}
+		if err := ctx.BindJSON(&template); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": "解析JSON失败"})
+			return
+		}
+		if err := template.CheckField(); err != nil {
+			logger.Error(fmt.Sprintf(`模板字段出错: [%s]`, err.Error()))
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf(`模板字段出错: [%s]`, err.Error())})
+			return
+		}
+		if err := control.AddTemplate(template, ent_client, logger); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf(`添加模板"%s"成功`, template.Name)})
+	})
+	configuration.DELETE("/delete/template", middleware.AdminAuth(), func(ctx *gin.Context) {
+		name := ctx.PostFormArray("name")
+		res := control.DeleteTemplate(name, work_dir, ent_client, logger)
+		ctx.JSON(http.StatusMultiStatus, res)
+	})
+	configuration.PATCH("/edit/template", middleware.AdminAuth(), func(ctx *gin.Context) {
+		template := model.Template{}
+		if err := ctx.BindJSON(&template); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+			return
+		}
+		if err := control.EditTemplate(template, ent_client, logger); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf(`修改模板"%s"成功`, template.Name)})
+	})
+
 }

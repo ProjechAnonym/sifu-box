@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "@/redux/store";
-import { Login, AutoLogin } from "@/utils/auth";
+import { Login, Verify} from "@/utils/auth";
 export const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -51,10 +51,10 @@ export const authSlice = createSlice({
           state.status = action.payload.status;
           !action.payload.status &&
             (state.err = "登录失败, 请检查密码或者用户名");
-          !action.payload.status && localStorage.removeItem("jwtToken");
+          !action.payload.status && localStorage.removeItem("jwt");
           action.payload.status && (state.jwt = action.payload.token || "");
           action.payload.status &&
-            localStorage.setItem("jwtToken", state.jwt || "");
+            localStorage.setItem("jwt", state.jwt || "");
           action.payload.status &&
             (state.admin = action.payload.admin || false);
         }
@@ -65,12 +65,12 @@ export const authSlice = createSlice({
         state.err = "登录失败, 请检查密码或者用户名";
         localStorage.removeItem("jwtToken");
       })
-      .addCase(AutoLogin.pending, (state) => {
+      .addCase(Verify.pending, (state) => {
         state.load = true;
         state.auto = false;
       })
       .addCase(
-        AutoLogin.fulfilled,
+        Verify.fulfilled,
         (
           state,
           action: PayloadAction<{
@@ -91,7 +91,7 @@ export const authSlice = createSlice({
             (state.admin = action.payload.admin || false);
         }
       )
-      .addCase(AutoLogin.rejected, (state) => {
+      .addCase(Verify.rejected, (state) => {
         state.load = false;
         state.status = false;
         state.err = "自动登录失败";

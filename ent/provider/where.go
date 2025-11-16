@@ -63,14 +63,19 @@ func Path(v string) predicate.Provider {
 	return predicate.Provider(sql.FieldEQ(FieldPath, v))
 }
 
-// Detour applies equality check predicate on the "detour" field. It's identical to DetourEQ.
-func Detour(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldEQ(FieldDetour, v))
-}
-
 // Remote applies equality check predicate on the "remote" field. It's identical to RemoteEQ.
 func Remote(v bool) predicate.Provider {
 	return predicate.Provider(sql.FieldEQ(FieldRemote, v))
+}
+
+// UUID applies equality check predicate on the "uuid" field. It's identical to UUIDEQ.
+func UUID(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldEQ(FieldUUID, v))
+}
+
+// Updated applies equality check predicate on the "updated" field. It's identical to UpdatedEQ.
+func Updated(v bool) predicate.Provider {
+	return predicate.Provider(sql.FieldEQ(FieldUpdated, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -203,79 +208,14 @@ func PathContainsFold(v string) predicate.Provider {
 	return predicate.Provider(sql.FieldContainsFold(FieldPath, v))
 }
 
-// DetourEQ applies the EQ predicate on the "detour" field.
-func DetourEQ(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldEQ(FieldDetour, v))
+// NodesIsNil applies the IsNil predicate on the "nodes" field.
+func NodesIsNil() predicate.Provider {
+	return predicate.Provider(sql.FieldIsNull(FieldNodes))
 }
 
-// DetourNEQ applies the NEQ predicate on the "detour" field.
-func DetourNEQ(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldNEQ(FieldDetour, v))
-}
-
-// DetourIn applies the In predicate on the "detour" field.
-func DetourIn(vs ...string) predicate.Provider {
-	return predicate.Provider(sql.FieldIn(FieldDetour, vs...))
-}
-
-// DetourNotIn applies the NotIn predicate on the "detour" field.
-func DetourNotIn(vs ...string) predicate.Provider {
-	return predicate.Provider(sql.FieldNotIn(FieldDetour, vs...))
-}
-
-// DetourGT applies the GT predicate on the "detour" field.
-func DetourGT(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldGT(FieldDetour, v))
-}
-
-// DetourGTE applies the GTE predicate on the "detour" field.
-func DetourGTE(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldGTE(FieldDetour, v))
-}
-
-// DetourLT applies the LT predicate on the "detour" field.
-func DetourLT(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldLT(FieldDetour, v))
-}
-
-// DetourLTE applies the LTE predicate on the "detour" field.
-func DetourLTE(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldLTE(FieldDetour, v))
-}
-
-// DetourContains applies the Contains predicate on the "detour" field.
-func DetourContains(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldContains(FieldDetour, v))
-}
-
-// DetourHasPrefix applies the HasPrefix predicate on the "detour" field.
-func DetourHasPrefix(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldHasPrefix(FieldDetour, v))
-}
-
-// DetourHasSuffix applies the HasSuffix predicate on the "detour" field.
-func DetourHasSuffix(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldHasSuffix(FieldDetour, v))
-}
-
-// DetourIsNil applies the IsNil predicate on the "detour" field.
-func DetourIsNil() predicate.Provider {
-	return predicate.Provider(sql.FieldIsNull(FieldDetour))
-}
-
-// DetourNotNil applies the NotNil predicate on the "detour" field.
-func DetourNotNil() predicate.Provider {
-	return predicate.Provider(sql.FieldNotNull(FieldDetour))
-}
-
-// DetourEqualFold applies the EqualFold predicate on the "detour" field.
-func DetourEqualFold(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldEqualFold(FieldDetour, v))
-}
-
-// DetourContainsFold applies the ContainsFold predicate on the "detour" field.
-func DetourContainsFold(v string) predicate.Provider {
-	return predicate.Provider(sql.FieldContainsFold(FieldDetour, v))
+// NodesNotNil applies the NotNil predicate on the "nodes" field.
+func NodesNotNil() predicate.Provider {
+	return predicate.Provider(sql.FieldNotNull(FieldNodes))
 }
 
 // RemoteEQ applies the EQ predicate on the "remote" field.
@@ -286,6 +226,111 @@ func RemoteEQ(v bool) predicate.Provider {
 // RemoteNEQ applies the NEQ predicate on the "remote" field.
 func RemoteNEQ(v bool) predicate.Provider {
 	return predicate.Provider(sql.FieldNEQ(FieldRemote, v))
+}
+
+// UUIDEQ applies the EQ predicate on the "uuid" field.
+func UUIDEQ(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldEQ(FieldUUID, v))
+}
+
+// UUIDNEQ applies the NEQ predicate on the "uuid" field.
+func UUIDNEQ(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldNEQ(FieldUUID, v))
+}
+
+// UUIDIn applies the In predicate on the "uuid" field.
+func UUIDIn(vs ...string) predicate.Provider {
+	return predicate.Provider(sql.FieldIn(FieldUUID, vs...))
+}
+
+// UUIDNotIn applies the NotIn predicate on the "uuid" field.
+func UUIDNotIn(vs ...string) predicate.Provider {
+	return predicate.Provider(sql.FieldNotIn(FieldUUID, vs...))
+}
+
+// UUIDGT applies the GT predicate on the "uuid" field.
+func UUIDGT(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldGT(FieldUUID, v))
+}
+
+// UUIDGTE applies the GTE predicate on the "uuid" field.
+func UUIDGTE(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldGTE(FieldUUID, v))
+}
+
+// UUIDLT applies the LT predicate on the "uuid" field.
+func UUIDLT(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldLT(FieldUUID, v))
+}
+
+// UUIDLTE applies the LTE predicate on the "uuid" field.
+func UUIDLTE(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldLTE(FieldUUID, v))
+}
+
+// UUIDContains applies the Contains predicate on the "uuid" field.
+func UUIDContains(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldContains(FieldUUID, v))
+}
+
+// UUIDHasPrefix applies the HasPrefix predicate on the "uuid" field.
+func UUIDHasPrefix(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldHasPrefix(FieldUUID, v))
+}
+
+// UUIDHasSuffix applies the HasSuffix predicate on the "uuid" field.
+func UUIDHasSuffix(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldHasSuffix(FieldUUID, v))
+}
+
+// UUIDIsNil applies the IsNil predicate on the "uuid" field.
+func UUIDIsNil() predicate.Provider {
+	return predicate.Provider(sql.FieldIsNull(FieldUUID))
+}
+
+// UUIDNotNil applies the NotNil predicate on the "uuid" field.
+func UUIDNotNil() predicate.Provider {
+	return predicate.Provider(sql.FieldNotNull(FieldUUID))
+}
+
+// UUIDEqualFold applies the EqualFold predicate on the "uuid" field.
+func UUIDEqualFold(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldEqualFold(FieldUUID, v))
+}
+
+// UUIDContainsFold applies the ContainsFold predicate on the "uuid" field.
+func UUIDContainsFold(v string) predicate.Provider {
+	return predicate.Provider(sql.FieldContainsFold(FieldUUID, v))
+}
+
+// UpdatedEQ applies the EQ predicate on the "updated" field.
+func UpdatedEQ(v bool) predicate.Provider {
+	return predicate.Provider(sql.FieldEQ(FieldUpdated, v))
+}
+
+// UpdatedNEQ applies the NEQ predicate on the "updated" field.
+func UpdatedNEQ(v bool) predicate.Provider {
+	return predicate.Provider(sql.FieldNEQ(FieldUpdated, v))
+}
+
+// UpdatedIsNil applies the IsNil predicate on the "updated" field.
+func UpdatedIsNil() predicate.Provider {
+	return predicate.Provider(sql.FieldIsNull(FieldUpdated))
+}
+
+// UpdatedNotNil applies the NotNil predicate on the "updated" field.
+func UpdatedNotNil() predicate.Provider {
+	return predicate.Provider(sql.FieldNotNull(FieldUpdated))
+}
+
+// TemplatesIsNil applies the IsNil predicate on the "templates" field.
+func TemplatesIsNil() predicate.Provider {
+	return predicate.Provider(sql.FieldIsNull(FieldTemplates))
+}
+
+// TemplatesNotNil applies the NotNil predicate on the "templates" field.
+func TemplatesNotNil() predicate.Provider {
+	return predicate.Provider(sql.FieldNotNull(FieldTemplates))
 }
 
 // And groups predicates with the AND operator between them.

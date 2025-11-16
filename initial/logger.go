@@ -28,14 +28,19 @@ func getWriter(level, task, workDir string) zapcore.WriteSyncer {
 	return zapcore.AddSync(lumberJackLogger)
 }
 
-func GetLogger(workDir, task string) *zap.Logger{
+func GetLogger(dir, task string, debug bool) *zap.Logger {
 	encoder := getEncoder()
-	infoWriter := getWriter("info", task, workDir)
-	errorWriter := getWriter("error", task, workDir)
+	infoWriter := getWriter("info", task, dir)
+	errorWriter := getWriter("error", task, dir)
 	infoCore := zapcore.NewCore(encoder, infoWriter, zapcore.InfoLevel)
 	errorCore := zapcore.NewCore(encoder, errorWriter, zapcore.ErrorLevel)
-	consoloCore := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel)
-	core := zapcore.NewTee(infoCore, errorCore, consoloCore)
-	logger := zap.New(core,zap.AddCaller())
+	if debug {
+		consoloCore := zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel)
+		core := zapcore.NewTee(infoCore, errorCore, consoloCore)
+		logger := zap.New(core, zap.AddCaller())
+		return logger
+	}
+	core := zapcore.NewTee(infoCore, errorCore)
+	logger := zap.New(core)
 	return logger
 }

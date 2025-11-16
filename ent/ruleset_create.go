@@ -12,104 +12,84 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// RuleSetCreate is the builder for creating a RuleSet entity.
-type RuleSetCreate struct {
+// RulesetCreate is the builder for creating a Ruleset entity.
+type RulesetCreate struct {
 	config
-	mutation *RuleSetMutation
+	mutation *RulesetMutation
 	hooks    []Hook
 }
 
-// SetTag sets the "tag" field.
-func (rsc *RuleSetCreate) SetTag(s string) *RuleSetCreate {
-	rsc.mutation.SetTag(s)
-	return rsc
-}
-
-// SetType sets the "type" field.
-func (rsc *RuleSetCreate) SetType(s string) *RuleSetCreate {
-	rsc.mutation.SetType(s)
-	return rsc
+// SetName sets the "name" field.
+func (_c *RulesetCreate) SetName(v string) *RulesetCreate {
+	_c.mutation.SetName(v)
+	return _c
 }
 
 // SetPath sets the "path" field.
-func (rsc *RuleSetCreate) SetPath(s string) *RuleSetCreate {
-	rsc.mutation.SetPath(s)
-	return rsc
+func (_c *RulesetCreate) SetPath(v string) *RulesetCreate {
+	_c.mutation.SetPath(v)
+	return _c
 }
 
-// SetFormat sets the "format" field.
-func (rsc *RuleSetCreate) SetFormat(s string) *RuleSetCreate {
-	rsc.mutation.SetFormat(s)
-	return rsc
+// SetRemote sets the "remote" field.
+func (_c *RulesetCreate) SetRemote(v bool) *RulesetCreate {
+	_c.mutation.SetRemote(v)
+	return _c
 }
 
-// SetLabel sets the "label" field.
-func (rsc *RuleSetCreate) SetLabel(s string) *RuleSetCreate {
-	rsc.mutation.SetLabel(s)
-	return rsc
+// SetBinary sets the "binary" field.
+func (_c *RulesetCreate) SetBinary(v bool) *RulesetCreate {
+	_c.mutation.SetBinary(v)
+	return _c
 }
 
 // SetDownloadDetour sets the "download_detour" field.
-func (rsc *RuleSetCreate) SetDownloadDetour(s string) *RuleSetCreate {
-	rsc.mutation.SetDownloadDetour(s)
-	return rsc
+func (_c *RulesetCreate) SetDownloadDetour(v string) *RulesetCreate {
+	_c.mutation.SetDownloadDetour(v)
+	return _c
 }
 
 // SetNillableDownloadDetour sets the "download_detour" field if the given value is not nil.
-func (rsc *RuleSetCreate) SetNillableDownloadDetour(s *string) *RuleSetCreate {
-	if s != nil {
-		rsc.SetDownloadDetour(*s)
+func (_c *RulesetCreate) SetNillableDownloadDetour(v *string) *RulesetCreate {
+	if v != nil {
+		_c.SetDownloadDetour(*v)
 	}
-	return rsc
+	return _c
 }
 
 // SetUpdateInterval sets the "update_interval" field.
-func (rsc *RuleSetCreate) SetUpdateInterval(s string) *RuleSetCreate {
-	rsc.mutation.SetUpdateInterval(s)
-	return rsc
+func (_c *RulesetCreate) SetUpdateInterval(v string) *RulesetCreate {
+	_c.mutation.SetUpdateInterval(v)
+	return _c
 }
 
 // SetNillableUpdateInterval sets the "update_interval" field if the given value is not nil.
-func (rsc *RuleSetCreate) SetNillableUpdateInterval(s *string) *RuleSetCreate {
-	if s != nil {
-		rsc.SetUpdateInterval(*s)
+func (_c *RulesetCreate) SetNillableUpdateInterval(v *string) *RulesetCreate {
+	if v != nil {
+		_c.SetUpdateInterval(*v)
 	}
-	return rsc
+	return _c
 }
 
-// SetNameServer sets the "name_server" field.
-func (rsc *RuleSetCreate) SetNameServer(s string) *RuleSetCreate {
-	rsc.mutation.SetNameServer(s)
-	return rsc
+// SetTemplates sets the "templates" field.
+func (_c *RulesetCreate) SetTemplates(v []string) *RulesetCreate {
+	_c.mutation.SetTemplates(v)
+	return _c
 }
 
-// SetNillableNameServer sets the "name_server" field if the given value is not nil.
-func (rsc *RuleSetCreate) SetNillableNameServer(s *string) *RuleSetCreate {
-	if s != nil {
-		rsc.SetNameServer(*s)
-	}
-	return rsc
+// Mutation returns the RulesetMutation object of the builder.
+func (_c *RulesetCreate) Mutation() *RulesetMutation {
+	return _c.mutation
 }
 
-// SetChina sets the "china" field.
-func (rsc *RuleSetCreate) SetChina(b bool) *RuleSetCreate {
-	rsc.mutation.SetChina(b)
-	return rsc
-}
-
-// Mutation returns the RuleSetMutation object of the builder.
-func (rsc *RuleSetCreate) Mutation() *RuleSetMutation {
-	return rsc.mutation
-}
-
-// Save creates the RuleSet in the database.
-func (rsc *RuleSetCreate) Save(ctx context.Context) (*RuleSet, error) {
-	return withHooks(ctx, rsc.sqlSave, rsc.mutation, rsc.hooks)
+// Save creates the Ruleset in the database.
+func (_c *RulesetCreate) Save(ctx context.Context) (*Ruleset, error) {
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (rsc *RuleSetCreate) SaveX(ctx context.Context) *RuleSet {
-	v, err := rsc.Save(ctx)
+func (_c *RulesetCreate) SaveX(ctx context.Context) *Ruleset {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -117,87 +97,56 @@ func (rsc *RuleSetCreate) SaveX(ctx context.Context) *RuleSet {
 }
 
 // Exec executes the query.
-func (rsc *RuleSetCreate) Exec(ctx context.Context) error {
-	_, err := rsc.Save(ctx)
+func (_c *RulesetCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rsc *RuleSetCreate) ExecX(ctx context.Context) {
-	if err := rsc.Exec(ctx); err != nil {
+func (_c *RulesetCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (rsc *RuleSetCreate) check() error {
-	if _, ok := rsc.mutation.Tag(); !ok {
-		return &ValidationError{Name: "tag", err: errors.New(`ent: missing required field "RuleSet.tag"`)}
+func (_c *RulesetCreate) check() error {
+	if _, ok := _c.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Ruleset.name"`)}
 	}
-	if v, ok := rsc.mutation.Tag(); ok {
-		if err := ruleset.TagValidator(v); err != nil {
-			return &ValidationError{Name: "tag", err: fmt.Errorf(`ent: validator failed for field "RuleSet.tag": %w`, err)}
+	if v, ok := _c.mutation.Name(); ok {
+		if err := ruleset.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Ruleset.name": %w`, err)}
 		}
 	}
-	if _, ok := rsc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "RuleSet.type"`)}
+	if _, ok := _c.mutation.Path(); !ok {
+		return &ValidationError{Name: "path", err: errors.New(`ent: missing required field "Ruleset.path"`)}
 	}
-	if v, ok := rsc.mutation.GetType(); ok {
-		if err := ruleset.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "RuleSet.type": %w`, err)}
-		}
-	}
-	if _, ok := rsc.mutation.Path(); !ok {
-		return &ValidationError{Name: "path", err: errors.New(`ent: missing required field "RuleSet.path"`)}
-	}
-	if v, ok := rsc.mutation.Path(); ok {
+	if v, ok := _c.mutation.Path(); ok {
 		if err := ruleset.PathValidator(v); err != nil {
-			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "RuleSet.path": %w`, err)}
+			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "Ruleset.path": %w`, err)}
 		}
 	}
-	if _, ok := rsc.mutation.Format(); !ok {
-		return &ValidationError{Name: "format", err: errors.New(`ent: missing required field "RuleSet.format"`)}
+	if _, ok := _c.mutation.Remote(); !ok {
+		return &ValidationError{Name: "remote", err: errors.New(`ent: missing required field "Ruleset.remote"`)}
 	}
-	if v, ok := rsc.mutation.Format(); ok {
-		if err := ruleset.FormatValidator(v); err != nil {
-			return &ValidationError{Name: "format", err: fmt.Errorf(`ent: validator failed for field "RuleSet.format": %w`, err)}
-		}
+	if _, ok := _c.mutation.Binary(); !ok {
+		return &ValidationError{Name: "binary", err: errors.New(`ent: missing required field "Ruleset.binary"`)}
 	}
-	if _, ok := rsc.mutation.Label(); !ok {
-		return &ValidationError{Name: "label", err: errors.New(`ent: missing required field "RuleSet.label"`)}
-	}
-	if v, ok := rsc.mutation.Label(); ok {
-		if err := ruleset.LabelValidator(v); err != nil {
-			return &ValidationError{Name: "label", err: fmt.Errorf(`ent: validator failed for field "RuleSet.label": %w`, err)}
-		}
-	}
-	if v, ok := rsc.mutation.DownloadDetour(); ok {
-		if err := ruleset.DownloadDetourValidator(v); err != nil {
-			return &ValidationError{Name: "download_detour", err: fmt.Errorf(`ent: validator failed for field "RuleSet.download_detour": %w`, err)}
-		}
-	}
-	if v, ok := rsc.mutation.UpdateInterval(); ok {
+	if v, ok := _c.mutation.UpdateInterval(); ok {
 		if err := ruleset.UpdateIntervalValidator(v); err != nil {
-			return &ValidationError{Name: "update_interval", err: fmt.Errorf(`ent: validator failed for field "RuleSet.update_interval": %w`, err)}
+			return &ValidationError{Name: "update_interval", err: fmt.Errorf(`ent: validator failed for field "Ruleset.update_interval": %w`, err)}
 		}
-	}
-	if v, ok := rsc.mutation.NameServer(); ok {
-		if err := ruleset.NameServerValidator(v); err != nil {
-			return &ValidationError{Name: "name_server", err: fmt.Errorf(`ent: validator failed for field "RuleSet.name_server": %w`, err)}
-		}
-	}
-	if _, ok := rsc.mutation.China(); !ok {
-		return &ValidationError{Name: "china", err: errors.New(`ent: missing required field "RuleSet.china"`)}
 	}
 	return nil
 }
 
-func (rsc *RuleSetCreate) sqlSave(ctx context.Context) (*RuleSet, error) {
-	if err := rsc.check(); err != nil {
+func (_c *RulesetCreate) sqlSave(ctx context.Context) (*Ruleset, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := rsc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, rsc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -205,75 +154,67 @@ func (rsc *RuleSetCreate) sqlSave(ctx context.Context) (*RuleSet, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
-	rsc.mutation.id = &_node.ID
-	rsc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (rsc *RuleSetCreate) createSpec() (*RuleSet, *sqlgraph.CreateSpec) {
+func (_c *RulesetCreate) createSpec() (*Ruleset, *sqlgraph.CreateSpec) {
 	var (
-		_node = &RuleSet{config: rsc.config}
+		_node = &Ruleset{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(ruleset.Table, sqlgraph.NewFieldSpec(ruleset.FieldID, field.TypeInt))
 	)
-	if value, ok := rsc.mutation.Tag(); ok {
-		_spec.SetField(ruleset.FieldTag, field.TypeString, value)
-		_node.Tag = value
+	if value, ok := _c.mutation.Name(); ok {
+		_spec.SetField(ruleset.FieldName, field.TypeString, value)
+		_node.Name = value
 	}
-	if value, ok := rsc.mutation.GetType(); ok {
-		_spec.SetField(ruleset.FieldType, field.TypeString, value)
-		_node.Type = value
-	}
-	if value, ok := rsc.mutation.Path(); ok {
+	if value, ok := _c.mutation.Path(); ok {
 		_spec.SetField(ruleset.FieldPath, field.TypeString, value)
 		_node.Path = value
 	}
-	if value, ok := rsc.mutation.Format(); ok {
-		_spec.SetField(ruleset.FieldFormat, field.TypeString, value)
-		_node.Format = value
+	if value, ok := _c.mutation.Remote(); ok {
+		_spec.SetField(ruleset.FieldRemote, field.TypeBool, value)
+		_node.Remote = value
 	}
-	if value, ok := rsc.mutation.Label(); ok {
-		_spec.SetField(ruleset.FieldLabel, field.TypeString, value)
-		_node.Label = value
+	if value, ok := _c.mutation.Binary(); ok {
+		_spec.SetField(ruleset.FieldBinary, field.TypeBool, value)
+		_node.Binary = value
 	}
-	if value, ok := rsc.mutation.DownloadDetour(); ok {
+	if value, ok := _c.mutation.DownloadDetour(); ok {
 		_spec.SetField(ruleset.FieldDownloadDetour, field.TypeString, value)
 		_node.DownloadDetour = value
 	}
-	if value, ok := rsc.mutation.UpdateInterval(); ok {
+	if value, ok := _c.mutation.UpdateInterval(); ok {
 		_spec.SetField(ruleset.FieldUpdateInterval, field.TypeString, value)
 		_node.UpdateInterval = value
 	}
-	if value, ok := rsc.mutation.NameServer(); ok {
-		_spec.SetField(ruleset.FieldNameServer, field.TypeString, value)
-		_node.NameServer = value
-	}
-	if value, ok := rsc.mutation.China(); ok {
-		_spec.SetField(ruleset.FieldChina, field.TypeBool, value)
-		_node.China = value
+	if value, ok := _c.mutation.Templates(); ok {
+		_spec.SetField(ruleset.FieldTemplates, field.TypeJSON, value)
+		_node.Templates = value
 	}
 	return _node, _spec
 }
 
-// RuleSetCreateBulk is the builder for creating many RuleSet entities in bulk.
-type RuleSetCreateBulk struct {
+// RulesetCreateBulk is the builder for creating many Ruleset entities in bulk.
+type RulesetCreateBulk struct {
 	config
 	err      error
-	builders []*RuleSetCreate
+	builders []*RulesetCreate
 }
 
-// Save creates the RuleSet entities in the database.
-func (rscb *RuleSetCreateBulk) Save(ctx context.Context) ([]*RuleSet, error) {
-	if rscb.err != nil {
-		return nil, rscb.err
+// Save creates the Ruleset entities in the database.
+func (_c *RulesetCreateBulk) Save(ctx context.Context) ([]*Ruleset, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(rscb.builders))
-	nodes := make([]*RuleSet, len(rscb.builders))
-	mutators := make([]Mutator, len(rscb.builders))
-	for i := range rscb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Ruleset, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := rscb.builders[i]
+			builder := _c.builders[i]
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*RuleSetMutation)
+				mutation, ok := m.(*RulesetMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -284,11 +225,11 @@ func (rscb *RuleSetCreateBulk) Save(ctx context.Context) ([]*RuleSet, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, rscb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, rscb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -312,7 +253,7 @@ func (rscb *RuleSetCreateBulk) Save(ctx context.Context) ([]*RuleSet, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, rscb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -320,8 +261,8 @@ func (rscb *RuleSetCreateBulk) Save(ctx context.Context) ([]*RuleSet, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (rscb *RuleSetCreateBulk) SaveX(ctx context.Context) []*RuleSet {
-	v, err := rscb.Save(ctx)
+func (_c *RulesetCreateBulk) SaveX(ctx context.Context) []*Ruleset {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -329,14 +270,14 @@ func (rscb *RuleSetCreateBulk) SaveX(ctx context.Context) []*RuleSet {
 }
 
 // Exec executes the query.
-func (rscb *RuleSetCreateBulk) Exec(ctx context.Context) error {
-	_, err := rscb.Save(ctx)
+func (_c *RulesetCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (rscb *RuleSetCreateBulk) ExecX(ctx context.Context) {
-	if err := rscb.Exec(ctx); err != nil {
+func (_c *RulesetCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

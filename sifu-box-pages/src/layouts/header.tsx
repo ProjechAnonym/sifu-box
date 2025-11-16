@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { useAppSelector, useAppDispatch } from "@/redux/hooks";
+import { useAppSelector, useAppDispatch } from "@/redux/hook";
 import { useNavigate } from "react-router-dom";
 import { setStatus, setAuto, setAdmin } from "@/redux/slice";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/navbar";

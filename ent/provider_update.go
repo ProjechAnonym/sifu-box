@@ -11,6 +11,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -22,86 +23,142 @@ type ProviderUpdate struct {
 }
 
 // Where appends a list predicates to the ProviderUpdate builder.
-func (pu *ProviderUpdate) Where(ps ...predicate.Provider) *ProviderUpdate {
-	pu.mutation.Where(ps...)
-	return pu
+func (_u *ProviderUpdate) Where(ps ...predicate.Provider) *ProviderUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetName sets the "name" field.
-func (pu *ProviderUpdate) SetName(s string) *ProviderUpdate {
-	pu.mutation.SetName(s)
-	return pu
+func (_u *ProviderUpdate) SetName(v string) *ProviderUpdate {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (pu *ProviderUpdate) SetNillableName(s *string) *ProviderUpdate {
-	if s != nil {
-		pu.SetName(*s)
+func (_u *ProviderUpdate) SetNillableName(v *string) *ProviderUpdate {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return pu
+	return _u
 }
 
 // SetPath sets the "path" field.
-func (pu *ProviderUpdate) SetPath(s string) *ProviderUpdate {
-	pu.mutation.SetPath(s)
-	return pu
+func (_u *ProviderUpdate) SetPath(v string) *ProviderUpdate {
+	_u.mutation.SetPath(v)
+	return _u
 }
 
 // SetNillablePath sets the "path" field if the given value is not nil.
-func (pu *ProviderUpdate) SetNillablePath(s *string) *ProviderUpdate {
-	if s != nil {
-		pu.SetPath(*s)
+func (_u *ProviderUpdate) SetNillablePath(v *string) *ProviderUpdate {
+	if v != nil {
+		_u.SetPath(*v)
 	}
-	return pu
+	return _u
 }
 
-// SetDetour sets the "detour" field.
-func (pu *ProviderUpdate) SetDetour(s string) *ProviderUpdate {
-	pu.mutation.SetDetour(s)
-	return pu
+// SetNodes sets the "nodes" field.
+func (_u *ProviderUpdate) SetNodes(v []map[string]interface{}) *ProviderUpdate {
+	_u.mutation.SetNodes(v)
+	return _u
 }
 
-// SetNillableDetour sets the "detour" field if the given value is not nil.
-func (pu *ProviderUpdate) SetNillableDetour(s *string) *ProviderUpdate {
-	if s != nil {
-		pu.SetDetour(*s)
-	}
-	return pu
+// AppendNodes appends value to the "nodes" field.
+func (_u *ProviderUpdate) AppendNodes(v []map[string]interface{}) *ProviderUpdate {
+	_u.mutation.AppendNodes(v)
+	return _u
 }
 
-// ClearDetour clears the value of the "detour" field.
-func (pu *ProviderUpdate) ClearDetour() *ProviderUpdate {
-	pu.mutation.ClearDetour()
-	return pu
+// ClearNodes clears the value of the "nodes" field.
+func (_u *ProviderUpdate) ClearNodes() *ProviderUpdate {
+	_u.mutation.ClearNodes()
+	return _u
 }
 
 // SetRemote sets the "remote" field.
-func (pu *ProviderUpdate) SetRemote(b bool) *ProviderUpdate {
-	pu.mutation.SetRemote(b)
-	return pu
+func (_u *ProviderUpdate) SetRemote(v bool) *ProviderUpdate {
+	_u.mutation.SetRemote(v)
+	return _u
 }
 
 // SetNillableRemote sets the "remote" field if the given value is not nil.
-func (pu *ProviderUpdate) SetNillableRemote(b *bool) *ProviderUpdate {
-	if b != nil {
-		pu.SetRemote(*b)
+func (_u *ProviderUpdate) SetNillableRemote(v *bool) *ProviderUpdate {
+	if v != nil {
+		_u.SetRemote(*v)
 	}
-	return pu
+	return _u
+}
+
+// SetUUID sets the "uuid" field.
+func (_u *ProviderUpdate) SetUUID(v string) *ProviderUpdate {
+	_u.mutation.SetUUID(v)
+	return _u
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (_u *ProviderUpdate) SetNillableUUID(v *string) *ProviderUpdate {
+	if v != nil {
+		_u.SetUUID(*v)
+	}
+	return _u
+}
+
+// ClearUUID clears the value of the "uuid" field.
+func (_u *ProviderUpdate) ClearUUID() *ProviderUpdate {
+	_u.mutation.ClearUUID()
+	return _u
+}
+
+// SetUpdated sets the "updated" field.
+func (_u *ProviderUpdate) SetUpdated(v bool) *ProviderUpdate {
+	_u.mutation.SetUpdated(v)
+	return _u
+}
+
+// SetNillableUpdated sets the "updated" field if the given value is not nil.
+func (_u *ProviderUpdate) SetNillableUpdated(v *bool) *ProviderUpdate {
+	if v != nil {
+		_u.SetUpdated(*v)
+	}
+	return _u
+}
+
+// ClearUpdated clears the value of the "updated" field.
+func (_u *ProviderUpdate) ClearUpdated() *ProviderUpdate {
+	_u.mutation.ClearUpdated()
+	return _u
+}
+
+// SetTemplates sets the "templates" field.
+func (_u *ProviderUpdate) SetTemplates(v []string) *ProviderUpdate {
+	_u.mutation.SetTemplates(v)
+	return _u
+}
+
+// AppendTemplates appends value to the "templates" field.
+func (_u *ProviderUpdate) AppendTemplates(v []string) *ProviderUpdate {
+	_u.mutation.AppendTemplates(v)
+	return _u
+}
+
+// ClearTemplates clears the value of the "templates" field.
+func (_u *ProviderUpdate) ClearTemplates() *ProviderUpdate {
+	_u.mutation.ClearTemplates()
+	return _u
 }
 
 // Mutation returns the ProviderMutation object of the builder.
-func (pu *ProviderUpdate) Mutation() *ProviderMutation {
-	return pu.mutation
+func (_u *ProviderUpdate) Mutation() *ProviderMutation {
+	return _u.mutation
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (pu *ProviderUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, pu.sqlSave, pu.mutation, pu.hooks)
+func (_u *ProviderUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (pu *ProviderUpdate) SaveX(ctx context.Context) int {
-	affected, err := pu.Save(ctx)
+func (_u *ProviderUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -109,66 +166,94 @@ func (pu *ProviderUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (pu *ProviderUpdate) Exec(ctx context.Context) error {
-	_, err := pu.Save(ctx)
+func (_u *ProviderUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (pu *ProviderUpdate) ExecX(ctx context.Context) {
-	if err := pu.Exec(ctx); err != nil {
+func (_u *ProviderUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (pu *ProviderUpdate) check() error {
-	if v, ok := pu.mutation.Name(); ok {
+func (_u *ProviderUpdate) check() error {
+	if v, ok := _u.mutation.Name(); ok {
 		if err := provider.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Provider.name": %w`, err)}
 		}
 	}
-	if v, ok := pu.mutation.Path(); ok {
+	if v, ok := _u.mutation.Path(); ok {
 		if err := provider.PathValidator(v); err != nil {
 			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "Provider.path": %w`, err)}
 		}
 	}
-	if v, ok := pu.mutation.Detour(); ok {
-		if err := provider.DetourValidator(v); err != nil {
-			return &ValidationError{Name: "detour", err: fmt.Errorf(`ent: validator failed for field "Provider.detour": %w`, err)}
+	if v, ok := _u.mutation.UUID(); ok {
+		if err := provider.UUIDValidator(v); err != nil {
+			return &ValidationError{Name: "uuid", err: fmt.Errorf(`ent: validator failed for field "Provider.uuid": %w`, err)}
 		}
 	}
 	return nil
 }
 
-func (pu *ProviderUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := pu.check(); err != nil {
-		return n, err
+func (_u *ProviderUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(provider.Table, provider.Columns, sqlgraph.NewFieldSpec(provider.FieldID, field.TypeInt))
-	if ps := pu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := pu.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(provider.FieldName, field.TypeString, value)
 	}
-	if value, ok := pu.mutation.Path(); ok {
+	if value, ok := _u.mutation.Path(); ok {
 		_spec.SetField(provider.FieldPath, field.TypeString, value)
 	}
-	if value, ok := pu.mutation.Detour(); ok {
-		_spec.SetField(provider.FieldDetour, field.TypeString, value)
+	if value, ok := _u.mutation.Nodes(); ok {
+		_spec.SetField(provider.FieldNodes, field.TypeJSON, value)
 	}
-	if pu.mutation.DetourCleared() {
-		_spec.ClearField(provider.FieldDetour, field.TypeString)
+	if value, ok := _u.mutation.AppendedNodes(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, provider.FieldNodes, value)
+		})
 	}
-	if value, ok := pu.mutation.Remote(); ok {
+	if _u.mutation.NodesCleared() {
+		_spec.ClearField(provider.FieldNodes, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Remote(); ok {
 		_spec.SetField(provider.FieldRemote, field.TypeBool, value)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
+	if value, ok := _u.mutation.UUID(); ok {
+		_spec.SetField(provider.FieldUUID, field.TypeString, value)
+	}
+	if _u.mutation.UUIDCleared() {
+		_spec.ClearField(provider.FieldUUID, field.TypeString)
+	}
+	if value, ok := _u.mutation.Updated(); ok {
+		_spec.SetField(provider.FieldUpdated, field.TypeBool, value)
+	}
+	if _u.mutation.UpdatedCleared() {
+		_spec.ClearField(provider.FieldUpdated, field.TypeBool)
+	}
+	if value, ok := _u.mutation.Templates(); ok {
+		_spec.SetField(provider.FieldTemplates, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedTemplates(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, provider.FieldTemplates, value)
+		})
+	}
+	if _u.mutation.TemplatesCleared() {
+		_spec.ClearField(provider.FieldTemplates, field.TypeJSON)
+	}
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{provider.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -176,8 +261,8 @@ func (pu *ProviderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	pu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // ProviderUpdateOne is the builder for updating a single Provider entity.
@@ -189,93 +274,149 @@ type ProviderUpdateOne struct {
 }
 
 // SetName sets the "name" field.
-func (puo *ProviderUpdateOne) SetName(s string) *ProviderUpdateOne {
-	puo.mutation.SetName(s)
-	return puo
+func (_u *ProviderUpdateOne) SetName(v string) *ProviderUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (puo *ProviderUpdateOne) SetNillableName(s *string) *ProviderUpdateOne {
-	if s != nil {
-		puo.SetName(*s)
+func (_u *ProviderUpdateOne) SetNillableName(v *string) *ProviderUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return puo
+	return _u
 }
 
 // SetPath sets the "path" field.
-func (puo *ProviderUpdateOne) SetPath(s string) *ProviderUpdateOne {
-	puo.mutation.SetPath(s)
-	return puo
+func (_u *ProviderUpdateOne) SetPath(v string) *ProviderUpdateOne {
+	_u.mutation.SetPath(v)
+	return _u
 }
 
 // SetNillablePath sets the "path" field if the given value is not nil.
-func (puo *ProviderUpdateOne) SetNillablePath(s *string) *ProviderUpdateOne {
-	if s != nil {
-		puo.SetPath(*s)
+func (_u *ProviderUpdateOne) SetNillablePath(v *string) *ProviderUpdateOne {
+	if v != nil {
+		_u.SetPath(*v)
 	}
-	return puo
+	return _u
 }
 
-// SetDetour sets the "detour" field.
-func (puo *ProviderUpdateOne) SetDetour(s string) *ProviderUpdateOne {
-	puo.mutation.SetDetour(s)
-	return puo
+// SetNodes sets the "nodes" field.
+func (_u *ProviderUpdateOne) SetNodes(v []map[string]interface{}) *ProviderUpdateOne {
+	_u.mutation.SetNodes(v)
+	return _u
 }
 
-// SetNillableDetour sets the "detour" field if the given value is not nil.
-func (puo *ProviderUpdateOne) SetNillableDetour(s *string) *ProviderUpdateOne {
-	if s != nil {
-		puo.SetDetour(*s)
-	}
-	return puo
+// AppendNodes appends value to the "nodes" field.
+func (_u *ProviderUpdateOne) AppendNodes(v []map[string]interface{}) *ProviderUpdateOne {
+	_u.mutation.AppendNodes(v)
+	return _u
 }
 
-// ClearDetour clears the value of the "detour" field.
-func (puo *ProviderUpdateOne) ClearDetour() *ProviderUpdateOne {
-	puo.mutation.ClearDetour()
-	return puo
+// ClearNodes clears the value of the "nodes" field.
+func (_u *ProviderUpdateOne) ClearNodes() *ProviderUpdateOne {
+	_u.mutation.ClearNodes()
+	return _u
 }
 
 // SetRemote sets the "remote" field.
-func (puo *ProviderUpdateOne) SetRemote(b bool) *ProviderUpdateOne {
-	puo.mutation.SetRemote(b)
-	return puo
+func (_u *ProviderUpdateOne) SetRemote(v bool) *ProviderUpdateOne {
+	_u.mutation.SetRemote(v)
+	return _u
 }
 
 // SetNillableRemote sets the "remote" field if the given value is not nil.
-func (puo *ProviderUpdateOne) SetNillableRemote(b *bool) *ProviderUpdateOne {
-	if b != nil {
-		puo.SetRemote(*b)
+func (_u *ProviderUpdateOne) SetNillableRemote(v *bool) *ProviderUpdateOne {
+	if v != nil {
+		_u.SetRemote(*v)
 	}
-	return puo
+	return _u
+}
+
+// SetUUID sets the "uuid" field.
+func (_u *ProviderUpdateOne) SetUUID(v string) *ProviderUpdateOne {
+	_u.mutation.SetUUID(v)
+	return _u
+}
+
+// SetNillableUUID sets the "uuid" field if the given value is not nil.
+func (_u *ProviderUpdateOne) SetNillableUUID(v *string) *ProviderUpdateOne {
+	if v != nil {
+		_u.SetUUID(*v)
+	}
+	return _u
+}
+
+// ClearUUID clears the value of the "uuid" field.
+func (_u *ProviderUpdateOne) ClearUUID() *ProviderUpdateOne {
+	_u.mutation.ClearUUID()
+	return _u
+}
+
+// SetUpdated sets the "updated" field.
+func (_u *ProviderUpdateOne) SetUpdated(v bool) *ProviderUpdateOne {
+	_u.mutation.SetUpdated(v)
+	return _u
+}
+
+// SetNillableUpdated sets the "updated" field if the given value is not nil.
+func (_u *ProviderUpdateOne) SetNillableUpdated(v *bool) *ProviderUpdateOne {
+	if v != nil {
+		_u.SetUpdated(*v)
+	}
+	return _u
+}
+
+// ClearUpdated clears the value of the "updated" field.
+func (_u *ProviderUpdateOne) ClearUpdated() *ProviderUpdateOne {
+	_u.mutation.ClearUpdated()
+	return _u
+}
+
+// SetTemplates sets the "templates" field.
+func (_u *ProviderUpdateOne) SetTemplates(v []string) *ProviderUpdateOne {
+	_u.mutation.SetTemplates(v)
+	return _u
+}
+
+// AppendTemplates appends value to the "templates" field.
+func (_u *ProviderUpdateOne) AppendTemplates(v []string) *ProviderUpdateOne {
+	_u.mutation.AppendTemplates(v)
+	return _u
+}
+
+// ClearTemplates clears the value of the "templates" field.
+func (_u *ProviderUpdateOne) ClearTemplates() *ProviderUpdateOne {
+	_u.mutation.ClearTemplates()
+	return _u
 }
 
 // Mutation returns the ProviderMutation object of the builder.
-func (puo *ProviderUpdateOne) Mutation() *ProviderMutation {
-	return puo.mutation
+func (_u *ProviderUpdateOne) Mutation() *ProviderMutation {
+	return _u.mutation
 }
 
 // Where appends a list predicates to the ProviderUpdate builder.
-func (puo *ProviderUpdateOne) Where(ps ...predicate.Provider) *ProviderUpdateOne {
-	puo.mutation.Where(ps...)
-	return puo
+func (_u *ProviderUpdateOne) Where(ps ...predicate.Provider) *ProviderUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (puo *ProviderUpdateOne) Select(field string, fields ...string) *ProviderUpdateOne {
-	puo.fields = append([]string{field}, fields...)
-	return puo
+func (_u *ProviderUpdateOne) Select(field string, fields ...string) *ProviderUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Provider entity.
-func (puo *ProviderUpdateOne) Save(ctx context.Context) (*Provider, error) {
-	return withHooks(ctx, puo.sqlSave, puo.mutation, puo.hooks)
+func (_u *ProviderUpdateOne) Save(ctx context.Context) (*Provider, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (puo *ProviderUpdateOne) SaveX(ctx context.Context) *Provider {
-	node, err := puo.Save(ctx)
+func (_u *ProviderUpdateOne) SaveX(ctx context.Context) *Provider {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -283,49 +424,49 @@ func (puo *ProviderUpdateOne) SaveX(ctx context.Context) *Provider {
 }
 
 // Exec executes the query on the entity.
-func (puo *ProviderUpdateOne) Exec(ctx context.Context) error {
-	_, err := puo.Save(ctx)
+func (_u *ProviderUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (puo *ProviderUpdateOne) ExecX(ctx context.Context) {
-	if err := puo.Exec(ctx); err != nil {
+func (_u *ProviderUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (puo *ProviderUpdateOne) check() error {
-	if v, ok := puo.mutation.Name(); ok {
+func (_u *ProviderUpdateOne) check() error {
+	if v, ok := _u.mutation.Name(); ok {
 		if err := provider.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Provider.name": %w`, err)}
 		}
 	}
-	if v, ok := puo.mutation.Path(); ok {
+	if v, ok := _u.mutation.Path(); ok {
 		if err := provider.PathValidator(v); err != nil {
 			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "Provider.path": %w`, err)}
 		}
 	}
-	if v, ok := puo.mutation.Detour(); ok {
-		if err := provider.DetourValidator(v); err != nil {
-			return &ValidationError{Name: "detour", err: fmt.Errorf(`ent: validator failed for field "Provider.detour": %w`, err)}
+	if v, ok := _u.mutation.UUID(); ok {
+		if err := provider.UUIDValidator(v); err != nil {
+			return &ValidationError{Name: "uuid", err: fmt.Errorf(`ent: validator failed for field "Provider.uuid": %w`, err)}
 		}
 	}
 	return nil
 }
 
-func (puo *ProviderUpdateOne) sqlSave(ctx context.Context) (_node *Provider, err error) {
-	if err := puo.check(); err != nil {
+func (_u *ProviderUpdateOne) sqlSave(ctx context.Context) (_node *Provider, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(provider.Table, provider.Columns, sqlgraph.NewFieldSpec(provider.FieldID, field.TypeInt))
-	id, ok := puo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Provider.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := puo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, provider.FieldID)
 		for _, f := range fields {
@@ -337,32 +478,60 @@ func (puo *ProviderUpdateOne) sqlSave(ctx context.Context) (_node *Provider, err
 			}
 		}
 	}
-	if ps := puo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := puo.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(provider.FieldName, field.TypeString, value)
 	}
-	if value, ok := puo.mutation.Path(); ok {
+	if value, ok := _u.mutation.Path(); ok {
 		_spec.SetField(provider.FieldPath, field.TypeString, value)
 	}
-	if value, ok := puo.mutation.Detour(); ok {
-		_spec.SetField(provider.FieldDetour, field.TypeString, value)
+	if value, ok := _u.mutation.Nodes(); ok {
+		_spec.SetField(provider.FieldNodes, field.TypeJSON, value)
 	}
-	if puo.mutation.DetourCleared() {
-		_spec.ClearField(provider.FieldDetour, field.TypeString)
+	if value, ok := _u.mutation.AppendedNodes(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, provider.FieldNodes, value)
+		})
 	}
-	if value, ok := puo.mutation.Remote(); ok {
+	if _u.mutation.NodesCleared() {
+		_spec.ClearField(provider.FieldNodes, field.TypeJSON)
+	}
+	if value, ok := _u.mutation.Remote(); ok {
 		_spec.SetField(provider.FieldRemote, field.TypeBool, value)
 	}
-	_node = &Provider{config: puo.config}
+	if value, ok := _u.mutation.UUID(); ok {
+		_spec.SetField(provider.FieldUUID, field.TypeString, value)
+	}
+	if _u.mutation.UUIDCleared() {
+		_spec.ClearField(provider.FieldUUID, field.TypeString)
+	}
+	if value, ok := _u.mutation.Updated(); ok {
+		_spec.SetField(provider.FieldUpdated, field.TypeBool, value)
+	}
+	if _u.mutation.UpdatedCleared() {
+		_spec.ClearField(provider.FieldUpdated, field.TypeBool)
+	}
+	if value, ok := _u.mutation.Templates(); ok {
+		_spec.SetField(provider.FieldTemplates, field.TypeJSON, value)
+	}
+	if value, ok := _u.mutation.AppendedTemplates(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, provider.FieldTemplates, value)
+		})
+	}
+	if _u.mutation.TemplatesCleared() {
+		_spec.ClearField(provider.FieldTemplates, field.TypeJSON)
+	}
+	_node = &Provider{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, puo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{provider.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -370,6 +539,6 @@ func (puo *ProviderUpdateOne) sqlSave(ctx context.Context) (_node *Provider, err
 		}
 		return nil, err
 	}
-	puo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

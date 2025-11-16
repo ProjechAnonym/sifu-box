@@ -9,661 +9,401 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldID, id))
+func ID(id int) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldID, id))
+func IDEQ(id int) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNEQ(FieldID, id))
+func IDNEQ(id int) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIn(FieldID, ids...))
+func IDIn(ids ...int) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotIn(FieldID, ids...))
+func IDNotIn(ids ...int) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGT(FieldID, id))
+func IDGT(id int) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGTE(FieldID, id))
+func IDGTE(id int) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLT(FieldID, id))
+func IDLT(id int) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLTE(FieldID, id))
+func IDLTE(id int) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldLTE(FieldID, id))
 }
 
-// Tag applies equality check predicate on the "tag" field. It's identical to TagEQ.
-func Tag(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldTag, v))
-}
-
-// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
-func Type(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldType, v))
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldName, v))
 }
 
 // Path applies equality check predicate on the "path" field. It's identical to PathEQ.
-func Path(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldPath, v))
+func Path(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldPath, v))
 }
 
-// Format applies equality check predicate on the "format" field. It's identical to FormatEQ.
-func Format(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldFormat, v))
+// Remote applies equality check predicate on the "remote" field. It's identical to RemoteEQ.
+func Remote(v bool) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldRemote, v))
+}
+
+// Binary applies equality check predicate on the "binary" field. It's identical to BinaryEQ.
+func Binary(v bool) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldBinary, v))
 }
 
 // DownloadDetour applies equality check predicate on the "download_detour" field. It's identical to DownloadDetourEQ.
-func DownloadDetour(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldDownloadDetour, v))
+func DownloadDetour(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldDownloadDetour, v))
 }
 
 // UpdateInterval applies equality check predicate on the "update_interval" field. It's identical to UpdateIntervalEQ.
-func UpdateInterval(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldUpdateInterval, v))
+func UpdateInterval(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldUpdateInterval, v))
 }
 
-// NameServer applies equality check predicate on the "name_server" field. It's identical to NameServerEQ.
-func NameServer(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldNameServer, v))
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldName, v))
 }
 
-// China applies equality check predicate on the "china" field. It's identical to ChinaEQ.
-func China(v bool) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldChina, v))
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNEQ(FieldName, v))
 }
 
-// TagEQ applies the EQ predicate on the "tag" field.
-func TagEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldTag, v))
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldIn(FieldName, vs...))
 }
 
-// TagNEQ applies the NEQ predicate on the "tag" field.
-func TagNEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNEQ(FieldTag, v))
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNotIn(FieldName, vs...))
 }
 
-// TagIn applies the In predicate on the "tag" field.
-func TagIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIn(FieldTag, vs...))
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldGT(FieldName, v))
 }
 
-// TagNotIn applies the NotIn predicate on the "tag" field.
-func TagNotIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotIn(FieldTag, vs...))
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldGTE(FieldName, v))
 }
 
-// TagGT applies the GT predicate on the "tag" field.
-func TagGT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGT(FieldTag, v))
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldLT(FieldName, v))
 }
 
-// TagGTE applies the GTE predicate on the "tag" field.
-func TagGTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGTE(FieldTag, v))
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldLTE(FieldName, v))
 }
 
-// TagLT applies the LT predicate on the "tag" field.
-func TagLT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLT(FieldTag, v))
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldContains(FieldName, v))
 }
 
-// TagLTE applies the LTE predicate on the "tag" field.
-func TagLTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLTE(FieldTag, v))
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldHasPrefix(FieldName, v))
 }
 
-// TagContains applies the Contains predicate on the "tag" field.
-func TagContains(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContains(FieldTag, v))
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldHasSuffix(FieldName, v))
 }
 
-// TagHasPrefix applies the HasPrefix predicate on the "tag" field.
-func TagHasPrefix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasPrefix(FieldTag, v))
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEqualFold(FieldName, v))
 }
 
-// TagHasSuffix applies the HasSuffix predicate on the "tag" field.
-func TagHasSuffix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasSuffix(FieldTag, v))
-}
-
-// TagEqualFold applies the EqualFold predicate on the "tag" field.
-func TagEqualFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEqualFold(FieldTag, v))
-}
-
-// TagContainsFold applies the ContainsFold predicate on the "tag" field.
-func TagContainsFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContainsFold(FieldTag, v))
-}
-
-// TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldType, v))
-}
-
-// TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNEQ(FieldType, v))
-}
-
-// TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIn(FieldType, vs...))
-}
-
-// TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotIn(FieldType, vs...))
-}
-
-// TypeGT applies the GT predicate on the "type" field.
-func TypeGT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGT(FieldType, v))
-}
-
-// TypeGTE applies the GTE predicate on the "type" field.
-func TypeGTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGTE(FieldType, v))
-}
-
-// TypeLT applies the LT predicate on the "type" field.
-func TypeLT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLT(FieldType, v))
-}
-
-// TypeLTE applies the LTE predicate on the "type" field.
-func TypeLTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLTE(FieldType, v))
-}
-
-// TypeContains applies the Contains predicate on the "type" field.
-func TypeContains(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContains(FieldType, v))
-}
-
-// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
-func TypeHasPrefix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasPrefix(FieldType, v))
-}
-
-// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
-func TypeHasSuffix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasSuffix(FieldType, v))
-}
-
-// TypeEqualFold applies the EqualFold predicate on the "type" field.
-func TypeEqualFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEqualFold(FieldType, v))
-}
-
-// TypeContainsFold applies the ContainsFold predicate on the "type" field.
-func TypeContainsFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContainsFold(FieldType, v))
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldContainsFold(FieldName, v))
 }
 
 // PathEQ applies the EQ predicate on the "path" field.
-func PathEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldPath, v))
+func PathEQ(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldPath, v))
 }
 
 // PathNEQ applies the NEQ predicate on the "path" field.
-func PathNEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNEQ(FieldPath, v))
+func PathNEQ(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNEQ(FieldPath, v))
 }
 
 // PathIn applies the In predicate on the "path" field.
-func PathIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIn(FieldPath, vs...))
+func PathIn(vs ...string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldIn(FieldPath, vs...))
 }
 
 // PathNotIn applies the NotIn predicate on the "path" field.
-func PathNotIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotIn(FieldPath, vs...))
+func PathNotIn(vs ...string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNotIn(FieldPath, vs...))
 }
 
 // PathGT applies the GT predicate on the "path" field.
-func PathGT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGT(FieldPath, v))
+func PathGT(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldGT(FieldPath, v))
 }
 
 // PathGTE applies the GTE predicate on the "path" field.
-func PathGTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGTE(FieldPath, v))
+func PathGTE(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldGTE(FieldPath, v))
 }
 
 // PathLT applies the LT predicate on the "path" field.
-func PathLT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLT(FieldPath, v))
+func PathLT(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldLT(FieldPath, v))
 }
 
 // PathLTE applies the LTE predicate on the "path" field.
-func PathLTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLTE(FieldPath, v))
+func PathLTE(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldLTE(FieldPath, v))
 }
 
 // PathContains applies the Contains predicate on the "path" field.
-func PathContains(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContains(FieldPath, v))
+func PathContains(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldContains(FieldPath, v))
 }
 
 // PathHasPrefix applies the HasPrefix predicate on the "path" field.
-func PathHasPrefix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasPrefix(FieldPath, v))
+func PathHasPrefix(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldHasPrefix(FieldPath, v))
 }
 
 // PathHasSuffix applies the HasSuffix predicate on the "path" field.
-func PathHasSuffix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasSuffix(FieldPath, v))
+func PathHasSuffix(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldHasSuffix(FieldPath, v))
 }
 
 // PathEqualFold applies the EqualFold predicate on the "path" field.
-func PathEqualFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEqualFold(FieldPath, v))
+func PathEqualFold(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEqualFold(FieldPath, v))
 }
 
 // PathContainsFold applies the ContainsFold predicate on the "path" field.
-func PathContainsFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContainsFold(FieldPath, v))
+func PathContainsFold(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldContainsFold(FieldPath, v))
 }
 
-// FormatEQ applies the EQ predicate on the "format" field.
-func FormatEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldFormat, v))
+// RemoteEQ applies the EQ predicate on the "remote" field.
+func RemoteEQ(v bool) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldRemote, v))
 }
 
-// FormatNEQ applies the NEQ predicate on the "format" field.
-func FormatNEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNEQ(FieldFormat, v))
+// RemoteNEQ applies the NEQ predicate on the "remote" field.
+func RemoteNEQ(v bool) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNEQ(FieldRemote, v))
 }
 
-// FormatIn applies the In predicate on the "format" field.
-func FormatIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIn(FieldFormat, vs...))
+// BinaryEQ applies the EQ predicate on the "binary" field.
+func BinaryEQ(v bool) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldBinary, v))
 }
 
-// FormatNotIn applies the NotIn predicate on the "format" field.
-func FormatNotIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotIn(FieldFormat, vs...))
-}
-
-// FormatGT applies the GT predicate on the "format" field.
-func FormatGT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGT(FieldFormat, v))
-}
-
-// FormatGTE applies the GTE predicate on the "format" field.
-func FormatGTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGTE(FieldFormat, v))
-}
-
-// FormatLT applies the LT predicate on the "format" field.
-func FormatLT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLT(FieldFormat, v))
-}
-
-// FormatLTE applies the LTE predicate on the "format" field.
-func FormatLTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLTE(FieldFormat, v))
-}
-
-// FormatContains applies the Contains predicate on the "format" field.
-func FormatContains(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContains(FieldFormat, v))
-}
-
-// FormatHasPrefix applies the HasPrefix predicate on the "format" field.
-func FormatHasPrefix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasPrefix(FieldFormat, v))
-}
-
-// FormatHasSuffix applies the HasSuffix predicate on the "format" field.
-func FormatHasSuffix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasSuffix(FieldFormat, v))
-}
-
-// FormatEqualFold applies the EqualFold predicate on the "format" field.
-func FormatEqualFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEqualFold(FieldFormat, v))
-}
-
-// FormatContainsFold applies the ContainsFold predicate on the "format" field.
-func FormatContainsFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContainsFold(FieldFormat, v))
-}
-
-// LabelEQ applies the EQ predicate on the "label" field.
-func LabelEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldLabel, v))
-}
-
-// LabelNEQ applies the NEQ predicate on the "label" field.
-func LabelNEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNEQ(FieldLabel, v))
-}
-
-// LabelIn applies the In predicate on the "label" field.
-func LabelIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIn(FieldLabel, vs...))
-}
-
-// LabelNotIn applies the NotIn predicate on the "label" field.
-func LabelNotIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotIn(FieldLabel, vs...))
-}
-
-// LabelGT applies the GT predicate on the "label" field.
-func LabelGT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGT(FieldLabel, v))
-}
-
-// LabelGTE applies the GTE predicate on the "label" field.
-func LabelGTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGTE(FieldLabel, v))
-}
-
-// LabelLT applies the LT predicate on the "label" field.
-func LabelLT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLT(FieldLabel, v))
-}
-
-// LabelLTE applies the LTE predicate on the "label" field.
-func LabelLTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLTE(FieldLabel, v))
-}
-
-// LabelContains applies the Contains predicate on the "label" field.
-func LabelContains(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContains(FieldLabel, v))
-}
-
-// LabelHasPrefix applies the HasPrefix predicate on the "label" field.
-func LabelHasPrefix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasPrefix(FieldLabel, v))
-}
-
-// LabelHasSuffix applies the HasSuffix predicate on the "label" field.
-func LabelHasSuffix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasSuffix(FieldLabel, v))
-}
-
-// LabelEqualFold applies the EqualFold predicate on the "label" field.
-func LabelEqualFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEqualFold(FieldLabel, v))
-}
-
-// LabelContainsFold applies the ContainsFold predicate on the "label" field.
-func LabelContainsFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContainsFold(FieldLabel, v))
+// BinaryNEQ applies the NEQ predicate on the "binary" field.
+func BinaryNEQ(v bool) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNEQ(FieldBinary, v))
 }
 
 // DownloadDetourEQ applies the EQ predicate on the "download_detour" field.
-func DownloadDetourEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldDownloadDetour, v))
+func DownloadDetourEQ(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldDownloadDetour, v))
 }
 
 // DownloadDetourNEQ applies the NEQ predicate on the "download_detour" field.
-func DownloadDetourNEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNEQ(FieldDownloadDetour, v))
+func DownloadDetourNEQ(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNEQ(FieldDownloadDetour, v))
 }
 
 // DownloadDetourIn applies the In predicate on the "download_detour" field.
-func DownloadDetourIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIn(FieldDownloadDetour, vs...))
+func DownloadDetourIn(vs ...string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldIn(FieldDownloadDetour, vs...))
 }
 
 // DownloadDetourNotIn applies the NotIn predicate on the "download_detour" field.
-func DownloadDetourNotIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotIn(FieldDownloadDetour, vs...))
+func DownloadDetourNotIn(vs ...string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNotIn(FieldDownloadDetour, vs...))
 }
 
 // DownloadDetourGT applies the GT predicate on the "download_detour" field.
-func DownloadDetourGT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGT(FieldDownloadDetour, v))
+func DownloadDetourGT(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldGT(FieldDownloadDetour, v))
 }
 
 // DownloadDetourGTE applies the GTE predicate on the "download_detour" field.
-func DownloadDetourGTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGTE(FieldDownloadDetour, v))
+func DownloadDetourGTE(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldGTE(FieldDownloadDetour, v))
 }
 
 // DownloadDetourLT applies the LT predicate on the "download_detour" field.
-func DownloadDetourLT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLT(FieldDownloadDetour, v))
+func DownloadDetourLT(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldLT(FieldDownloadDetour, v))
 }
 
 // DownloadDetourLTE applies the LTE predicate on the "download_detour" field.
-func DownloadDetourLTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLTE(FieldDownloadDetour, v))
+func DownloadDetourLTE(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldLTE(FieldDownloadDetour, v))
 }
 
 // DownloadDetourContains applies the Contains predicate on the "download_detour" field.
-func DownloadDetourContains(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContains(FieldDownloadDetour, v))
+func DownloadDetourContains(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldContains(FieldDownloadDetour, v))
 }
 
 // DownloadDetourHasPrefix applies the HasPrefix predicate on the "download_detour" field.
-func DownloadDetourHasPrefix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasPrefix(FieldDownloadDetour, v))
+func DownloadDetourHasPrefix(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldHasPrefix(FieldDownloadDetour, v))
 }
 
 // DownloadDetourHasSuffix applies the HasSuffix predicate on the "download_detour" field.
-func DownloadDetourHasSuffix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasSuffix(FieldDownloadDetour, v))
+func DownloadDetourHasSuffix(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldHasSuffix(FieldDownloadDetour, v))
 }
 
 // DownloadDetourIsNil applies the IsNil predicate on the "download_detour" field.
-func DownloadDetourIsNil() predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIsNull(FieldDownloadDetour))
+func DownloadDetourIsNil() predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldIsNull(FieldDownloadDetour))
 }
 
 // DownloadDetourNotNil applies the NotNil predicate on the "download_detour" field.
-func DownloadDetourNotNil() predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotNull(FieldDownloadDetour))
+func DownloadDetourNotNil() predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNotNull(FieldDownloadDetour))
 }
 
 // DownloadDetourEqualFold applies the EqualFold predicate on the "download_detour" field.
-func DownloadDetourEqualFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEqualFold(FieldDownloadDetour, v))
+func DownloadDetourEqualFold(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEqualFold(FieldDownloadDetour, v))
 }
 
 // DownloadDetourContainsFold applies the ContainsFold predicate on the "download_detour" field.
-func DownloadDetourContainsFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContainsFold(FieldDownloadDetour, v))
+func DownloadDetourContainsFold(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldContainsFold(FieldDownloadDetour, v))
 }
 
 // UpdateIntervalEQ applies the EQ predicate on the "update_interval" field.
-func UpdateIntervalEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldUpdateInterval, v))
+func UpdateIntervalEQ(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEQ(FieldUpdateInterval, v))
 }
 
 // UpdateIntervalNEQ applies the NEQ predicate on the "update_interval" field.
-func UpdateIntervalNEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNEQ(FieldUpdateInterval, v))
+func UpdateIntervalNEQ(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNEQ(FieldUpdateInterval, v))
 }
 
 // UpdateIntervalIn applies the In predicate on the "update_interval" field.
-func UpdateIntervalIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIn(FieldUpdateInterval, vs...))
+func UpdateIntervalIn(vs ...string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldIn(FieldUpdateInterval, vs...))
 }
 
 // UpdateIntervalNotIn applies the NotIn predicate on the "update_interval" field.
-func UpdateIntervalNotIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotIn(FieldUpdateInterval, vs...))
+func UpdateIntervalNotIn(vs ...string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNotIn(FieldUpdateInterval, vs...))
 }
 
 // UpdateIntervalGT applies the GT predicate on the "update_interval" field.
-func UpdateIntervalGT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGT(FieldUpdateInterval, v))
+func UpdateIntervalGT(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldGT(FieldUpdateInterval, v))
 }
 
 // UpdateIntervalGTE applies the GTE predicate on the "update_interval" field.
-func UpdateIntervalGTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGTE(FieldUpdateInterval, v))
+func UpdateIntervalGTE(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldGTE(FieldUpdateInterval, v))
 }
 
 // UpdateIntervalLT applies the LT predicate on the "update_interval" field.
-func UpdateIntervalLT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLT(FieldUpdateInterval, v))
+func UpdateIntervalLT(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldLT(FieldUpdateInterval, v))
 }
 
 // UpdateIntervalLTE applies the LTE predicate on the "update_interval" field.
-func UpdateIntervalLTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLTE(FieldUpdateInterval, v))
+func UpdateIntervalLTE(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldLTE(FieldUpdateInterval, v))
 }
 
 // UpdateIntervalContains applies the Contains predicate on the "update_interval" field.
-func UpdateIntervalContains(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContains(FieldUpdateInterval, v))
+func UpdateIntervalContains(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldContains(FieldUpdateInterval, v))
 }
 
 // UpdateIntervalHasPrefix applies the HasPrefix predicate on the "update_interval" field.
-func UpdateIntervalHasPrefix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasPrefix(FieldUpdateInterval, v))
+func UpdateIntervalHasPrefix(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldHasPrefix(FieldUpdateInterval, v))
 }
 
 // UpdateIntervalHasSuffix applies the HasSuffix predicate on the "update_interval" field.
-func UpdateIntervalHasSuffix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasSuffix(FieldUpdateInterval, v))
+func UpdateIntervalHasSuffix(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldHasSuffix(FieldUpdateInterval, v))
 }
 
 // UpdateIntervalIsNil applies the IsNil predicate on the "update_interval" field.
-func UpdateIntervalIsNil() predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIsNull(FieldUpdateInterval))
+func UpdateIntervalIsNil() predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldIsNull(FieldUpdateInterval))
 }
 
 // UpdateIntervalNotNil applies the NotNil predicate on the "update_interval" field.
-func UpdateIntervalNotNil() predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotNull(FieldUpdateInterval))
+func UpdateIntervalNotNil() predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNotNull(FieldUpdateInterval))
 }
 
 // UpdateIntervalEqualFold applies the EqualFold predicate on the "update_interval" field.
-func UpdateIntervalEqualFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEqualFold(FieldUpdateInterval, v))
+func UpdateIntervalEqualFold(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldEqualFold(FieldUpdateInterval, v))
 }
 
 // UpdateIntervalContainsFold applies the ContainsFold predicate on the "update_interval" field.
-func UpdateIntervalContainsFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContainsFold(FieldUpdateInterval, v))
+func UpdateIntervalContainsFold(v string) predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldContainsFold(FieldUpdateInterval, v))
 }
 
-// NameServerEQ applies the EQ predicate on the "name_server" field.
-func NameServerEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldNameServer, v))
+// TemplatesIsNil applies the IsNil predicate on the "templates" field.
+func TemplatesIsNil() predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldIsNull(FieldTemplates))
 }
 
-// NameServerNEQ applies the NEQ predicate on the "name_server" field.
-func NameServerNEQ(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNEQ(FieldNameServer, v))
-}
-
-// NameServerIn applies the In predicate on the "name_server" field.
-func NameServerIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIn(FieldNameServer, vs...))
-}
-
-// NameServerNotIn applies the NotIn predicate on the "name_server" field.
-func NameServerNotIn(vs ...string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotIn(FieldNameServer, vs...))
-}
-
-// NameServerGT applies the GT predicate on the "name_server" field.
-func NameServerGT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGT(FieldNameServer, v))
-}
-
-// NameServerGTE applies the GTE predicate on the "name_server" field.
-func NameServerGTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldGTE(FieldNameServer, v))
-}
-
-// NameServerLT applies the LT predicate on the "name_server" field.
-func NameServerLT(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLT(FieldNameServer, v))
-}
-
-// NameServerLTE applies the LTE predicate on the "name_server" field.
-func NameServerLTE(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldLTE(FieldNameServer, v))
-}
-
-// NameServerContains applies the Contains predicate on the "name_server" field.
-func NameServerContains(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContains(FieldNameServer, v))
-}
-
-// NameServerHasPrefix applies the HasPrefix predicate on the "name_server" field.
-func NameServerHasPrefix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasPrefix(FieldNameServer, v))
-}
-
-// NameServerHasSuffix applies the HasSuffix predicate on the "name_server" field.
-func NameServerHasSuffix(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldHasSuffix(FieldNameServer, v))
-}
-
-// NameServerIsNil applies the IsNil predicate on the "name_server" field.
-func NameServerIsNil() predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldIsNull(FieldNameServer))
-}
-
-// NameServerNotNil applies the NotNil predicate on the "name_server" field.
-func NameServerNotNil() predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNotNull(FieldNameServer))
-}
-
-// NameServerEqualFold applies the EqualFold predicate on the "name_server" field.
-func NameServerEqualFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEqualFold(FieldNameServer, v))
-}
-
-// NameServerContainsFold applies the ContainsFold predicate on the "name_server" field.
-func NameServerContainsFold(v string) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldContainsFold(FieldNameServer, v))
-}
-
-// ChinaEQ applies the EQ predicate on the "china" field.
-func ChinaEQ(v bool) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldEQ(FieldChina, v))
-}
-
-// ChinaNEQ applies the NEQ predicate on the "china" field.
-func ChinaNEQ(v bool) predicate.RuleSet {
-	return predicate.RuleSet(sql.FieldNEQ(FieldChina, v))
+// TemplatesNotNil applies the NotNil predicate on the "templates" field.
+func TemplatesNotNil() predicate.Ruleset {
+	return predicate.Ruleset(sql.FieldNotNull(FieldTemplates))
 }
 
 // And groups predicates with the AND operator between them.
-func And(predicates ...predicate.RuleSet) predicate.RuleSet {
-	return predicate.RuleSet(sql.AndPredicates(predicates...))
+func And(predicates ...predicate.Ruleset) predicate.Ruleset {
+	return predicate.Ruleset(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
-func Or(predicates ...predicate.RuleSet) predicate.RuleSet {
-	return predicate.RuleSet(sql.OrPredicates(predicates...))
+func Or(predicates ...predicate.Ruleset) predicate.Ruleset {
+	return predicate.Ruleset(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
-func Not(p predicate.RuleSet) predicate.RuleSet {
-	return predicate.RuleSet(sql.NotPredicates(p))
+func Not(p predicate.Ruleset) predicate.Ruleset {
+	return predicate.Ruleset(sql.NotPredicates(p))
 }
