@@ -2,7 +2,7 @@ import axios from "axios";
 
 export async function FetchYacd(token: string) {
     try {
-    const res = await axios.get("http://192.168.10.6:9090/api/configuration/yacd", {
+    const res = await axios.get("/api/configuration/yacd", {
       headers: {
         Authorization: token,
       },
@@ -17,7 +17,7 @@ export async function FetchYacd(token: string) {
 }
 export async function FetchConfiguration(token: string) {
   try {
-    const res = await axios.get("http://192.168.10.6:9090/api/configuration/fetch", {
+    const res = await axios.get("/api/configuration/fetch", {
       headers: { Authorization: token },
     });
     return res.status === 207 && isConfiguration(res.data)
@@ -31,7 +31,7 @@ export async function FetchConfiguration(token: string) {
 
 export async function FetchDefaultTemplate(token: string) {
   try {
-    const res = await axios.get("http://192.168.10.6:9090/api/configuration/default/template", {
+    const res = await axios.get("/api/configuration/default/template", {
       headers: { Authorization: token },
     });
     return res.status === 200 ? res.data.message : false;

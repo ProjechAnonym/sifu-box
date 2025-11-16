@@ -3,7 +3,7 @@ export async function DeleteRuleset(token: string, value: Array<string>) {
   const data = new FormData();
   value.forEach((item) => data.append("name", item));
   try {
-    const res = await axios.delete("http://192.168.10.6:9090/api/configuration/delete/ruleset",
+    const res = await axios.delete("/api/configuration/delete/ruleset",
         { data: data, headers: { Authorization: token } }
     );
     return res.status === 207
@@ -20,7 +20,7 @@ export async function AddRulesetFiles(token: string, files: FileList) {
     files.item(i) && formData.append("file", files.item(i)!, files.item(i)!.name);
   }
   try {
-    const res = await axios.post("http://192.168.10.6:9090/api/configuration/add/ruleset/local",
+    const res = await axios.post("/api/configuration/add/ruleset/local",
         formData,
         { headers: { Authorization: token } }
     );
@@ -35,7 +35,7 @@ export async function AddRulesetFiles(token: string, files: FileList) {
 
 export async function AddRulesetMsg(token: string, rulesets: Array<{name: string, path: string, remote: boolean, binary: boolean, download_detour: string, update_interval: string}>) {
   try {
-    const res = await axios.post("http://192.168.10.6:9090/api/configuration/add/ruleset/remote",
+    const res = await axios.post("/api/configuration/add/ruleset/remote",
         rulesets,
         { headers: { Authorization: token } }
     );
@@ -57,7 +57,7 @@ export async function EditRuleset(token: string, ruleset: {name: string, path: s
   ruleset.download_detour && data.append("download_detour", ruleset.download_detour);
   ruleset.update_interval && data.append("update_interval", ruleset.update_interval);
   try {
-    const res = await axios.patch("http://192.168.10.6:9090/api/configuration/edit/ruleset",
+    const res = await axios.patch("/api/configuration/edit/ruleset",
         data,
         { headers: { Authorization: token } }
     );

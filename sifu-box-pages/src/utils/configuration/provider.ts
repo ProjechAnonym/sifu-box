@@ -3,7 +3,7 @@ export async function DeleteProvider(token: string, value: Array<string>) {
   const data = new FormData();
   value.forEach((item) => data.append("name", item));
   try {
-    const res = await axios.delete("http://192.168.10.6:9090/api/configuration/delete/provider",
+    const res = await axios.delete("/api/configuration/delete/provider",
         { data: data, headers: { Authorization: token } }
     );
     return res.status === 207
@@ -20,7 +20,7 @@ export async function AddProviderFiles(token: string, files: FileList) {
     files.item(i) && formData.append("file", files.item(i)!, files.item(i)!.name);
   }
   try {
-    const res = await axios.post("http://192.168.10.6:9090/api/configuration/add/provider/local",
+    const res = await axios.post("/api/configuration/add/provider/local",
         formData,
         { headers: { Authorization: token } }
     );
@@ -35,7 +35,7 @@ export async function AddProviderFiles(token: string, files: FileList) {
 
 export async function AddProviderMsg(token: string, providers: Array<{name: string, path: string, remote: boolean}>) {
   try {
-    const res = await axios.post("http://192.168.10.6:9090/api/configuration/add/provider/remote",
+    const res = await axios.post("/api/configuration/add/provider/remote",
         providers,
         { headers: { Authorization: token } }
     );
@@ -54,7 +54,7 @@ export async function EditProvider(token: string, provider: {name: string, path:
   data.append("path", provider.path);
   data.append("remote", provider.remote.toString());
   try {
-    const res = await axios.patch("http://192.168.10.6:9090/api/configuration/edit/provider",
+    const res = await axios.patch("/api/configuration/edit/provider",
         data,
         { headers: { Authorization: token } }
     );

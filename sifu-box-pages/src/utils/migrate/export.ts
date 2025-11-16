@@ -2,7 +2,7 @@ import axios from "axios";
 import { saveAs } from "file-saver";
 export async function Export(token: string) {
   try {
-    const res = await axios.get("http://192.168.10.6:9090/api/migrate/export", {
+    const res = await axios.get("/api/migrate/export", {
       headers: {
         Authorization: token,
       },

@@ -4,7 +4,7 @@ export async function DeleteTemplate(token: string, value: Array<string>) {
   const data = new FormData();
   value.forEach((item) => data.append("name", item));
   try {
-    const res = await axios.delete("http://192.168.10.6:9090/api/configuration/delete/template",
+    const res = await axios.delete("/api/configuration/delete/template",
         { data: data, headers: { Authorization: token } }
     );
     return res.status === 207
@@ -17,7 +17,7 @@ export async function DeleteTemplate(token: string, value: Array<string>) {
 }
 export async function AddTemplateMsg(token: string, template: {name: string, [key: string]: any}) {
   try {
-    const res = await axios.post("http://192.168.10.6:9090/api/configuration/add/template",
+    const res = await axios.post("/api/configuration/add/template",
         template,
         { headers: { Authorization: token } }
     );
@@ -29,7 +29,7 @@ export async function AddTemplateMsg(token: string, template: {name: string, [ke
 }
 export async function EditTemplateMsg(token: string, template: {name: string, [key: string]: any}) {
   try {
-    const res = await axios.patch("http://192.168.10.6:9090/api/configuration/edit/template",
+    const res = await axios.patch("/api/configuration/edit/template",
         template,
         { headers: { Authorization: token } }
     );

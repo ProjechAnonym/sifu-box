@@ -4,7 +4,7 @@ export async function Import(token: string, file: File) {
   data.append("file", file);
 
   try {
-    const res = await axios.post("http://192.168.10.6:9090/api/migrate/import", data, {
+    const res = await axios.post("/api/migrate/import", data, {
       headers: { Authorization: token },
     });
     return res.status === 200 ? true : isImportRes(res.data) ? res.data : false;

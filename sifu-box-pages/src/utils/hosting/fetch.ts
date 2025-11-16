@@ -2,7 +2,7 @@ import axios from "axios";
 import { FileData } from "@/types/hosting/file";
 export async function FetchFile(token: string) {
   try {
-    const res = await axios.get("http://192.168.10.6:9090/api/files/list", {
+    const res = await axios.get("/api/files/list", {
       headers: {
         Authorization: token,
       },
