@@ -227,7 +227,7 @@ template:
 
 ## 结尾
 
-[API 文档](https://github.com/ProjechAnonym/sifu-box/blob/test/API%E6%96%87%E6%A1%A3.md)我没细写, 就是直接导出来的, 开发过程中可能会有更改, 如果想编写新的 ui 建议自行测试返回结果
+[API 文档](https://github.com/ProjechAnonym/sifu-box/blob/main/API%E6%96%87%E6%A1%A3.md)我没细写, 就是直接导出来的, 开发过程中可能会有更改, 如果想编写新的 ui 建议自行测试返回结果
 
 再来点规则集的下载链接
 
