@@ -17,7 +17,7 @@ apt-get update
 apt-get install -y tar sudo vim acl
 mkdir /opt/sifu-box
 # 确保存在opt/sifubox文件夹,压缩包上传到root文件夹下,如果不是root用户可以改成绝对路径
-tar -zxvf sifu-box-*.tar.gz -C /opt/sifubox --strip-components=1
+tar -zxvf sifu-box-*.tar.gz -C /opt/sifu-box --strip-components=1
 
 # 删除压缩包
 rm -rf sifu-box-*.tar.gz
