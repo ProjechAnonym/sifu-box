@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"sifu-box/application"
 	"sifu-box/cmd"
@@ -100,6 +101,16 @@ func main() {
 	}
 
 	application.Process(work_dir, ent_client, task_logger)
+	name, err := ent_client.Template.Query().First(context.Background())
+	if err != nil {
+		task_logger.Error(fmt.Sprintf("获取模板失败: [%s]", err.Error()))
+	} else {
+		if err := utils.SetValue(bunt_client, initial.ACTIVE_TEMPLATE, name.Name, task_logger); err != nil {
+			panic(fmt.Sprintf("设置激活模板失败: [%s]", err.Error()))
+		}
+		signal_chan <- application.Signal{Cron: false, Operation: application.BOOT_SERVICE}
+	}
+
 	gin.SetMode(gin.ReleaseMode)
 	server := gin.Default()
 	server.Use(middleware.Logger(web_logger), middleware.Recovery(true, web_logger), cors.New(middleware.Cors()))
