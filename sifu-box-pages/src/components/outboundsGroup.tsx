@@ -8,9 +8,9 @@ import toast from "react-hot-toast";
 import { cloneDeep } from "lodash";
 import { SharedSelection } from "@heroui/system";
 
-export default function OutboundsGroup(props: {theme: string, providers: string[], setOutboundsGroup: (outboundsGroup: {tag: string, type:string, providers: string[], tag_groups: string[]}[]) => void}) {
-    const { theme, providers, setOutboundsGroup } = props;
-    const [outbounds_groups, setOutboundsGroups] = useState<Array<{type: string, tag: string, providers: SharedSelection, tag_groups: SharedSelection}>>([{type: "direct", tag: "direct", providers: new Set<string>(), tag_groups: new Set<string>()}]);
+export default function OutboundsGroup(props: {theme: string, providers: string[], outbounds_group: {tag: string, type:string, providers: string[], tag_groups: string[]}[],setOutboundsGroup: (outboundsGroup: {tag: string, type:string, providers: string[], tag_groups: string[]}[]) => void}) {
+    const { theme, providers, outbounds_group, setOutboundsGroup } = props;
+    const [outbounds_groups, setOutboundsGroups] = useState<Array<{type: string, tag: string, providers: SharedSelection, tag_groups: SharedSelection}>>(outbounds_group ? outbounds_group.map((group: {tag: string, type:string, providers: string[], tag_groups: string[]}) => {return {tag: group.tag, type: group.type, providers: new Set(group.providers), tag_groups: new Set(group.tag_groups)}}) : [{type: "direct", tag: "direct", providers: new Set<string>(), tag_groups: new Set<string>()}]);
     useEffect(()=>{
         setOutboundsGroup(outbounds_groups.map((group)=>{
             return {

@@ -30,6 +30,9 @@ export default function AddTemplate(props: {
   const [outbounds_groups, setOutboundsGroups] = useState<Array<{type: string, tag: string, providers: string[], tag_groups: string[]}>>([{type: "direct", tag: "direct", providers: [], tag_groups: []}]);
   useMemo(() => {
     template && setContent(JSON.stringify(template, null, 4));
+    setSelectedProviders(template.providers ?  template.providers : [])
+    setSelectedRulesets(template.route.rule_set ? template.route.rule_set.map((rule_set: Record<string, any>) => rule_set.tag) : [])
+    setOutboundsGroups(template.outbounds_group ? template.outbounds_group : [{type: "direct", tag: "direct", providers: [], tag_groups: []}])
   }, [template]);
   const AddItem = (content: string, name: string) => {
     try {
@@ -146,7 +149,7 @@ export default function AddTemplate(props: {
                   </CheckboxGroup>
                 </ScrollShadow>)}
               {current_modal === "template" && (<Textarea label="模板内容" value={content} onValueChange={setContent}/>)}
-              {current_modal === "outbounds_group" && <OutboundsGroup theme={theme} providers={selected_providers} setOutboundsGroup={setOutboundsGroups}/>}
+              {current_modal === "outbounds_group" && <OutboundsGroup theme={theme} providers={selected_providers} outbounds_group={outbounds_groups} setOutboundsGroup={setOutboundsGroups}/>}
             </ModalBody>
             <ModalFooter>
               <Button size="sm" color="danger" variant="shadow" onPress={onClose}>
