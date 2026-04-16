@@ -7,7 +7,7 @@ import (
 
 func vlessFromYaml(content map[string]any) map[string]any {
 	outbound := make(map[string]any)
-	transport := make(map[string]any)
+	transport := Transport{}
 	for k, v := range content {
 		switch k {
 		case "port":
@@ -19,16 +19,19 @@ func vlessFromYaml(content map[string]any) map[string]any {
 		case "name":
 			outbound["tag"] = v
 		case "network":
-			transport["type"] = v
+			if network, ok := v.(string); ok {
+				transport.Type = network
+			}
+
 		case "ws-opts":
 			if opts, ok := v.(map[string]any); ok {
 				if headers, ok := opts["headers"].(map[string]any); ok {
 					if host, ok := headers["Host"].(string); ok {
-						transport["headers"] = map[string]any{"host": host}
+						transport.Headers = map[string]string{"host": host}
 					}
 				}
 				if path, ok := opts["path"].(string); ok {
-					transport["path"] = path
+					transport.Path = path
 				}
 			}
 		case "client-fingerprint":
@@ -36,6 +39,8 @@ func vlessFromYaml(content map[string]any) map[string]any {
 		case "tls":
 		case "skip-cert-verify":
 		case "servername":
+		case "udp":
+			continue
 		default:
 			outbound[k] = v
 		}
@@ -48,7 +53,7 @@ func vlessFromYaml(content map[string]any) map[string]any {
 func vlessFromBase64(content *url.URL) map[string]any {
 
 	outbound := make(map[string]any)
-	transport := make(map[string]any)
+	transport := Transport{}
 	outbound["type"] = "vless"
 	outbound["server"] = content.Hostname()
 	port, err := strconv.Atoi(content.Port())
@@ -59,14 +64,13 @@ func vlessFromBase64(content *url.URL) map[string]any {
 	outbound["server_port"] = port
 	outbound["tag"] = content.Fragment
 	outbound["uuid"] = content.User.String()
-	transport["type"] = content.Query().Get("type")
-	transport["host"] = content.Query().Get("host")
-	transport["path"] = content.Query().Get("path")
-	if transport["type"] == "ws" {
-		transport["headers"] = map[string]any{"host": transport["host"]}
-		delete(transport, "host")
+	transport.Type = content.Query().Get("type")
+	host := content.Query().Get("host")
+	transport.Path = content.Query().Get("path")
+	if transport.Type == "ws" {
+		transport.Headers = map[string]string{"host": host}
 	}
-	if transport["type"] != "ws" && transport["type"] != "http" && transport["type"] != "quic" && transport["type"] != "grpc" && transport["type"] != "httpupgrade" {
+	if transport.Type != "ws" && transport.Type != "http" && transport.Type != "quic" && transport.Type != "grpc" && transport.Type != "httpupgrade" {
 		return outbound
 	}
 	outbound["transport"] = transport

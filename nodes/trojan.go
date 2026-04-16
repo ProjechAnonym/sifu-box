@@ -7,8 +7,8 @@ import (
 
 func trojanFromYaml(content map[string]any) map[string]any {
 	outbound := make(map[string]any)
-	transport := make(map[string]any)
-	tls := make(map[string]any)
+	transport := Transport{}
+	tls := TLS{}
 	for k, v := range content {
 		switch k {
 		case "port":
@@ -22,27 +22,33 @@ func trojanFromYaml(content map[string]any) map[string]any {
 		case "name":
 			outbound["tag"] = v
 		case "skip-cert-verify":
-			tls["insecure"] = v
-			tls["enabled"] = true
+			tls.Enabled = true
+			tls.Insecure = true
 		case "sni":
-			tls["server_name"] = v
-			tls["enabled"] = true
+			tls.Enabled = true
+			if server_name, ok := v.(string); ok {
+				tls.ServerName = server_name
+			}
 		case "network":
-			transport["type"] = v
+			if network, ok := v.(string); ok {
+				transport.Type = network
+			}
 		case "ws-opts":
 			if opts, ok := v.(map[string]any); ok {
 				if headers, ok := opts["headers"].(map[string]any); ok {
 					if host, ok := headers["Host"].(string); ok {
-						transport["headers"] = map[string]any{"host": host}
+						transport.Headers = map[string]string{"host": host}
 					}
 				}
 				if path, ok := opts["path"].(string); ok {
-					transport["path"] = path
+					transport.Path = path
 				}
 			}
 		case "client-fingerprint":
 		case "servername":
 		case "tfo":
+		case "udp":
+			continue
 		default:
 			outbound[k] = v
 		}
@@ -53,14 +59,14 @@ func trojanFromYaml(content map[string]any) map[string]any {
 }
 func trojanFromBase64(content *url.URL) map[string]any {
 	outbound := make(map[string]any)
-	transport := make(map[string]any)
-	tls := make(map[string]any)
-	tls["enabled"] = true
-	tls["server_name"] = content.Query().Get("sni")
+	transport := Transport{}
+	tls := TLS{}
+	tls.Enabled = true
+	tls.ServerName = content.Query().Get("sni")
 	if content.Query().Get("allowInsecure") != "1" {
-		tls["insecure"] = false
+		tls.Insecure = false
 	} else {
-		tls["insecure"] = true
+		tls.Insecure = true
 	}
 	outbound["tag"] = content.Fragment
 	outbound["server"] = content.Hostname()
@@ -73,12 +79,11 @@ func trojanFromBase64(content *url.URL) map[string]any {
 	outbound["password"] = content.User.String()
 	outbound["type"] = "trojan"
 	if content.Query().Get("type") != "" {
-		transport["type"] = content.Query().Get("type")
-		transport["host"] = content.Query().Get("host")
-		transport["path"] = content.Query().Get("path")
-		if transport["type"] == "ws" {
-			transport["headers"] = map[string]any{"host": transport["host"]}
-			delete(transport, "host")
+		transport.Type = content.Query().Get("type")
+		host := content.Query().Get("host")
+		transport.Path = content.Query().Get("path")
+		if transport.Type == "ws" {
+			transport.Headers = map[string]string{"host": host}
 		}
 		outbound["transport"] = transport
 	}
