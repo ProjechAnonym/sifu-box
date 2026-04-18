@@ -36,6 +36,8 @@ func tuicFromYaml(content map[string]any) map[string]any {
 			if alpn, ok := v.([]string); ok {
 				tls.Alpn = alpn
 			}
+		case "version":
+			continue
 		case "udp":
 			continue
 		case "reduce-rtt":
