@@ -39,7 +39,7 @@ func vlessFromYaml(content map[string]any) map[string]any {
 		case "tls":
 		case "skip-cert-verify":
 		case "servername":
-		case "alterID":
+		case "alterId":
 			continue
 		case "udp":
 			continue
