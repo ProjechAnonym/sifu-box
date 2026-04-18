@@ -45,6 +45,10 @@ func vmessFromYaml(content map[string]any) map[string]any {
 		case "tls":
 		case "skip-cert-verify":
 		case "servername":
+		case "ws-headers":
+			continue
+		case "ws-path":
+			continue
 		case "udp":
 			continue
 		default:
