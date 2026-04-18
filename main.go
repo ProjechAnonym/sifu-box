@@ -46,6 +46,18 @@ func init() {
 	}
 	init_logger.Info("初始化成功")
 }
+
+// func main() {
+// 	init_logger := initial.GetLogger(`F:/1`, "init1", false)
+// 	defer init_logger.Sync()
+// 	http := http.Client{}
+// 	outbounds, err := nodes.FetchFromRemote("1", "https://u05zx8.lhkwergjhgewj.com:108/api/v1/client/subscribe?token=c96df96ac602bb4e0dfb75bd16072550", &http, init_logger)
+// 	data, _ := json.MarshalIndent(outbounds, "", "  ")
+// 	os.WriteFile("F:/1/bro.json", data, 755)
+
+// 	fmt.Println(err)
+// }
+
 func main() {
 	signal_chan := make(chan application.Signal, 5)
 	hook_chan := make(chan application.SignalHook, 5)

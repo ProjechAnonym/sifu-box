@@ -148,6 +148,10 @@ func generateFromYaml(content map[string]any, logger *zap.Logger) ([]map[string]
 			outbounds = append(outbounds, vmessFromYaml(proxy.(map[string]any)))
 		case "trojan":
 			outbounds = append(outbounds, trojanFromYaml(proxy.(map[string]any)))
+		case "tuic":
+			outbounds = append(outbounds, tuicFromYaml(proxy.(map[string]any)))
+		case "anytls":
+			outbounds = append(outbounds, anytlsFromYaml(proxy.(map[string]any)))
 		default:
 			logger.Error(fmt.Sprintf(`"%s"协议暂不支持`, protocol))
 			continue
@@ -185,6 +189,10 @@ func generateFromBase64(content []byte, logger *zap.Logger) ([]map[string]interf
 			outbounds = append(outbounds, trojanFromBase64(link))
 		case "vless":
 			outbounds = append(outbounds, vlessFromBase64(link))
+		case "tuic":
+			outbounds = append(outbounds, tuicFromBase64(link))
+		case "anytls":
+			outbounds = append(outbounds, anytlsFromBase64(link))
 		default:
 			if line != "" {
 				logger.Error(fmt.Sprintf(`"%s"协议暂不支持`, strings.Split(line, ":")[0]))
