@@ -8,7 +8,7 @@ import (
 
 func vmessFromYaml(content map[string]any) map[string]any {
 	outbound := make(map[string]any)
-	transport := make(map[string]any)
+	transport := Transport{}
 	for k, v := range content {
 		switch k {
 		case "port":
@@ -28,16 +28,16 @@ func vmessFromYaml(content map[string]any) map[string]any {
 			}
 			outbound["alter_id"] = v.(int)
 		case "network":
-			transport["type"] = v
+			transport.Type = v.(string)
 		case "ws-opts":
 			if opts, ok := v.(map[string]any); ok {
 				if headers, ok := opts["headers"].(map[string]any); ok {
 					if host, ok := headers["Host"].(string); ok {
-						transport["headers"] = map[string]any{"host": host}
+						transport.Headers = map[string]string{"host": host}
 					}
 				}
 				if path, ok := opts["path"].(string); ok {
-					transport["path"] = path
+					transport.Path = path
 				}
 			}
 		case "client-fingerprint":
@@ -50,6 +50,9 @@ func vmessFromYaml(content map[string]any) map[string]any {
 		default:
 			outbound[k] = v
 		}
+	}
+	if transport.Type != "ws" && transport.Type != "http" && transport.Type != "quic" && transport.Type != "grpc" && transport.Type != "httpupgrade" {
+		return outbound
 	}
 	outbound["transport"] = transport
 	return outbound

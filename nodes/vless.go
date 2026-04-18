@@ -45,7 +45,9 @@ func vlessFromYaml(content map[string]any) map[string]any {
 			outbound[k] = v
 		}
 	}
-
+	if transport.Type != "ws" && transport.Type != "http" && transport.Type != "quic" && transport.Type != "grpc" && transport.Type != "httpupgrade" {
+		return outbound
+	}
 	outbound["transport"] = transport
 	return outbound
 }

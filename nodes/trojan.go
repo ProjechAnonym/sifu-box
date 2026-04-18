@@ -54,7 +54,11 @@ func trojanFromYaml(content map[string]any) map[string]any {
 		}
 	}
 	outbound["tls"] = tls
+	if transport.Type != "ws" && transport.Type != "http" && transport.Type != "quic" && transport.Type != "grpc" && transport.Type != "httpupgrade" {
+		return outbound
+	}
 	outbound["transport"] = transport
+
 	return outbound
 }
 func trojanFromBase64(content *url.URL) map[string]any {
@@ -78,15 +82,18 @@ func trojanFromBase64(content *url.URL) map[string]any {
 	outbound["server_port"] = port
 	outbound["password"] = content.User.String()
 	outbound["type"] = "trojan"
-	if content.Query().Get("type") != "" {
-		transport.Type = content.Query().Get("type")
+	transport.Type = content.Query().Get("type")
+	if transport.Type == "ws" {
 		host := content.Query().Get("host")
 		transport.Path = content.Query().Get("path")
 		if transport.Type == "ws" {
 			transport.Headers = map[string]string{"host": host}
 		}
-		outbound["transport"] = transport
 	}
+	if transport.Type != "ws" && transport.Type != "http" && transport.Type != "quic" && transport.Type != "grpc" && transport.Type != "httpupgrade" {
+		return outbound
+	}
+	outbound["transport"] = transport
 	outbound["tls"] = tls
 	return outbound
 }
