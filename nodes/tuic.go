@@ -36,6 +36,12 @@ func tuicFromYaml(content map[string]any) map[string]any {
 			if alpn, ok := v.([]string); ok {
 				tls.Alpn = alpn
 			}
+		case "udp-relay-mode":
+			outbound["udp_relay_mode"] = v
+		case "congestion-control":
+			outbound["congestion_control"] = v
+		case "disable-sni":
+			continue
 		case "version":
 			continue
 		case "udp":
@@ -73,7 +79,7 @@ func tuicFromBase64(content *url.URL) map[string]any {
 	}
 	tls.ServerName = content.Query().Get("sni")
 	tls.Alpn = []string{content.Query().Get("alpn")}
-	outbound["congestion_control"] = "bbr"
+	outbound["congestion_control"] = content.Query().Get("congestion-control")
 	outbound["udp_relay_mode"] = content.Query().Get("udp_relay_mode")
 	outbound["tls"] = tls
 	return outbound
