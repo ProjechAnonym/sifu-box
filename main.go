@@ -50,8 +50,8 @@ func init() {
 // func main() {
 // 	init_logger := initial.GetLogger(`F:/1`, "init1", false)
 // 	defer init_logger.Sync()
-// 	http := http.Client{}
-// 	outbounds, err := nodes.FetchFromRemote("1", "https://u05zx8.lhkwergjhgewj.com:108/api/v1/client/subscribe?token=c96df96ac602bb4e0dfb75bd16072550", &http, init_logger)
+// 	hg := http.Client{}
+// 	outbounds, err := nodes.FetchFromRemote("1", "https://yfssce.net/s/994e2eea98b8a755974b81f22a66080b", &hg, init_logger)
 // 	data, _ := json.MarshalIndent(outbounds, "", "  ")
 // 	os.WriteFile("F:/1/bro.json", data, 755)
 

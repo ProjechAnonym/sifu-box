@@ -38,6 +38,10 @@ func vlessFromYaml(content map[string]any) map[string]any {
 		case "tfo":
 		case "tls":
 		case "skip-cert-verify":
+		case "ws-headers":
+			continue
+		case "ws-path":
+			continue
 		case "servername":
 			continue
 		case "reality-opts":
@@ -48,6 +52,10 @@ func vlessFromYaml(content map[string]any) map[string]any {
 			continue
 		case "udp":
 			continue
+		case "flow":
+			if flow, ok := v.(string); ok {
+				outbound["flow"] = flow
+			}
 		default:
 			outbound[k] = v
 		}

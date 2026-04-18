@@ -19,7 +19,7 @@ import (
 // client: HTTP客户端, 用于发送请求
 // logger: 日志记录器, 用于记录处理过程中的日志
 // 返回值: 解析后的出站节点配置列表和可能的错误信息
-func fetchFromRemote(name, url string, client *http.Client, logger *zap.Logger) ([]map[string]any, error) {
+func FetchFromRemote(name, url string, client *http.Client, logger *zap.Logger) ([]map[string]any, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		logger.Error(fmt.Sprintf(`"%s"出错, 创建请求失败: [%s]`, name, err.Error()))
@@ -152,6 +152,8 @@ func generateFromYaml(content map[string]any, logger *zap.Logger) ([]map[string]
 			outbounds = append(outbounds, tuicFromYaml(proxy.(map[string]any)))
 		case "anytls":
 			outbounds = append(outbounds, anytlsFromYaml(proxy.(map[string]any)))
+		case "hysteria2":
+			outbounds = append(outbounds, hysteria2FromYaml(proxy.(map[string]any)))
 		default:
 			logger.Error(fmt.Sprintf(`"%s"协议暂不支持`, protocol))
 			continue
@@ -193,6 +195,8 @@ func generateFromBase64(content []byte, logger *zap.Logger) ([]map[string]interf
 			outbounds = append(outbounds, tuicFromBase64(link))
 		case "anytls":
 			outbounds = append(outbounds, anytlsFromBase64(link))
+		case "hysteria2":
+			outbounds = append(outbounds, hysteria2FromBase64(link))
 		default:
 			if line != "" {
 				logger.Error(fmt.Sprintf(`"%s"协议暂不支持`, strings.Split(line, ":")[0]))
