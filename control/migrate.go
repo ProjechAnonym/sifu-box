@@ -143,7 +143,7 @@ func Export(ent_client *ent.Client, bunt_client *buntdb.DB, logger *zap.Logger) 
 // 返回值:
 //   - []gin.H: 每个元素表示一个导入项的结果, 包含状态和消息
 //   - error: 如果在解析配置时发生错误, 则返回错误信息
-func Import(content []byte, ent_client *ent.Client, logger *zap.Logger) ([]gin.H, error) {
+func Import(work_dir string, content []byte, ent_client *ent.Client, logger *zap.Logger) ([]gin.H, error) {
 	// 定义结构体用于解析配置文件内容, 包含 Providers、Rulesets 和 Templates 三部分
 	setting := struct {
 		Providers []struct {
@@ -206,7 +206,7 @@ func Import(content []byte, ent_client *ent.Client, logger *zap.Logger) ([]gin.H
 	// 导入 Templates 数据
 	for _, template := range setting.Templates {
 		template_instance := ent_client.Template.Create()
-		template.CreateFillFields(template_instance)
+		template.CreateFillFields(work_dir, template_instance)
 		if err := template_instance.
 			SetInbounds(template.Inbounds).
 			SetName(template.Name).

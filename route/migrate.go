@@ -14,7 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func SettingMigrate(api *gin.RouterGroup, user *model.User, ent_client *ent.Client, bunt_client *buntdb.DB, logger *zap.Logger) {
+func SettingMigrate(api *gin.RouterGroup, user *model.User, work_dir string, ent_client *ent.Client, bunt_client *buntdb.DB, logger *zap.Logger) {
 	migrate := api.Group("/migrate")
 	migrate.Use(middleware.JwtAuth(user.Key, logger))
 	migrate.GET("/export", middleware.AdminAuth(), func(c *gin.Context) {
@@ -44,7 +44,7 @@ func SettingMigrate(api *gin.RouterGroup, user *model.User, ent_client *ent.Clie
 			c.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("读取文件失败: [%s]", err.Error())})
 			return
 		}
-		res, err := control.Import(content, ent_client, logger)
+		res, err := control.Import(work_dir, content, ent_client, logger)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return

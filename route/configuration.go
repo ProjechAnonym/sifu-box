@@ -118,7 +118,7 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 			ctx.JSON(http.StatusBadRequest, gin.H{"message": "未标明云端或本地"})
 			return
 		}
-		res = append(res, control.AddRuleset(rulesets, ent_client, logger)...)
+		res = append(res, control.AddRuleset(rulesets, work_dir, ent_client, logger)...)
 		ctx.JSON(http.StatusMultiStatus, res)
 	})
 	configuration.PATCH("/edit/ruleset", middleware.AdminAuth(), func(ctx *gin.Context) {
@@ -129,7 +129,7 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 		remote := ctx.PostForm("remote") == "true"
 		binary := ctx.PostForm("binary") == "true"
 
-		if err := control.EditRuleset(name, path, update_interval, download_detour, remote, binary, ent_client, logger); err != nil {
+		if err := control.EditRuleset(name, path, update_interval, download_detour, work_dir, remote, binary, ent_client, logger); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
@@ -137,7 +137,7 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 	})
 	configuration.DELETE("/delete/ruleset", middleware.AdminAuth(), func(ctx *gin.Context) {
 		name := ctx.PostFormArray("name")
-		res := control.DeleteRuleset(name, ent_client, logger)
+		res := control.DeleteRuleset(name, work_dir, ent_client, logger)
 		ctx.JSON(http.StatusMultiStatus, res)
 	})
 	configuration.POST("/add/template", middleware.AdminAuth(), func(ctx *gin.Context) {
@@ -151,7 +151,7 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 			ctx.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf(`模板字段出错: [%s]`, err.Error())})
 			return
 		}
-		if err := control.AddTemplate(template, ent_client, logger); err != nil {
+		if err := control.AddTemplate(work_dir, template, ent_client, logger); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
@@ -168,7 +168,7 @@ func SettingConfiguration(api *gin.RouterGroup, user *model.User, bunt_client *b
 			ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
-		if err := control.EditTemplate(template, ent_client, logger); err != nil {
+		if err := control.EditTemplate(template, ent_client, work_dir, logger); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}

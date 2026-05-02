@@ -2,7 +2,9 @@ package model
 
 import (
 	"context"
+	"crypto/md5"
 	"fmt"
+	"path"
 	"sifu-box/ent"
 	"sifu-box/ent/provider"
 	"sifu-box/ent/ruleset"
@@ -45,7 +47,7 @@ func (t *Template) CheckField() error {
 	}
 	return nil
 }
-func (t *Template) CreateFillFields(template *ent.TemplateCreate) {
+func (t *Template) CreateFillFields(work_dir string, template *ent.TemplateCreate) {
 	if t.Log != nil {
 		template.SetLog(*t.Log)
 	}
@@ -59,10 +61,35 @@ func (t *Template) CreateFillFields(template *ent.TemplateCreate) {
 		template.SetDNS(*t.DNS)
 	}
 	if t.Route != nil {
+		if t.Route.Rule_sets != nil {
+			rulesets := []singbox.Rule_set{}
+			for _, v := range t.Route.Rule_sets {
+				ruleset := v
+				var file_name string
+				switch v.Format {
+				case "binary":
+					file_name = fmt.Sprintf(`%s.srs`, fmt.Sprintf("%x", md5.Sum([]byte(v.Tag))))
+				case "sourcce":
+					file_name = fmt.Sprintf(`%s.json`, fmt.Sprintf("%x", md5.Sum([]byte(v.Tag))))
+				}
+
+				if v.Type == "remote" {
+					ruleset.Download_detour = ""
+					ruleset.Update_interval = ""
+					ruleset.URL = ""
+					ruleset.Type = "local"
+					ruleset.Path = path.Join(work_dir, "temp", "rulesets", file_name)
+					rulesets = append(rulesets, ruleset)
+				} else {
+					rulesets = append(rulesets, ruleset)
+				}
+			}
+			t.Route.Rule_sets = rulesets
+		}
 		template.SetRoute(*t.Route)
 	}
 }
-func (t *Template) UpdateFillFields(template *ent.TemplateUpdate) {
+func (t *Template) UpdateFillFields(work_dir string, template *ent.TemplateUpdate) {
 	if t.Log != nil {
 		template.SetLog(*t.Log)
 	}
@@ -76,6 +103,31 @@ func (t *Template) UpdateFillFields(template *ent.TemplateUpdate) {
 		template.SetDNS(*t.DNS)
 	}
 	if t.Route != nil {
+		if t.Route.Rule_sets != nil {
+			rulesets := []singbox.Rule_set{}
+			for _, v := range t.Route.Rule_sets {
+				ruleset := v
+				var file_name string
+				switch v.Format {
+				case "binary":
+					file_name = fmt.Sprintf(`%s.srs`, fmt.Sprintf("%x", md5.Sum([]byte(v.Tag))))
+				case "sourcce":
+					file_name = fmt.Sprintf(`%s.json`, fmt.Sprintf("%x", md5.Sum([]byte(v.Tag))))
+				}
+
+				if v.Type == "remote" {
+					ruleset.Download_detour = ""
+					ruleset.Update_interval = ""
+					ruleset.URL = ""
+					ruleset.Type = "local"
+					ruleset.Path = path.Join(work_dir, "temp", "rulesets", file_name)
+					rulesets = append(rulesets, ruleset)
+				} else {
+					rulesets = append(rulesets, ruleset)
+				}
+			}
+			t.Route.Rule_sets = rulesets
+		}
 		template.SetRoute(*t.Route)
 	}
 }

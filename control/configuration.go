@@ -4,7 +4,10 @@ import (
 	"context"
 	"crypto/md5"
 	"fmt"
+	"io"
+	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"sifu-box/ent"
 	"sifu-box/ent/provider"
@@ -164,10 +167,38 @@ func AddProvider(providers []model.Provider, ent_client *ent.Client, logger *zap
 //
 // 返回值:
 //   - []gin.H: 操作结果切片, 每个元素包含状态和消息信息
-func AddRuleset(rulesets []model.Ruleset, ent_client *ent.Client, logger *zap.Logger) []gin.H {
+func AddRuleset(rulesets []model.Ruleset, work_dir string, ent_client *ent.Client, logger *zap.Logger) []gin.H {
 	res := []gin.H{}
 	// 遍历规则集列表, 逐个添加到数据库
 	for _, ruleset := range rulesets {
+		if ruleset.Remote {
+
+			// 保存下载的规则集文件
+			var name string
+			if ruleset.Binary {
+				name = fmt.Sprintf(`%s.srs`, fmt.Sprintf("%x", md5.Sum([]byte(ruleset.Name))))
+			} else {
+				name = fmt.Sprintf(`%s.json`, fmt.Sprintf("%x", md5.Sum([]byte(ruleset.Name))))
+			}
+			content, err := http.Get(ruleset.Path)
+			if err != nil {
+				logger.Error(fmt.Sprintf(`添加规则集"%s"失败: [%s]`, ruleset.Name, err.Error()))
+				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`添加规则集"%s"失败: [%s]`, ruleset.Name, err.Error())})
+				continue
+			}
+			defer content.Body.Close()
+			body, err := io.ReadAll(content.Body)
+			if err != nil {
+				logger.Error(fmt.Sprintf(`添加规则集"%s"失败: [%s]`, ruleset.Name, err.Error()))
+				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`添加规则集"%s"失败: [%s]`, ruleset.Name, err.Error())})
+				continue
+			}
+			if err := utils.WriteFile(path.Join(work_dir, "temp", "rulesets", name), body, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644); err != nil {
+				logger.Error(fmt.Sprintf(`添加规则集"%s"失败: [%s]`, ruleset.Name, err.Error()))
+				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`添加规则集"%s"失败: [%s]`, ruleset.Name, err.Error())})
+			}
+		}
+
 		// 构造并执行数据库插入操作, 如果失败则记录错误日志
 		if err := ent_client.Ruleset.Create().SetName(ruleset.Name).SetPath(ruleset.Path).SetRemote(ruleset.Remote).SetBinary(ruleset.Binary).SetDownloadDetour(ruleset.DownloadDetour).SetUpdateInterval(ruleset.UpdateInterval).Exec(context.Background()); err != nil {
 			logger.Error(fmt.Sprintf(`添加规则集"%s"失败: [%s]`, ruleset.Name, err.Error()))
@@ -214,7 +245,7 @@ func EditProvider(name, path string, remote bool, ent_client *ent.Client, logger
 // ent_client: 数据库客户端, 用于执行数据库查询和更新操作
 // logger: 日志记录器, 用于记录操作日志和错误信息
 // 返回值: 操作成功返回nil, 失败返回相应的错误信息
-func EditRuleset(name, path, update_interval, download_detour string, remote, binary bool, ent_client *ent.Client, logger *zap.Logger) error {
+func EditRuleset(name, url, update_interval, download_detour, work_dir string, remote, binary bool, ent_client *ent.Client, logger *zap.Logger) error {
 	// 检查规则集是否存在
 	exist, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(name)).Exist(context.Background())
 	if err != nil {
@@ -224,9 +255,33 @@ func EditRuleset(name, path, update_interval, download_detour string, remote, bi
 		logger.Error(fmt.Sprintf(`未找到规则集"%s"`, name))
 		return fmt.Errorf(`规则集"%s"不存在`, name)
 	}
+	if remote {
 
+		// 保存规则集文件
+		var file_name string
+		if binary {
+			file_name = fmt.Sprintf(`%s.srs`, fmt.Sprintf("%x", md5.Sum([]byte(name))))
+		} else {
+			file_name = fmt.Sprintf(`%s.json`, fmt.Sprintf("%x", md5.Sum([]byte(name))))
+		}
+		content, err := http.Get(url)
+		if err != nil {
+			logger.Error(fmt.Sprintf(`修改规则集"%s"失败: [%s]`, name, err.Error()))
+			return fmt.Errorf(`修改规则集"%s"失败: [%s]`, name, err.Error())
+		}
+		defer content.Body.Close()
+		body, err := io.ReadAll(content.Body)
+		if err != nil {
+			logger.Error(fmt.Sprintf(`修改规则集"%s"失败: [%s]`, name, err.Error()))
+			return fmt.Errorf(`修改规则集"%s"失败: [%s]`, name, err.Error())
+		}
+		if err := utils.WriteFile(path.Join(work_dir, "temp", "rulesets", file_name), body, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644); err != nil {
+			logger.Error(fmt.Sprintf(`修改规则集"%s"失败: [%s]`, name, err.Error()))
+			return fmt.Errorf(`修改规则集"%s"失败: [%s]`, name, err.Error())
+		}
+	}
 	// 更新规则集信息
-	if err := ent_client.Ruleset.Update().Where(ruleset.NameEQ(name)).SetPath(path).SetDownloadDetour(download_detour).SetUpdateInterval(update_interval).SetBinary(binary).SetRemote(remote).Exec(context.Background()); err != nil {
+	if err := ent_client.Ruleset.Update().Where(ruleset.NameEQ(name)).SetPath(url).SetDownloadDetour(download_detour).SetUpdateInterval(update_interval).SetBinary(binary).SetRemote(remote).Exec(context.Background()); err != nil {
 		logger.Error(fmt.Sprintf(`修改机场"%s"失败: [%s]`, name, err.Error()))
 	}
 	return nil
@@ -325,7 +380,7 @@ func DeleteProvider(name []string, ent_client *ent.Client, logger *zap.Logger) [
 //
 // 返回值:
 //   - []gin.H: 每个元素表示一个规则集的删除结果, 包含状态和消息
-func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []gin.H {
+func DeleteRuleset(name []string, work_dir string, ent_client *ent.Client, logger *zap.Logger) []gin.H {
 	res := []gin.H{}
 	delete_rulesets_map := map[string]bool{}
 	for _, n := range name {
@@ -335,7 +390,7 @@ func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []
 	// 遍历所有要删除的规则集名称
 	for _, n := range name {
 		// 查询要删除的规则集信息
-		rule_set, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(n)).Select(ruleset.FieldPath, ruleset.FieldRemote, ruleset.FieldTemplates).First(context.Background())
+		rule_set, err := ent_client.Ruleset.Query().Where(ruleset.NameEQ(n)).Select(ruleset.FieldPath, ruleset.FieldRemote, ruleset.FieldTemplates, ruleset.FieldBinary).First(context.Background())
 		if err != nil {
 			logger.Error(fmt.Sprintf(`查找规则集"%s"失败: [%s]`, n, err.Error()))
 			res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`查找规则集"%s"失败: [%s]`, n, err.Error())})
@@ -369,12 +424,27 @@ func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []
 				break
 			}
 		}
+
+		// 如果删除关联模板报错则退出不继续进行操作
 		if exit_status {
 			continue
 		}
-		// 如果是本地规则集, 删除对应的文件
+
+		// 查找对应的文件路径并删除
+		var file_name string
+		if rule_set.Binary {
+			file_name = fmt.Sprintf(`%s.srs`, fmt.Sprintf("%x", md5.Sum([]byte(n))))
+		} else {
+			file_name = fmt.Sprintf(`%s.json`, fmt.Sprintf("%x", md5.Sum([]byte(n))))
+		}
 		if !rule_set.Remote {
 			if err := os.Remove(rule_set.Path); err != nil {
+				logger.Error(fmt.Sprintf(`删除规则集"%s"文件失败: [%s]`, n, err.Error()))
+				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`删除规则集"%s"文件失败: [%s]`, n, err.Error())})
+				continue
+			}
+		} else {
+			if err := os.Remove(path.Join(work_dir, "temp", "rulesets", file_name)); err != nil {
 				logger.Error(fmt.Sprintf(`删除规则集"%s"文件失败: [%s]`, n, err.Error()))
 				res = append(res, gin.H{"status": false, "message": fmt.Sprintf(`删除规则集"%s"文件失败: [%s]`, n, err.Error())})
 				continue
@@ -395,10 +465,10 @@ func DeleteRuleset(name []string, ent_client *ent.Client, logger *zap.Logger) []
 // ent_client: 数据库客户端, 用于执行数据库操作
 // logger: 日志记录器, 用于记录错误日志
 // 返回值: 如果添加成功返回nil, 否则返回相应的错误信息
-func AddTemplate(template model.Template, ent_client *ent.Client, logger *zap.Logger) error {
+func AddTemplate(work_dir string, template model.Template, ent_client *ent.Client, logger *zap.Logger) error {
 	// 创建数据库模板记录构建器
 	ent_template := ent_client.Template.Create()
-	template.CreateFillFields(ent_template)
+	template.CreateFillFields(work_dir, ent_template)
 
 	// 关联提供商表数据
 	if err := template.LinkProvidersTable(ent_client); err != nil {
@@ -505,7 +575,7 @@ func DeleteTemplate(name []string, work_dir string, ent_client *ent.Client, logg
 //
 // 返回值:
 //   - error: 如果在执行过程中发生错误, 则返回相应的错误信息；否则返回 nil
-func EditTemplate(template_msg model.Template, ent_client *ent.Client, logger *zap.Logger) error {
+func EditTemplate(template_msg model.Template, ent_client *ent.Client, work_dir string, logger *zap.Logger) error {
 	// 初始化模板更新实例
 	template_instance := ent_client.Template.Update()
 
@@ -616,7 +686,7 @@ func EditTemplate(template_msg model.Template, ent_client *ent.Client, logger *z
 	}
 
 	// 填充模板更新字段并执行数据库更新操作
-	template_msg.UpdateFillFields(template_instance)
+	template_msg.UpdateFillFields(work_dir, template_instance)
 	if err := template_instance.Where(template.NameEQ(template_msg.Name)).SetUpdated(true).SetInbounds(template_msg.Inbounds).SetOutboundGroups(template_msg.OutboundsGroup).SetProviders(template_msg.Providers).Exec(context.Background()); err != nil {
 		logger.Error(fmt.Sprintf(`修改模板"%s"失败: [%s]`, template_msg.Name, err.Error()))
 		return fmt.Errorf(`修改模板"%s"失败: [%s]`, template_msg.Name, err.Error())
