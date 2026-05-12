@@ -51,9 +51,9 @@ func init() {
 // 	init_logger := initial.GetLogger(`F:/1`, "init1", false)
 // 	defer init_logger.Sync()
 // 	hg := http.Client{}
-// 	outbounds, err := nodes.FetchFromRemote("1", "https://yfssce.net/s/994e2eea98b8a755974b81f22a66080b", &hg, init_logger)
+// 	outbounds, err := nodes.FetchFromRemote("1", "https://naiun.adfgawidhioawjd.site/api/v1/client/subscribe?token=745f0f059c5256cf9b2e4cc4fc87ee81", &hg, init_logger)
 // 	data, _ := json.MarshalIndent(outbounds, "", "  ")
-// 	os.WriteFile("F:/1/bro.json", data, 755)
+// 	os.WriteFile("/root/temp/bro.json", data, 755)
 
 // 	fmt.Println(err)
 // }

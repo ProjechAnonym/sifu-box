@@ -82,6 +82,7 @@ func trojanFromBase64(content *url.URL) map[string]any {
 	outbound["server_port"] = port
 	outbound["password"] = content.User.String()
 	outbound["type"] = "trojan"
+	outbound["tls"] = tls
 	transport.Type = content.Query().Get("type")
 	if transport.Type == "ws" {
 		host := content.Query().Get("host")
@@ -94,6 +95,6 @@ func trojanFromBase64(content *url.URL) map[string]any {
 		return outbound
 	}
 	outbound["transport"] = transport
-	outbound["tls"] = tls
+
 	return outbound
 }

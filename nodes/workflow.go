@@ -67,7 +67,7 @@ func Fetch(providers []*ent.Provider, ent_client *ent.Client, logger *zap.Logger
 
 			// 根据 provider 是否是远程的, 选择不同的获取方式
 			if provider.Remote {
-				outbounds, err := FetchFromRemote(provider.Name, provider.Path, client, logger)
+				outbounds, err := fetchFromRemote(provider.Name, provider.Path, client, logger)
 				if err != nil {
 					err_chan <- err
 					return

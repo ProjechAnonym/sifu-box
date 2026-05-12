@@ -19,7 +19,7 @@ import (
 // client: HTTP客户端, 用于发送请求
 // logger: 日志记录器, 用于记录处理过程中的日志
 // 返回值: 解析后的出站节点配置列表和可能的错误信息
-func FetchFromRemote(name, url string, client *http.Client, logger *zap.Logger) ([]map[string]any, error) {
+func fetchFromRemote(name, url string, client *http.Client, logger *zap.Logger) ([]map[string]any, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		logger.Error(fmt.Sprintf(`"%s"出错, 创建请求失败: [%s]`, name, err.Error()))
