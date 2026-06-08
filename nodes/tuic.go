@@ -40,7 +40,7 @@ func tuicFromYaml(content map[string]any) map[string]any {
 			}
 		case "udp-relay-mode":
 			outbound["udp_relay_mode"] = v
-		case "congestion-control":
+		case "congestion-controller":
 			outbound["congestion_control"] = v
 		case "disable-sni":
 			continue
