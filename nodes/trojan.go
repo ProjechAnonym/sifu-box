@@ -36,12 +36,15 @@ func trojanFromYaml(content map[string]any) map[string]any {
 		case "ws-opts":
 			if opts, ok := v.(map[string]any); ok {
 				if headers, ok := opts["headers"].(map[string]any); ok {
-					if host, ok := headers["Host"].(string); ok {
-						transport.Headers = map[string]string{"host": host}
+					if host, ok := headers["Host"]; ok {
+						transport.Headers = map[string]any{"host": host}
 					}
 				}
 				if path, ok := opts["path"].(string); ok {
 					transport.Path = path
+				}
+				if path, ok := opts["path"].([]string); ok {
+					transport.Path = path[0]
 				}
 			}
 		case "client-fingerprint":
@@ -88,7 +91,7 @@ func trojanFromBase64(content *url.URL) map[string]any {
 		host := content.Query().Get("host")
 		transport.Path = content.Query().Get("path")
 		if transport.Type == "ws" {
-			transport.Headers = map[string]string{"host": host}
+			transport.Headers = map[string]any{"host": host}
 		}
 	}
 	if transport.Type != "ws" && transport.Type != "http" && transport.Type != "quic" && transport.Type != "grpc" && transport.Type != "httpupgrade" {

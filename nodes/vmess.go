@@ -32,8 +32,8 @@ func vmessFromYaml(content map[string]any) map[string]any {
 		case "ws-opts":
 			if opts, ok := v.(map[string]any); ok {
 				if headers, ok := opts["headers"].(map[string]any); ok {
-					if host, ok := headers["Host"].(string); ok {
-						transport.Headers = map[string]string{"host": host}
+					if host, ok := headers["Host"]; ok {
+						transport.Headers = map[string]any{"host": host}
 					}
 				}
 				if path, ok := opts["path"].(string); ok {
