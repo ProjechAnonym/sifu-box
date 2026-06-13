@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"encoding/base64"
+	"fmt"
 	"net/url"
 	"strconv"
 	"strings"
@@ -24,6 +25,28 @@ func shadowsocksFromYaml(content map[string]any) map[string]any {
 		case "type":
 			outbound["type"] = "shadowsocks"
 		case "udp":
+		case "plugin":
+			if v, ok := v.(string); ok {
+				switch v {
+				case "obfs":
+					outbound["plugin"] = "obfs-local"
+				case "v2ray":
+					outbound["plugin"] = "v2ray-plugin"
+				}
+			}
+		case "plugin-opts":
+			if opts, ok := v.(map[string]any); ok {
+				pluginOpts := ""
+				if mode, ok := opts["mode"].(string); ok {
+					pluginOpts = fmt.Sprintf("obfs=%s;", mode)
+				}
+				if host, ok := opts["host"].(string); ok {
+					pluginOpts += fmt.Sprintf("obfs-host=%s;", host)
+				}
+				if pluginOpts != "" {
+					outbound["plugin_opts"] = pluginOpts
+				}
+			}
 		default:
 			outbound[k] = v
 		}
