@@ -38,6 +38,8 @@ func anytlsFromYaml(content map[string]any) map[string]any {
 			continue
 		case "udp":
 			continue
+		case "tfo":
+			continue
 		default:
 			outbound[k] = v
 		}
