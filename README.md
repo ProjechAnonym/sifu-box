@@ -166,7 +166,15 @@ template:
       rules:
         - action: route
           domain_keyword:
-            - siub.top
+            - sifuhub.top
+          server: internal
+        - action: evaluate  # 默认会先去external查询, 结果会放置在缓存中
+          server: external
+        - action: route
+          match_response: true
+          rule_set: 
+            - china-site  # 先前evaluate的ip根本不会匹配域名规则, 会继续向下一条规则匹配
+            - china-ip  # 先前evaluate的ip会匹配ip规则, 如果匹配到, 则会向该规则指定的DNS进行查询并覆盖原来的结果
           server: internal
       servers:
         - detour: select
@@ -180,7 +188,7 @@ template:
           type: udp
     experiment:
       clash_api:
-        external_controller: 192.168.10.6:8080
+        external_controller: 0.0.0.0:9090
         external_ui: ui
         secret: "123456"
     log:
